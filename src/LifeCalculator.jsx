@@ -5,7 +5,7 @@ export default function LifeCalculator() {
   const [lifeExpectancy, setLifeExpectancy] = useState("");
 
   const stats = useMemo(() => {
-    if (!birthDate) return null;
+    if (!birthDate || lifeExpectancy === "") return null;
 
     const birth = new Date(birthDate);
     const today = new Date();
@@ -14,37 +14,25 @@ export default function LifeCalculator() {
       return null;
     }
 
+    const yearsLived = (Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24)) / 365.25);
+
+    if (Number(lifeExpectancy) <= yearsLived) return null;
+
     const oneDay = 1000 * 60 * 60 * 24;
+    const daysLived = Math.floor((today.getTime() - birth.getTime()) / oneDay);
+    const totalDaysExpected = Math.floor(Number(lifeExpectancy) * 365.25);
+    const remainingDays = Math.max(0, totalDaysExpected - daysLived);
+    const progress = Math.min(100, Math.max(0, (daysLived / totalDaysExpected) * 100));
 
-    const daysLived = Math.floor(
-      (today.getTime() - birth.getTime()) / oneDay
-    );
-
-    const totalDaysExpected = Math.floor(
-      lifeExpectancy * 365.25
-    );
-
-    const remainingDays = Math.max(
-      0,
-      totalDaysExpected - daysLived
-    );
-
-    const progress = Math.min(
-      100,
-      Math.max(
-        0,
-        (daysLived / totalDaysExpected) * 100
-      )
-    );
-
-    const yearsLived = (daysLived / 365.25).toFixed(1);
+    const deathYear = new Date(birthDate).getFullYear() + Number(lifeExpectancy);
 
     return {
       daysLived,
       remainingDays,
       totalDaysExpected,
       progress,
-      yearsLived,
+      yearsLived: yearsLived.toFixed(1),
+      deathYear,
     };
   }, [birthDate, lifeExpectancy]);
 
@@ -103,9 +91,15 @@ export default function LifeCalculator() {
           </div>
         </div>
 
+          {birthDate && lifeExpectancy !== "" && !stats && (
+            <p className="mt-6 text-red-400 text-sm text-center">
+              ⚠️ L'espérance de vie doit être strictement supérieure à votre âge actuel.
+            </p>
+          )}
+
         {stats && (
           <div className="mt-10 space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-4 gap-6">
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
                 <h3 className="text-slate-400 mb-2">
                   Jours vécus
@@ -118,7 +112,7 @@ export default function LifeCalculator() {
 
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
                 <h3 className="text-slate-400 mb-2">
-                  Jours restants estimés
+                  Jours restants
                 </h3>
 
                 <p className="text-4xl font-bold">
@@ -130,9 +124,17 @@ export default function LifeCalculator() {
                 <h3 className="text-slate-400 mb-2">
                   Âge actuel
                 </h3>
-
                 <p className="text-4xl font-bold">
                   {stats.yearsLived} ans
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6">
+                <h3 className="text-slate-400 mb-2">
+                  Année estimée
+                </h3>
+                <p className="text-4xl font-bold">
+                  {stats.deathYear}
                 </p>
               </div>
             </div>
