@@ -194,8 +194,34 @@ export default function PortfolioDataAnalyst() {
   return (
     <main className="min-h-screen bg-slate-950 text-white overflow-hidden scroll-smooth">
 
+{/* Bandeau défilant */}
+      <div className="w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-4 mt-6 mb-2">
+      {/* <div className="fixed top-6 left-0 right-0 z-40 w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-4"> */}
+        <div className="animate-marquee whitespace-nowrap flex gap-20 text-base font-medium text-slate-300">
+          {[
+            "👋 Bienvenue sur mon portfolio !",
+            "📊 Expert en Data Visualisation & Reporting",
+            "⚙️ Automatisation de flux de données",
+            "🚀 Disponible pour des missions freelance",
+            "📅 Réservez un appel directement depuis ce site",
+            "💡 Transformer vos données en décisions opérationnelles",
+            "🔍 Power BI · Python · SQL · Microsoft Fabric",
+            "👋 Bienvenue sur mon portfolio !",
+            "📊 Expert en Data Visualisation & Reporting",
+            "⚙️ Automatisation de flux de données",
+            "🚀 Disponible pour des missions freelance",
+            "📅 Réservez un appel directement depuis ce site",
+            "💡 Transformer vos données en décisions opérationnelles",
+            "🔍 Power BI · Python · SQL · Microsoft Fabric",
+          ].map((msg, i) => (
+            <span key={i}>{msg}</span>
+          ))}
+        </div>
+      </div>
+
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 py-20">
+      {/* <section className="max-w-7xl mx-auto px-6 py-20 mt-16"> */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <div className="flex items-center gap-6 mb-6 flex-wrap">
@@ -204,13 +230,26 @@ export default function PortfolioDataAnalyst() {
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm">
                 <span>🧠</span>
-                <span>Data Analyst • Power BI • Automatisation</span>
+                <span>Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
               </div>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
-              Henintsoa
-              <span className="block text-slate-400 mt-2">Data Analyst Freelance</span>
-            </h1>
+           <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
+            Henintsoa
+           </h1>
+            <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
+              Consultant en
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+                Data Analyst
+              </span>
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+                Data Visualisation
+              </span>
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+                Reporting Décisionnel
+              </span>
+            </div>
             <p className="text-slate-400 text-lg leading-relaxed mt-8 max-w-2xl">
               J'aide les entreprises à transformer leurs données en décisions opérationnelles
               grâce à la DataViz, l'automatisation des flux et la modélisation de données orientée métier.
@@ -222,8 +261,12 @@ export default function PortfolioDataAnalyst() {
               </a>
               <button type="button" onClick={openLinkedIn}
                 className="relative z-50 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-900 transition duration-300 cursor-pointer">
-                🔗 Voir mon LinkedIn
+                🔗 LinkedIn
               </button>
+              <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:scale-105 transition duration-300 text-center">
+                📅 Réserver un appel
+              </a>
             </div>
           </div>
 
@@ -232,10 +275,19 @@ export default function PortfolioDataAnalyst() {
             <div className="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center justify-between mb-8 gap-6">
                 <div>
-                  <p className="text-slate-400 text-sm">KPI opérationnels</p>
-                  <h2 className="text-3xl font-bold mt-2">+42%</h2>
+                  <p className="text-slate-400 text-sm mb-3">Expérience terrain</p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2 text-sm">
+                      <span className="text-white mt-1">•</span>
+                      <span className="text-slate-300">Plus de <span className="text-white font-semibold">20 missions</span> réalisées dans le secteur de l'assurance, au service de <span className="text-white font-semibold">dizaines de clients accompagnés</span> dans leurs projets data.</span>
+                    </li>
+                    {/* <li className="flex items-start gap-2 text-sm">
+                      <span className="text-white mt-1">•</span>
+                      <span className="text-slate-300">Réalisation d'un projet d'analyse et de pilotage des <span className="text-white font-semibold">données RH</span>.</span>
+                    </li> */}
+                  </ul>
                 </div>
-                <span className="text-5xl">📈</span>
+                <span className="text-5xl">📉</span>
               </div>
               <div className="space-y-5">
                 <ProgressBar label="Automatisation" value={92} />
@@ -277,15 +329,25 @@ export default function PortfolioDataAnalyst() {
             <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-6">
               Disponible pour des missions freelance en Data Analysis, automatisation et reporting métier.
             </p>
-            <button type="button" onClick={openLinkedIn}
-              className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-800 transition duration-300 cursor-pointer">
-              <span>🔗</span><span>LinkedIn</span>
-            </button>
+            <div className="flex items-center justify-center gap-4">
+              <button type="button" onClick={openLinkedIn}
+                className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-800 transition duration-300 cursor-pointer">
+                <span>🔗</span><span>LinkedIn</span>
+              </button>
+              <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition duration-300">
+                <span>📅</span><span>Réserver un appel</span>
+              </a>
+            </div>
           </div>
           <ContactForm />
         </div>
       </section>
-
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition duration-300 text-lg">
+          ↑
+        </button>
     </main>
   );
 }
