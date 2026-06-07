@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
+import LifeCalculator from "./LifeCalculator";
 
 const EMAILJS_SERVICE_ID = "service_4k6fbdp";
 const EMAILJS_TEMPLATE_ID = "template_rxm98ga";
@@ -41,12 +42,20 @@ function ProgressBar({ label, value }) {
   );
 }
 
-function ProjectCard({ project }) {
+function ProjectCard({ project, onClick }) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl hover:-translate-y-2 transition duration-300">
+    <div
+      onClick={onClick}
+      className={`bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl hover:-translate-y-2 transition duration-300 ${onClick ? "cursor-pointer hover:border-slate-600" : ""}`}>
       <div className="text-4xl mb-6">{project.emoji}</div>
       <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
       <p className="text-slate-400 leading-relaxed">{project.description}</p>
+      {onClick && (
+        <div className="mt-6 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
+          <span>Lancer l'application</span>
+          <span>→</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -181,13 +190,14 @@ function ContactForm() {
 
       <button onClick={handleSubmit} disabled={loading}
         className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
-        {loading ? "⏳ Envoi en cours..." : "✉️ Envoyer le message"}
+        {loading ? "⏳ Envoi en cours..." : "📤 Envoyer le message"}
       </button>
     </div>
   );
 }
 
 export default function PortfolioDataAnalyst() {
+  const [showCalculator, setShowCalculator] = useState(false);
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
 
@@ -228,10 +238,10 @@ export default function PortfolioDataAnalyst() {
               <div className="w-28 h-28 rounded-3xl border border-slate-800 bg-slate-900 flex items-center justify-center text-slate-500 text-sm text-center p-4">
                 Votre photo
               </div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm">
+              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm">
                 <span>🧠</span>
                 <span>Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
-              </div>
+              </div> */}
             </div>
            <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
             Henintsoa
@@ -272,6 +282,14 @@ export default function PortfolioDataAnalyst() {
 
           <div className="relative">
             <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full" />
+            
+            {/* Badge au-dessus de la carte */}
+            <div className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm mb-4">
+              <span>🧠</span>
+              <span className="text-slate-300">Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
+            </div>
+
+            {/* Carte Expérience terrain */}
             <div className="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center justify-between mb-8 gap-6">
                 <div>
@@ -317,7 +335,13 @@ export default function PortfolioDataAnalyst() {
           <h2 className="text-4xl font-bold">Projets</h2>
         </div>
         <div className="grid lg:grid-cols-3 gap-6">
-          {projects.map((project) => <ProjectCard key={project.id} project={project} />)}
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onClick={project.id === 4 ? () => setShowCalculator(true) : undefined}
+            />
+          ))}
         </div>
       </section>
 
@@ -348,6 +372,20 @@ export default function PortfolioDataAnalyst() {
           className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition duration-300 text-lg">
           ↑
         </button>
+
+        {/* Modale Calculateur de vie */}
+          {showCalculator && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+              <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
+                <button
+                  onClick={() => setShowCalculator(false)}
+                  className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                  ✕
+                </button>
+                <LifeCalculator />
+              </div>
+            </div>
+          )}
     </main>
   );
 }
