@@ -205,29 +205,41 @@ export default function PortfolioDataAnalyst() {
     <main className="min-h-screen bg-slate-950 text-white overflow-hidden scroll-smooth">
 
 {/* Bandeau défilant */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-4 mt-6 mb-2">
-      {/* <div className="fixed top-6 left-0 right-0 z-40 w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-4"> */}
-        <div className="animate-marquee whitespace-nowrap flex gap-20 text-base font-medium text-slate-300">
-          {[
-            "👋 Bienvenue sur mon portfolio !",
-            "📊 Expert en Data Visualisation & Reporting",
-            "⚙️ Automatisation de flux de données",
-            "🚀 Disponible pour des missions freelance",
-            "📅 Réservez un appel directement depuis ce site",
-            "💡 Transformer vos données en décisions opérationnelles",
-            "🔍 Power BI · Python · SQL · Microsoft Fabric",
-            "👋 Bienvenue sur mon portfolio !",
-            "📊 Expert en Data Visualisation & Reporting",
-            "⚙️ Automatisation de flux de données",
-            "🚀 Disponible pour des missions freelance",
-            "📅 Réservez un appel directement depuis ce site",
-            "💡 Transformer vos données en décisions opérationnelles",
-            "🔍 Power BI · Python · SQL · Microsoft Fabric",
-          ].map((msg, i) => (
-            <span key={i}>{msg}</span>
-          ))}
-        </div>
-      </div>
+<div className="sticky top-0 z-40 w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
+  <div className="animate-marquee whitespace-nowrap flex gap-20 text-base font-medium text-slate-300">
+    {[
+      "👋 Bienvenue sur mon portfolio !",
+      "📊 Expert en Data Visualisation & Reporting",
+      "⚙️ Automatisation de flux de données",
+      "🚀 Disponible pour des missions freelance",
+      "📅 Réservez un appel directement depuis ce site",
+      "💡 Transformer vos données en décisions opérationnelles",
+      "🔍 Power BI · Python · SQL · Microsoft Fabric",
+      "👋 Bienvenue sur mon portfolio !",
+      "📊 Expert en Data Visualisation & Reporting",
+      "⚙️ Automatisation de flux de données",
+      "🚀 Disponible pour des missions freelance",
+      "📅 Réservez un appel directement depuis ce site",
+      "💡 Transformer vos données en décisions opérationnelles",
+      "🔍 Power BI · Python · SQL · Microsoft Fabric",
+    ].map((msg, i) => (
+      <span key={i}>{msg}</span>
+    ))}
+  </div>
+</div>
+
+{/* Menu navigation */}
+<div className="sticky top-12 z-30 w-full bg-slate-950 border-b border-slate-800 py-3">
+  <div className="max-w-7xl mx-auto px-6 flex items-center justify-end gap-6">
+    <a href="#about" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Qui suis-je</a>
+    <span className="text-slate-700">|</span>
+    <a href="#competences" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Compétences</a>
+    <span className="text-slate-700">|</span>
+    <a href="#projects" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Projets</a>
+    <span className="text-slate-700">|</span>
+    <a href="#contact" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Contact</a>
+  </div>
+</div>
 
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 py-20">
@@ -286,7 +298,7 @@ export default function PortfolioDataAnalyst() {
             {/* Badge au-dessus de la carte */}
             <div className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm mb-4">
               <span>🧠</span>
-              <span className="text-slate-300">Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
+              <span className="text-base text-slate-300">Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
             </div>
 
             {/* Carte Expérience terrain */}
@@ -317,8 +329,125 @@ export default function PortfolioDataAnalyst() {
         </div>
       </section>
 
+      {/* Qui suis-je */}
+      <section id="about" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+        <div className="flex items-center gap-3 mb-10">
+          <span className="text-3xl">👤</span>
+          <h2 className="text-4xl font-bold">Qui suis-je</h2>
+        </div>
+        <div className="grid lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <h3 className="text-2xl font-bold mb-6 leading-snug text-white">
+              Consultant Data indépendant, spécialisé en DataViz, automatisation et reporting décisionnel.
+            </h3>
+            <p className="text-slate-400 leading-relaxed mb-5">
+              Je suis <strong className="text-white">consultant Data Analyst freelance</strong> avec plus de 5 ans d'expérience dans la transformation des données en leviers de performance. Basé à Madagascar et intervenant en remote pour des entreprises françaises et internationales, j'accompagne mes clients dans la mise en place de <strong className="text-white">solutions data sur mesure</strong> : dashboards Power BI, automatisation de flux avec Python et n8n, modélisation de données sous Microsoft Fabric, et reporting métier orienté décision.
+            </p>
+            <p className="text-slate-400 leading-relaxed mb-5">
+              Fort d'une expertise reconnue dans le <strong className="text-white">secteur de l'assurance</strong>, j'ai conduit plus de 20 missions opérationnelles — pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.
+            </p>
+            <p className="text-slate-400 leading-relaxed">
+              Disponible pour des <strong className="text-white">missions freelance en Data Analysis</strong>, Power BI, automatisation et reporting. Réactif, rigoureux et orienté résultats — je transforme vos données brutes en décisions opérationnelles concrètes.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { emoji: "📊", number: "20+", label: "Missions réalisées" },
+              { emoji: "🗓️", number: "5+", label: "Années d'expérience" },
+            ].map(({ emoji, number, label }) => (
+              <div key={label} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center hover:-translate-y-1 transition duration-300">
+                <div className="text-3xl mb-2">{emoji}</div>
+                <div className="text-3xl font-black mb-1">{number}</div>
+                <div className="text-slate-400 text-sm">{label}</div>
+              </div>
+            ))}
+            <div className="col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden p-4">
+              <svg viewBox="0 0 360 178" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
+                {/* Chrome */}
+                <rect width="360" height="26" rx="10" fill="#1e293b"/>
+                <rect y="13" width="360" height="13" fill="#1e293b"/>
+                <circle cx="14" cy="13" r="4" fill="#f87171" opacity="0.8"/>
+                <circle cx="28" cy="13" r="4" fill="#fbbf24" opacity="0.8"/>
+                <circle cx="42" cy="13" r="4" fill="#4ade80" opacity="0.8"/>
+                <text x="56" y="17" fontFamily="monospace" fontSize="7.5" fill="#334155">Power BI · Niveau d'expertise — Compétences clés</text>
+
+                {/* KPI cards — 4 cartes x=0,91,182,273 w=87 */}
+                <rect x="0"   y="33" width="87" height="34" rx="6" fill="#0f172a"/>
+                <text x="10"  y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">Missions</text>
+                <text x="10"  y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#f1f5f9">20+</text>
+
+                <rect x="91"  y="33" width="87" height="34" rx="6" fill="#0f172a"/>
+                <text x="101" y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">Expérience</text>
+                <text x="101" y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#f1f5f9">5 ans</text>
+
+                <rect x="182" y="33" width="87" height="34" rx="6" fill="#0f172a"/>
+                <text x="192" y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">DataViz</text>
+                <text x="192" y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#60a5fa">95%</text>
+
+                <rect x="273" y="33" width="87" height="34" rx="6" fill="#0f172a"/>
+                <text x="283" y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">Reporting</text>
+                <text x="283" y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#34d399">96%</text>
+
+                {/* Chart label */}
+                <text x="0" y="82" fontFamily="sans-serif" fontSize="7.5" fill="#475569" fontWeight="500">Niveau d'expertise · Compétences clés (échelle 75–100%)</text>
+
+                {/* Grid lines — baseline y=152, top y=96, scale 70–100% (range=30, 56px) */}
+                <line x1="0" y1="96"  x2="360" y2="96"  stroke="#1e293b" strokeWidth="1"/>
+                <line x1="0" y1="114" x2="360" y2="114" stroke="#1e293b" strokeWidth="1"/>
+                <line x1="0" y1="133" x2="360" y2="133" stroke="#1e293b" strokeWidth="1"/>
+                <line x1="0" y1="152" x2="360" y2="152" stroke="#1e293b" strokeWidth="1"/>
+                <text x="0" y="99"  fontFamily="sans-serif" fontSize="5" fill="#334155">100%</text>
+                <text x="0" y="117" fontFamily="sans-serif" fontSize="5" fill="#334155">90%</text>
+                <text x="0" y="136" fontFamily="sans-serif" fontSize="5" fill="#334155">80%</text>
+                <text x="0" y="155" fontFamily="sans-serif" fontSize="5" fill="#334155">70%</text>
+
+                {/* 5 bars  x:27,94,161,228,295  w=40  gap=27
+                    scale:(val-70)/30*56  baseline y=152
+                    Power BI        98% → h=52 y=100  ★
+                    Python          90% → h=37 y=115
+                    SQL             96% → h=49 y=103
+                    Microsoft Fabric90% → h=37 y=115
+                    Cognos Analytics97% → h=50 y=102  */}
+
+                {/* Power BI 98% — outil principal */}
+                <rect x="27"  y="100" width="40" height="52" rx="3" fill="#3b82f6"/>
+                <rect x="27"  y="100" width="40" height="3"  rx="1" fill="#93c5fd"/>
+                <text x="35"  y="97"  fontFamily="sans-serif" fontSize="6" fill="#93c5fd">98%</text>
+                <text x="29"  y="163" fontFamily="sans-serif" fontSize="6" fill="#93c5fd">Power BI</text>
+
+                {/* Python 90% */}
+                <rect x="94"  y="115" width="40" height="37" rx="3" fill="#60a5fa"/>
+                <text x="102" y="112" fontFamily="sans-serif" fontSize="6" fill="#bfdbfe">90%</text>
+                <text x="99"  y="163" fontFamily="sans-serif" fontSize="6" fill="#475569">Python</text>
+
+                {/* SQL 96% */}
+                <rect x="161" y="103" width="40" height="49" rx="3" fill="#60a5fa" opacity="0.85"/>
+                <text x="170" y="100" fontFamily="sans-serif" fontSize="6" fill="#bfdbfe">96%</text>
+                <text x="172" y="163" fontFamily="sans-serif" fontSize="6" fill="#475569">SQL</text>
+
+                {/* Microsoft Fabric 90% */}
+                <rect x="228" y="115" width="40" height="37" rx="3" fill="#38bdf8"/>
+                <text x="236" y="112" fontFamily="sans-serif" fontSize="6" fill="#7dd3fc">90%</text>
+                <text x="224" y="163" fontFamily="sans-serif" fontSize="6" fill="#475569">MS Fabric</text>
+
+                {/* Cognos Analytics 97% */}
+                <rect x="295" y="102" width="40" height="50" rx="3" fill="#38bdf8" opacity="0.8"/>
+                <text x="303" y="99"  fontFamily="sans-serif" fontSize="6" fill="#7dd3fc">97%</text>
+                <text x="295" y="163" fontFamily="sans-serif" fontSize="6" fill="#475569">Cognos</text>
+
+                {/* Legend */}
+                <rect x="0" y="169" width="7" height="7" rx="1.5" fill="#3b82f6"/>
+                <text x="11" y="176" fontFamily="sans-serif" fontSize="6.5" fill="#93c5fd">Power BI · Outil principal</text>
+                <rect x="170" y="169" width="7" height="7" rx="1.5" fill="#38bdf8"/>
+                <text x="181" y="176" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">Outils complémentaires</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Compétences */}
-      <section className="max-w-7xl mx-auto px-6 py-10">
+      <section id="competences" className="max-w-7xl mx-auto px-6 py-10 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10">
           <span className="text-3xl">💻</span>
           <h2 className="text-4xl font-bold">Compétences</h2>
@@ -346,7 +475,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Contact */}
-      <section className="max-w-7xl mx-auto px-6 pb-24">
+      <section id="contact" className="max-w-7xl mx-auto px-6 pb-24 scroll-mt-24">
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 shadow-2xl">
           <div className="text-center">
             <h2 className="text-4xl font-bold mb-4">Transformons vos données en décisions.</h2>
@@ -386,6 +515,68 @@ export default function PortfolioDataAnalyst() {
               </div>
             </div>
           )}
+
+        {/* Footer */}
+        <footer className="border-t border-slate-800 py-8 px-6">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-slate-500 text-sm">
+              © {new Date().getFullYear()} Henintsoa — Tous droits réservés.
+            </p>
+            <div className="flex items-center gap-2 text-slate-600 text-xs">
+              <span>🇲🇬</span>
+              <span>Conçu & développé depuis Madagascar</span>
+            </div>
+            <p className="text-slate-600 text-xs">
+              Fait avec React • Vite • Tailwind CSS
+            </p>
+          </div>
+        </footer>
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
