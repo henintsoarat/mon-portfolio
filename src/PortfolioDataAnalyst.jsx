@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import LifeCalculator from "./LifeCalculator";
+import { useAuth } from "./AuthContext";
+import LinkedInManager from "./linkedin_manager";
 
 const EMAILJS_SERVICE_ID = "service_4k6fbdp";
 const EMAILJS_TEMPLATE_ID = "template_rxm98ga";
@@ -13,10 +15,33 @@ const skills = [
 ];
 
 const projects = [
-  { id: 1, title: "Pilotage d'activité Assurance", description: "Création de dashboards opérationnels pour le suivi des délais, KPI métiers et performances des équipes expertise.", emoji: "📊" },
-  { id: 2, title: "Automatisation de flux de données", description: "Automatisation des traitements et reportings via Python et n8n afin de réduire les tâches manuelles répétitives.", emoji: "⚙️" },
-  { id: 3, title: "Modélisation & Reporting", description: "Conception de modèles de données orientés métier pour améliorer la qualité des analyses et la prise de décision.", emoji: "🗄️" },
-  { id: 4, title: "Calculateur de vie", description: "Application React interactive permettant de visualiser les jours vécus, les jours restants estimés et la progression de vie à partir d'une date de naissance.", emoji: "⏳" },
+  {
+    id: 1,
+    title: "Pilotage & Reporting Data",
+    description: "Dashboards Power BI, KPI métiers et automatisation des reportings opérationnels — du traitement brut à la visualisation décisionnelle.",
+    emoji: "📊",
+    access: "public",
+    buttonLabel: "Voir les projets",
+    action: "data",
+  },
+  {
+    id: 2,
+    title: "Espace Projets Privés",
+    description: "Études de cas confidentielles, projets clients et ressources réservées à l'administration du portfolio.",
+    emoji: "🔐",
+    access: "admin",
+    buttonLabel: "Accéder au panel",
+    action: "admin",
+  },
+  {
+    id: 3,
+    title: "Life Calculator · Vibe Coding",
+    description: "Application React interactive pour visualiser les jours vécus, les jours restants estimés et la progression de vie.",
+    emoji: "⏳",
+    access: "public",
+    buttonLabel: "Lancer l'application",
+    action: "calculator",
+  },
 ];
 
 function SkillCard({ skill }) {
@@ -42,20 +67,24 @@ function ProgressBar({ label, value }) {
   );
 }
 
-function ProjectCard({ project, onClick }) {
+function ProjectCard({ project, onAction }) {
   return (
-    <div
-      onClick={onClick}
-      className={`bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl hover:-translate-y-2 transition duration-300 ${onClick ? "cursor-pointer hover:border-slate-600" : ""}`}>
+    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col hover:-translate-y-1 transition duration-300">
       <div className="text-4xl mb-6">{project.emoji}</div>
       <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
-      <p className="text-slate-400 leading-relaxed">{project.description}</p>
-      {onClick && (
-        <div className="mt-6 inline-flex items-center gap-2 text-sm text-slate-400 hover:text-white transition">
-          <span>Lancer l'application</span>
-          <span>→</span>
+      <p className="text-slate-400 leading-relaxed flex-1">{project.description}</p>
+      {project.access === 'admin' && (
+        <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-yellow-500/70">
+          <span>🔒</span>
+          <span>Accès admin uniquement</span>
         </div>
       )}
+      <button
+        onClick={onAction}
+        className="mt-6 w-full px-4 py-3 rounded-2xl bg-white text-black font-semibold text-sm hover:scale-105 transition duration-300"
+      >
+        {project.buttonLabel} →
+      </button>
     </div>
   );
 }
@@ -197,9 +226,21 @@ function ContactForm() {
 }
 
 export default function PortfolioDataAnalyst() {
+  const { role, logout } = useAuth();
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showDataProject, setShowDataProject] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [showLinkedInManager, setShowLinkedInManager] = useState(false);
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
+
+  const handleProjectAction = (action) => {
+    if (action === 'calculator') setShowCalculator(true);
+    else if (action === 'data') setShowDataProject(true);
+    else if (action === 'admin') setShowAdminPanel(true);
+  };
+
+  const visibleProjects = projects.filter(p => p.access === 'public' || (p.access === 'admin' && role === 'admin'));
 
   return (
     <main className="min-h-screen bg-slate-950 text-white overflow-hidden scroll-smooth">
@@ -230,14 +271,30 @@ export default function PortfolioDataAnalyst() {
 
 {/* Menu navigation */}
 <div className="sticky top-12 z-30 w-full bg-slate-950 border-b border-slate-800 py-3">
-  <div className="max-w-7xl mx-auto px-6 flex items-center justify-end gap-6">
-    <a href="#about" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Qui suis-je</a>
-    <span className="text-slate-700">|</span>
-    <a href="#competences" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Compétences</a>
-    <span className="text-slate-700">|</span>
-    <a href="#projects" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Projets</a>
-    <span className="text-slate-700">|</span>
-    <a href="#contact" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Contact</a>
+  <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-6">
+    {/* Badge mode */}
+    {role === 'admin' ? (
+      <div className="flex items-center gap-3">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-medium">
+          <span>🔐</span> Admin
+        </span>
+        <button onClick={logout} className="text-xs text-slate-500 hover:text-red-400 transition">Déconnexion</button>
+      </div>
+    ) : (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
+        <span>👁️</span> Mode Visiteur
+      </span>
+    )}
+    {/* Nav links */}
+    <div className="flex items-center gap-6">
+      <a href="#about" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Qui suis-je</a>
+      <span className="text-slate-700">|</span>
+      <a href="#competences" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Compétences</a>
+      <span className="text-slate-700">|</span>
+      <a href="#projects" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Projets</a>
+      <span className="text-slate-700">|</span>
+      <a href="#contact" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">Contact</a>
+    </div>
   </div>
 </div>
 
@@ -464,14 +521,19 @@ export default function PortfolioDataAnalyst() {
           <h2 className="text-4xl font-bold">Projets</h2>
         </div>
         <div className="grid lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
+          {visibleProjects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
-              onClick={project.id === 4 ? () => setShowCalculator(true) : undefined}
+              onAction={() => handleProjectAction(project.action)}
             />
           ))}
         </div>
+        {role !== 'admin' && (
+          <p className="text-center text-slate-600 text-sm mt-6">
+            🔐 Un projet est réservé à l'espace admin.
+          </p>
+        )}
       </section>
 
       {/* Contact */}
@@ -501,6 +563,102 @@ export default function PortfolioDataAnalyst() {
           className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition duration-300 text-lg">
           ↑
         </button>
+
+        {/* Modale Projets Data */}
+        {showDataProject && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+            <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl p-10">
+              <button onClick={() => setShowDataProject(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                ✕
+              </button>
+              <div className="flex items-center gap-3 mb-8">
+                <span className="text-3xl">📊</span>
+                <h2 className="text-3xl font-bold">Pilotage & Reporting Data</h2>
+              </div>
+              <div className="space-y-6">
+                {[
+                  { emoji: "📉", title: "Pilotage d'activité Assurance", desc: "Création de dashboards opérationnels pour le suivi des délais, KPI métiers et performances des équipes expertise.", tags: ["Power BI", "DAX", "Microsoft Fabric"] },
+                  { emoji: "⚙️", title: "Automatisation de flux de données", desc: "Automatisation des traitements et reportings via Python et n8n afin de réduire les tâches manuelles répétitives.", tags: ["Python", "n8n", "REST API"] },
+                  { emoji: "🗄️", title: "Modélisation & Reporting", desc: "Conception de modèles de données orientés métier pour améliorer la qualité des analyses et la prise de décision.", tags: ["SQL", "Cognos Analytics", "DataViz"] },
+                ].map(({ emoji, title, desc, tags }) => (
+                  <div key={title} className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <div className="flex items-start gap-4">
+                      <span className="text-3xl">{emoji}</span>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold mb-2">{title}</h3>
+                        <p className="text-slate-400 text-sm leading-relaxed mb-3">{desc}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {tags.map(t => (
+                            <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{t}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modale Admin Panel */}
+        {showAdminPanel && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+            <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-yellow-500/20 shadow-2xl p-10">
+              <button onClick={() => setShowAdminPanel(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                ✕
+              </button>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-3xl">🔐</span>
+                <h2 className="text-3xl font-bold">Espace Administration</h2>
+              </div>
+              <p className="text-slate-500 text-sm mb-8">Accès restreint — session admin active</p>
+              <div className="space-y-4">
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                  <h3 className="font-bold mb-2 flex items-center gap-2"><span>📁</span> Projets confidentiels</h3>
+                  <p className="text-slate-400 text-sm">Ajoutez ici vos études de cas clients, projets NDA ou ressources privées.</p>
+                </div>
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                  <h3 className="font-bold mb-2 flex items-center gap-2"><span>💼</span> Tarification & Disponibilités</h3>
+                  <p className="text-slate-400 text-sm">Informations tarifaires et planning de disponibilité accessibles depuis ce panel.</p>
+                </div>
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                  <h3 className="font-bold mb-3 flex items-center gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                    LinkedIn Manager
+                  </h3>
+                  <p className="text-slate-400 text-sm mb-4">Outil de gestion de posts LinkedIn — génération IA, planification et intégration Notion.</p>
+                  <button
+                    onClick={() => { setShowAdminPanel(false); setShowLinkedInManager(true); }}
+                    className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition duration-300"
+                  >
+                    Lancer LinkedIn Manager →
+                  </button>
+                </div>
+              </div>
+              <button onClick={logout}
+                className="mt-8 w-full px-4 py-3 rounded-2xl border border-red-500/30 text-red-400 hover:bg-red-950/30 transition text-sm font-medium">
+                Se déconnecter
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modale LinkedIn Manager */}
+        {showLinkedInManager && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+            <div className="relative w-full h-full max-w-[1400px] max-h-[95vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
+              <button
+                onClick={() => setShowLinkedInManager(false)}
+                className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                ✕
+              </button>
+              <LinkedInManager />
+            </div>
+          </div>
+        )}
 
         {/* Modale Calculateur de vie */}
           {showCalculator && (
