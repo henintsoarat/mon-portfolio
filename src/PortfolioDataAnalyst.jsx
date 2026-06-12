@@ -225,8 +225,38 @@ function ContactForm() {
   );
 }
 
+function useTypewriter(phrases, { typingSpeed = 75, deletingSpeed = 40, pauseMs = 2200 } = {}) {
+  const [text, setText] = useState('');
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = phrases[phraseIndex];
+    let timeout;
+    if (!isDeleting && text === current) {
+      timeout = setTimeout(() => setIsDeleting(true), pauseMs);
+    } else if (isDeleting && text === '') {
+      setIsDeleting(false);
+      setPhraseIndex((i) => (i + 1) % phrases.length);
+    } else {
+      timeout = setTimeout(() => {
+        setText(isDeleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1));
+      }, isDeleting ? deletingSpeed : typingSpeed);
+    }
+    return () => clearTimeout(timeout);
+  }, [text, isDeleting, phraseIndex]);
+
+  return text;
+}
+
 export default function PortfolioDataAnalyst() {
   const { role, logout } = useAuth();
+  const typedText = useTypewriter([
+    "spécialisé en DataViz Power BI",
+    "automatisation et reporting décisionnel",
+    "expert Microsoft Fabric & Python",
+    "disponible pour missions freelance",
+  ]);
   const [showCalculator, setShowCalculator] = useState(false);
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
@@ -404,7 +434,11 @@ export default function PortfolioDataAnalyst() {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h3 className="text-2xl font-bold mb-6 leading-snug text-white">
-              Consultant Data indépendant, spécialisé en DataViz, automatisation et reporting décisionnel.
+              Consultant Data indépendant,{' '}
+              <span className="text-blue-400 whitespace-nowrap">
+                {typedText}
+                <span className="inline-block w-[2px] h-[1.1em] bg-blue-400 ml-[2px] align-middle animate-pulse" />
+              </span>
             </h3>
             <p className="text-slate-400 leading-relaxed mb-5">
               Je suis <strong className="text-white">consultant Data Analyst freelance</strong> avec plus de 5 ans d'expérience dans la transformation des données en leviers de performance. Basé à Madagascar et intervenant en remote pour des entreprises françaises et internationales, j'accompagne mes clients dans la mise en place de <strong className="text-white">solutions data sur mesure</strong> : dashboards Power BI, automatisation de flux avec Python et n8n, modélisation de données sous Microsoft Fabric, et reporting métier orienté décision.
