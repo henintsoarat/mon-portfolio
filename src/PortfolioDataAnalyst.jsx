@@ -434,8 +434,8 @@ export default function PortfolioDataAnalyst() {
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h3 className="text-2xl font-bold mb-6 leading-snug text-white">
-              Consultant Data indépendant,{' '}
-              <span className="text-blue-400 whitespace-nowrap">
+              Consultant Data indépendant,
+              <span className="block text-blue-400 min-h-[1.4em]">
                 {typedText}
                 <span className="inline-block w-[2px] h-[1.1em] bg-blue-400 ml-[2px] align-middle animate-pulse" />
               </span>
