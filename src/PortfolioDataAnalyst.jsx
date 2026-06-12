@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import LifeCalculator from "./LifeCalculator";
 import { useAuth } from "./AuthContext";
@@ -46,8 +46,8 @@ const projects = [
 
 function SkillCard({ skill }) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 text-center hover:-translate-y-1 transition duration-300">
-      <span className="text-sm md:text-base font-medium">{skill}</span>
+    <div className="bg-[#111113] border border-slate-800 rounded-2xl p-5 text-center hover:-translate-y-1 hover:border-slate-600 hover:bg-slate-800/50 transition duration-200 cursor-default">
+      <span className="text-sm md:text-base font-medium text-slate-300">{skill}</span>
     </div>
   );
 }
@@ -69,19 +69,19 @@ function ProgressBar({ label, value }) {
 
 function ProjectCard({ project, onAction }) {
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col hover:-translate-y-1 transition duration-300">
+    <div className="bg-[#111113] border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col hover:-translate-y-2 hover:border-slate-600 hover:shadow-2xl hover:shadow-blue-500/5 transition duration-200 h-full">
       <div className="text-4xl mb-6">{project.emoji}</div>
-      <h3 className="text-2xl font-bold mb-4">{project.title}</h3>
-      <p className="text-slate-400 leading-relaxed flex-1">{project.description}</p>
+      <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>{project.title}</h3>
+      <p className="text-slate-400 leading-relaxed flex-1" style={{ lineHeight: '1.75' }}>{project.description}</p>
       {project.access === 'admin' && (
         <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-yellow-500/70">
-          <span>🔒</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
           <span>Accès admin uniquement</span>
         </div>
       )}
       <button
         onClick={onAction}
-        className="mt-6 w-full px-4 py-3 rounded-2xl bg-white text-black font-semibold text-sm hover:scale-105 transition duration-300"
+        className="mt-6 w-full px-4 py-3 rounded-2xl bg-white text-black font-semibold text-sm hover:bg-slate-100 hover:scale-[1.02] active:scale-[0.98] transition duration-200 cursor-pointer"
       >
         {project.buttonLabel} →
       </button>
@@ -243,8 +243,17 @@ export default function PortfolioDataAnalyst() {
 
   const visibleProjects = projects.filter(p => p.access === 'public' || (p.access === 'admin' && role === 'admin'));
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <main className="min-h-screen bg-slate-950 text-white overflow-hidden scroll-smooth">
+    <main className="min-h-screen bg-[#09090B] text-white overflow-hidden scroll-smooth" style={{ fontFamily: "'Inter', sans-serif" }}>
 
 {/* Bandeau défilant */}
 <div className="sticky top-0 z-40 w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
@@ -304,51 +313,48 @@ export default function PortfolioDataAnalyst() {
 
       {/* Hero */}
       <section className="max-w-7xl mx-auto px-6 py-20">
-      {/* <section className="max-w-7xl mx-auto px-6 py-20 mt-16"> */}
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div>
+          <div className="reveal">
             <div className="flex items-center gap-6 mb-6 flex-wrap">
               <div className="w-28 h-28 rounded-3xl border border-slate-800 bg-slate-900 flex items-center justify-center text-slate-500 text-sm text-center p-4">
                 Votre photo
               </div>
-              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm">
-                <span>🧠</span>
-                <span>Data Analyst • Power BI • Automatisation • Développement de solutions data et IA</span>
-              </div> */}
             </div>
-           <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
-            Henintsoa
-           </h1>
+            <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Henintsoa
+            </h1>
             <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
               Consultant en
             </p>
             <div className="flex flex-wrap gap-2">
-              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">
                 Data Analyst
               </span>
-              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">
                 Data Visualisation
               </span>
-              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium">
+              <span className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">
                 Reporting Décisionnel
               </span>
             </div>
-            <p className="text-slate-400 text-lg leading-relaxed mt-8 max-w-2xl">
+            <p className="text-slate-400 text-lg leading-relaxed mt-8 max-w-2xl" style={{ lineHeight: '1.75' }}>
               J'aide les entreprises à transformer leurs données en décisions opérationnelles
               grâce à la DataViz, l'automatisation des flux et la modélisation de données orientée métier.
             </p>
             <div className="flex flex-wrap gap-4 mt-10">
               <a href="#projects"
-                className="px-6 py-4 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition duration-300 text-center">
+                className="px-6 py-4 rounded-2xl bg-white text-black font-semibold hover:scale-105 hover:shadow-lg hover:shadow-white/10 transition duration-200 text-center cursor-pointer">
                 Voir mes projets
               </a>
               <button type="button" onClick={openLinkedIn}
-                className="relative z-50 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-900 transition duration-300 cursor-pointer">
-                🔗 LinkedIn
+                className="relative z-50 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-900 hover:border-slate-500 transition duration-200 cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                LinkedIn
               </button>
               <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:scale-105 transition duration-300 text-center">
-                📅 Réserver un appel
+                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 transition duration-200 text-center cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Réserver un appel
               </a>
             </div>
           </div>
@@ -392,9 +398,8 @@ export default function PortfolioDataAnalyst() {
 
       {/* Qui suis-je */}
       <section id="about" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
-        <div className="flex items-center gap-3 mb-10">
-          <span className="text-3xl">👤</span>
-          <h2 className="text-4xl font-bold">Qui suis-je</h2>
+        <div className="flex items-center gap-3 mb-10 reveal">
+          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>Qui suis-je</h2>
         </div>
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
@@ -509,9 +514,8 @@ export default function PortfolioDataAnalyst() {
 
       {/* Compétences */}
       <section id="competences" className="max-w-7xl mx-auto px-6 py-10 scroll-mt-24">
-        <div className="flex items-center gap-3 mb-10">
-          <span className="text-3xl">💻</span>
-          <h2 className="text-4xl font-bold">Compétences</h2>
+        <div className="flex items-center gap-3 mb-10 reveal">
+          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>Compétences</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {skills.map((skill) => <SkillCard key={skill} skill={skill} />)}
@@ -520,17 +524,17 @@ export default function PortfolioDataAnalyst() {
 
       {/* Projets */}
       <section id="projects" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
-        <div className="flex items-center gap-3 mb-10">
-          <span className="text-3xl">📊</span>
-          <h2 className="text-4xl font-bold">Projets</h2>
+        <div className="flex items-center gap-3 mb-10 reveal">
+          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>Projets</h2>
         </div>
         <div className={`grid gap-6 ${visibleProjects.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
-          {visibleProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onAction={() => handleProjectAction(project.action)}
-            />
+          {visibleProjects.map((project, i) => (
+            <div key={project.id} className={`reveal reveal-delay-${i + 1}`}>
+              <ProjectCard
+                project={project}
+                onAction={() => handleProjectAction(project.action)}
+              />
+            </div>
           ))}
         </div>
         {role !== 'admin' && (
@@ -542,20 +546,22 @@ export default function PortfolioDataAnalyst() {
 
       {/* Contact */}
       <section id="contact" className="max-w-7xl mx-auto px-6 pb-24 scroll-mt-24">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-10 shadow-2xl">
+        <div className="bg-[#111113] border border-slate-800 rounded-3xl p-10 shadow-2xl reveal">
           <div className="text-center">
-            <h2 className="text-4xl font-bold mb-4">Transformons vos données en décisions.</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-6">
+            <h2 className="text-4xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>Transformons vos données en décisions.</h2>
+            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-6" style={{ lineHeight: '1.75' }}>
               Disponible pour des missions freelance en Data Analysis, automatisation et reporting métier.
             </p>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 flex-wrap">
               <button type="button" onClick={openLinkedIn}
-                className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-800 transition duration-300 cursor-pointer">
-                <span>🔗</span><span>LinkedIn</span>
+                className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-800 hover:border-slate-500 transition duration-200 cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <span>LinkedIn</span>
               </button>
               <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition duration-300">
-                <span>📅</span><span>Réserver un appel</span>
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition duration-200 cursor-pointer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span>Réserver un appel</span>
               </a>
             </div>
           </div>
