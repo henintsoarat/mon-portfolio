@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -163,75 +163,165 @@ const NotionLogo = ({ size = 14 }) => (
 const TONES = ["Professionnel", "Inspirant", "Éducatif", "Storytelling", "Engageant"];
 const TYPES = ["Article", "Conseil", "Étude de cas", "Annonce", "Opinion"];
 const MAX_CHARS = 3000;
-const NOTION_MCP_URL = "https://mcp.notion.com/mcp";
-const CLAUDE_MODEL = "claude-sonnet-4-20250514";
-const NOTION_PARENT_PAGE_ID = "232b8ca4-a064-8003-9d58-e279edc624a0";
 
-// Strip markdown code fences from AI responses
-const stripFences = (s) => {
-  if (!s) return "";
-  let r = s.trim();
-  if (r.startsWith("```json")) r = r.slice(7);
-  else if (r.startsWith("```")) r = r.slice(3);
-  if (r.endsWith("```")) r = r.slice(0, -3);
-  return r.trim();
+// ── GÉNÉRATION LOCALE (sans API) ──────────────────────────────────────────
+
+const HOOKS = {
+  "Professionnel": {
+    "Conseil":      t => `${t} : voici les ${pick([3,4])} points clés que j'applique au quotidien.`,
+    "Article":      t => `Après 5 ans d'expérience sur ${t}, voici ce que j'ai vraiment retenu.`,
+    "Étude de cas": t => `Comment nous avons résolu un problème critique sur ${t} — retour d'expérience.`,
+    "Annonce":      t => `Nouvelle étape franchie : ${t}. Je suis heureux de partager ça avec vous.`,
+    "Opinion":      t => `Opinion peu partagée sur ${t} — mais que j'assume entièrement.`,
+  },
+  "Inspirant": {
+    "Conseil":      t => `${t} m'a appris une leçon que je n'oublierai jamais. 💡`,
+    "Article":      t => `Tout le monde parle de ${t}. Voici pourquoi c'est une vraie opportunité. 🚀`,
+    "Étude de cas": t => `De zéro à des résultats concrets sur ${t} — voici notre parcours.`,
+    "Annonce":      t => `Un nouveau chapitre s'ouvre. ${t} — et je suis plus motivé que jamais. ✨`,
+    "Opinion":      t => `${t} est sous-estimé. Et c'est une chance pour ceux qui agissent maintenant.`,
+  },
+  "Éducatif": {
+    "Conseil":      t => `Vous voulez progresser sur ${t} ? Commencez par ces fondamentaux. 📚`,
+    "Article":      t => `Guide pratique : tout ce qu'il faut savoir sur ${t}.`,
+    "Étude de cas": t => `Décryptage : comment fonctionne vraiment ${t} ? (avec exemple concret)`,
+    "Annonce":      t => `Nouveau : ${t} — voici comment ça marche et ce que ça change pour vous.`,
+    "Opinion":      t => `Ce que la plupart ignorent encore sur ${t} — et pourquoi c'est important.`,
+  },
+  "Storytelling": {
+    "Conseil":      t => `Il y a 3 ans, je ne savais rien de ${t}. Aujourd'hui, c'est mon quotidien.`,
+    "Article":      t => `Mon histoire avec ${t} : les erreurs, les succès, et ce que j'en ai retenu.`,
+    "Étude de cas": t => `J'étais sceptique sur ${t}. Un projet a tout changé. Voici comment.`,
+    "Annonce":      t => `Je me souviens du jour où j'ai décidé de me lancer dans ${t}...`,
+    "Opinion":      t => `On m'a dit que ${t} ne marcherait pas. J'ai quand même essayé. Voici ce qui s'est passé.`,
+  },
+  "Engageant": {
+    "Conseil":      t => `Quelle est votre plus grande difficulté avec ${t} ? 👇 (Ma réponse en commentaire)`,
+    "Article":      t => `VRAI ou FAUX : ${t} va tout changer dans les 12 prochains mois. 🤔`,
+    "Étude de cas": t => `Devinez le résultat avant de lire — sur ${t}, on ne s'attendait pas à ça.`,
+    "Annonce":      t => `Grande nouvelle ! ${t} — dites-moi ce que vous en pensez. 💬`,
+    "Opinion":      t => `Débat ouvert : sur ${t}, je pense le contraire de la majorité. Qui est d'accord ?`,
+  },
 };
 
-const callClaude = async (system, user, withNotion = false) => {
-  const body = {
-    model: CLAUDE_MODEL, max_tokens: withNotion ? 2048 : 1000,
-    system, messages: [{ role: "user", content: user }],
-  };
-  if (withNotion) body.mcp_servers = [{ type: "url", url: NOTION_MCP_URL, name: "notion" }];
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error("API " + res.status + ": " + errText.slice(0, 200));
+const BODIES = {
+  "Conseil": (t, n) => {
+    const pts = [
+      `Définir des objectifs mesurables avant de commencer quoi que ce soit`,
+      `Mesurer régulièrement les résultats pour ajuster la stratégie`,
+      `S'appuyer sur des données concrètes plutôt que sur des intuitions`,
+      `Documenter chaque étape pour capitaliser sur les apprentissages`,
+      `Collaborer avec des personnes qui ont déjà résolu ce problème`,
+    ].slice(0, n);
+    return "\n\n" + pts.map((p, i) => `${i + 1}. ${p}`).join("\n");
+  },
+  "Article": t => `\n\nPlusieurs facteurs expliquent pourquoi ${t} est en pleine évolution :\n\n→ L'adoption rapide de nouvelles pratiques\n→ Des attentes clients qui changent\n→ Des outils qui permettent d'aller plus loin qu'avant\n\nMa conviction : ceux qui anticipent cette tendance maintenant auront une longueur d'avance significative dans 12 mois.`,
+  "Étude de cas": t => `\n\nLe contexte : une équipe confrontée à un défi récurrent sur ${t}.\n\nLe problème : des processus manuels, un manque de visibilité, des décisions prises sans données fiables.\n\nCe qu'on a mis en place :\n→ Audit complet de l'existant\n→ Mise en place d'un suivi centralisé\n→ Montée en compétences des équipes\n\nRésultat : gains de temps significatifs et décisions beaucoup mieux éclairées.`,
+  "Annonce": t => `\n\nAprès plusieurs mois de travail, cette nouvelle étape est enfin là.\n\nCe que ça change concrètement :\n→ De nouvelles opportunités pour mes clients\n→ Une offre plus complète sur ${t}\n→ Des résultats encore plus mesurables\n\nMerci à toutes les personnes qui m'ont soutenu dans ce projet. 🙏`,
+  "Opinion": t => `\n\nVoici pourquoi je pense ça :\n\nD'abord, les données parlent d'elles-mêmes. Les organisations qui ont adopté cette approche sur ${t} performent mieux.\n\nEnsuite, les méthodes traditionnelles montrent leurs limites. La question n'est plus "si", mais "quand".\n\nEnfin, l'écart se creuse entre ceux qui agissent maintenant et ceux qui attendent.`,
+};
+
+const CTAS = {
+  "Professionnel": [
+    "Et vous, quelle est votre expérience sur ce sujet ? Partagez en commentaire.",
+    "Des questions ? Je réponds à tous les commentaires.",
+    "Vous avez vécu quelque chose de similaire ? Je serais curieux d'en entendre plus.",
+  ],
+  "Inspirant": [
+    "Qu'est-ce qui vous inspire le plus dans ce domaine ? 💬",
+    "Partagez si vous avez vécu quelque chose de similaire. 🙏",
+    "Retenez ce point. Il pourrait tout changer pour vous. 👇",
+  ],
+  "Éducatif": [
+    "Des questions sur ce sujet ? Posez-les en commentaire, je réponds à chacune.",
+    "Sauvegardez ce post pour y revenir. 🔖",
+    "Partagez avec quelqu'un qui en a besoin. 🎯",
+  ],
+  "Storytelling": [
+    "Avez-vous vécu une expérience similaire ? Racontez-moi. 👇",
+    "Je serais ravi d'entendre votre histoire. 💬",
+    "Partagez avec quelqu'un qui traverse la même chose. 🤝",
+  ],
+  "Engageant": [
+    "Likez si vous êtes d'accord, commentez si vous ne l'êtes pas ! 👍",
+    "RÉPONDEZ : oui ou non, et pourquoi. 🗣️",
+    "Taguez quelqu'un qui devrait lire ça. 👇",
+  ],
+};
+
+const HASHTAG_MAP = [
+  { keys: ["data", "données", "analyse", "analytique"], tags: ["DataAnalytics", "DataScience", "BusinessIntelligence", "DataDriven"] },
+  { keys: ["power bi", "powerbi", "dashboard", "tableau de bord"], tags: ["PowerBI", "DataViz", "Dashboard", "Reporting"] },
+  { keys: ["python", "script", "code", "développement"], tags: ["Python", "DataEngineering", "Automation", "Dev"] },
+  { keys: ["sql", "base de données", "requête"], tags: ["SQL", "Database", "DataEngineering"] },
+  { keys: ["automatisation", "workflow", "n8n", "robot"], tags: ["Automation", "n8n", "Workflow", "NoCode"] },
+  { keys: ["reporting", "kpi", "indicateur", "performance"], tags: ["Reporting", "KPI", "BusinessAnalytics", "Insights"] },
+  { keys: ["startup", "entrepreneur", "fondateur", "lancement"], tags: ["Startup", "Entrepreneuriat", "Innovation", "Business"] },
+  { keys: ["freelance", "consultant", "indépendant", "mission"], tags: ["Freelance", "Consultant", "IndépendantIT", "Missions"] },
+  { keys: ["ia", "intelligence artificielle", "ai", "machine learning"], tags: ["AI", "MachineLearning", "ArtificialIntelligence"] },
+  { keys: ["notion", "organisation", "productivité"], tags: ["Productivity", "Notion", "Organisation"] },
+  { keys: ["linkedin", "réseau", "personal branding", "visibilité"], tags: ["LinkedIn", "PersonalBranding", "ContentMarketing"] },
+  { keys: ["microsoft fabric", "azure", "cloud"], tags: ["MicrosoftFabric", "Azure", "Cloud", "DataPlatform"] },
+];
+
+const DEFAULT_TAGS = ["DataAnalyst", "Consulting", "TechFrance", "DigitalTransformation"];
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function generatePostLocal(topic, tone, postType) {
+  const hookFn = HOOKS[tone]?.[postType] ?? HOOKS["Professionnel"]["Conseil"];
+  const hook = hookFn(topic);
+  const bodyFn = BODIES[postType] ?? BODIES["Article"];
+  const body = postType === "Conseil" ? bodyFn(topic, pick([3, 4])) : bodyFn(topic);
+  const cta = pick(CTAS[tone] ?? CTAS["Professionnel"]);
+  return `${hook}${body}\n\n${cta}`;
+}
+
+function generateHashtagsLocal(text) {
+  const lower = text.toLowerCase();
+  const found = new Set();
+  for (const { keys, tags } of HASHTAG_MAP) {
+    if (keys.some(k => lower.includes(k))) tags.forEach(t => found.add(t));
   }
-  const data = await res.json();
-  if (!data.content) throw new Error("Réponse vide de l'API");
-  // Collect all text blocks
-  const text = data.content.filter(b => b.type === "text").map(b => b.text).join("\n");
-  // Collect MCP tool results (Notion responses live here)
-  const mcpResults = data.content
-    .filter(b => b.type === "mcp_tool_result")
-    .map(b => b.content?.[0]?.text || "")
-    .join("\n");
-  // Return text first, but if doing Notion actions, prefer MCP results
-  if (withNotion) return text || mcpResults;
-  return text;
-};
+  DEFAULT_TAGS.forEach(t => found.add(t));
+  return [...found].slice(0, 10);
+}
 
-const notionAction = async (instruction) => {
-  const text = await callClaude(
-    `Tu es un assistant qui utilise les outils MCP Notion pour effectuer des actions dans le workspace Notion de l'utilisateur.
-IMPORTANT: Utilise les outils MCP disponibles (search, create-database, create-pages, fetch, update-page, etc.) pour exécuter l'action demandée.
-La page parent principale du workspace a l'id: ${NOTION_PARENT_PAGE_ID}
-Après avoir effectué l'action avec les outils MCP, analyse le résultat retourné par l'outil et réponds UNIQUEMENT en JSON valide sans backticks markdown: {"success":true,"data":{"id":"...","url":"..."},"error":null}
-Si l'outil retourne une erreur, réponds: {"success":false,"data":null,"error":"description de l'erreur"}`,
-    instruction,
-    true
-  );
-  try {
-    return JSON.parse(stripFences(text));
-  } catch {
-    const jsonMatch = text.match(/\{[\s\S]*?"success"[\s\S]*?\}/);
-    if (jsonMatch) {
-      try { return JSON.parse(jsonMatch[0]); } catch {}
-    }
-    // If we still can't parse, look for notion IDs in the raw text
-    const idMatch = text.match(/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/);
-    if (idMatch) {
-      return { success: true, data: { id: idMatch[0], raw: text.slice(0, 300) }, error: null };
-    }
-    return { success: true, data: { raw: text.slice(0, 500) }, error: null };
-  }
-};
+function analyzePostLocal(content) {
+  const len = content.length;
+  const emojiRe = /[\u{1F300}-\u{1FAFF}]/u;
+  const hasEmoji = emojiRe.test(content);
+  const hasCTA = /comment|partage|avis|question|vous|likez|dites|r[ée]pond|\?/i.test(content.slice(-300));
+  const lines = (content.match(/\n/g) || []).length;
+  let score = 40;
+  if (len >= 400 && len <= 2000) score += 15;
+  if (len >= 800 && len <= 1500) score += 10;
+  if (hasEmoji) score += 10;
+  if (hasCTA) score += 15;
+  if (lines >= 4) score += 10;
+  const firstLine = content.split("\n")[0];
+  const accroche = firstLine.length <= 120 && (firstLine.includes("?") || emojiRe.test(firstLine) || firstLine.includes(":")) ? "Forte" : "À améliorer";
+  const longueur = len < 300 ? "Trop court" : len <= 1000 ? "Courte" : len <= 2000 ? "Idéale" : "Trop long";
+  const conseil = hasCTA
+    ? "Bonne structure ! Pensez à varier vos formats pour maintenir l'engagement."
+    : "Ajoutez une question ou un appel à l'action à la fin pour booster l'engagement.";
+  return { score: Math.min(score, 100), accroche, cta: hasCTA ? "Présent" : "Absent", longueur, conseil };
+}
 
-export default function App() {
+const TOPIC_SUGGESTIONS = [
+  "3 erreurs que j'ai commises en démarrant mon activité freelance en data",
+  "Comment j'ai automatisé 80% de mes reportings avec Python et n8n",
+  "Power BI : les 5 fonctionnalités que peu de consultants utilisent vraiment",
+  "Les KPIs qui comptent vraiment dans le secteur de l'assurance",
+  "De consultant salarié à freelance data : ce que personne ne vous dit",
+  "Comment convaincre un DSI d'adopter Microsoft Fabric",
+  "Modélisation de données : l'erreur que font 90% des débutants",
+  "DataViz : pourquoi un bon dashboard commence avant Power BI",
+];
+
+const API_BASE = "http://localhost:3001";
+
+export default function App({ onClose }) {
   const [tab, setTab] = useState("compose");
   const [notif, setNotif] = useState(null);
   const [composerTab, setComposerTab] = useState("ia");
@@ -255,6 +345,7 @@ export default function App() {
   const [notionLoadingPostId, setNotionLoadingPostId] = useState(null);
   const [notionDraftLoading, setNotionDraftLoading] = useState(false);
   const [showNotionModal, setShowNotionModal] = useState(false);
+  const [notionParentPageId, setNotionParentPageId] = useState("");
   const [posts, setPosts] = useState([
     { id: 1, content: "🚀 Lancement de notre nouvelle fonctionnalité ! Après 6 mois de développement, nous sommes fiers de présenter...", status: "published", date: "2026-06-08 10:30", likes: 142, comments: 23, notionId: null },
     { id: 2, content: "3 leçons que j'ai apprises en construisant une startup :\n\n1. L'exécution > la vision\n2. Écouter ses clients d'abord...", status: "scheduled", date: "2026-06-12 08:00", likes: 0, comments: 0, notionId: null },
@@ -266,153 +357,123 @@ export default function App() {
     setTimeout(() => setNotif(null), 4000);
   };
 
-  // ── NOTION INIT ────────────────────────────────────────────────────────────
+  useEffect(() => {
+    const savedDbId = localStorage.getItem("notion_db_id");
+    const savedDbUrl = localStorage.getItem("notion_db_url");
+    if (savedDbId) { setNotionDbId(savedDbId); if (savedDbUrl) setNotionDbUrl(savedDbUrl); setNotionStatus("ok"); }
+    fetch(`${API_BASE}/api/notion/status`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.configured) {
+          setNotionStatus("ok");
+          setNotionDbId(data.dbId);
+          setNotionDbUrl(data.dbUrl);
+          localStorage.setItem("notion_db_id", data.dbId);
+          if (data.dbUrl) localStorage.setItem("notion_db_url", data.dbUrl);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   const initNotionDb = async () => {
+    if (!notionParentPageId.trim()) {
+      toast("⚠️ Entrez l'ID de la page parent Notion", "#F59E0B");
+      return;
+    }
     setNotionStatus("loading");
-    toast("🔍 Connexion à Notion en cours...", "#F59E0B");
     try {
-      // Étape 1: chercher si la DB existe déjà
-      const searchResult = await notionAction(
-        `Utilise l'outil "search" de Notion pour chercher une base de données dont le titre contient "LinkedIn Posts Manager".
-Si tu trouves une base de données avec ce nom, retourne: {"success":true,"data":{"id":"<database_id>","url":"<database_url>","found":true,"created":false}}
-Si tu ne trouves rien, retourne: {"success":true,"data":{"found":false}}`
-      );
-
-      let dbId = null;
-      let dbUrl = null;
-
-      if (searchResult?.data?.found && searchResult?.data?.id) {
-        dbId = searchResult.data.id;
-        dbUrl = searchResult.data.url;
-      } else {
-        // Étape 2: créer la DB dans la page parent
-        toast("📋 Création de la base Notion...", "#F59E0B");
-        const createResult = await notionAction(
-          `Utilise l'outil "create-database" de Notion pour créer une base de données avec ces paramètres:
-- parent_page_id: "${NOTION_PARENT_PAGE_ID}"
-- title: "LinkedIn Posts Manager"
-- properties (les propriétés de la base):
-  * "Nom" de type "title" (propriété titre)
-  * "Statut" de type "select" avec les options: "Publié", "Planifié", "Brouillon"
-  * "Date" de type "date"
-  * "Ton" de type "select" avec les options: "Professionnel", "Inspirant", "Éducatif", "Storytelling", "Engageant"
-  * "Type" de type "select" avec les options: "Article", "Conseil", "Étude de cas", "Annonce", "Opinion"
-  * "Hashtags" de type "rich_text"
-  * "Likes" de type "number"
-  * "Commentaires" de type "number"
-
-Retourne: {"success":true,"data":{"id":"<database_id>","url":"<database_url>","created":true}}`
-        );
-        dbId = createResult?.data?.id;
-        dbUrl = createResult?.data?.url;
-      }
-
-      if (dbId) {
-        setNotionDbId(dbId);
-        setNotionDbUrl(dbUrl);
-        setNotionStatus("ok");
-        toast("✅ Base Notion prête !");
-      } else {
-        setNotionStatus("error");
-        toast("⚠️ Base introuvable. Vérifiez que Notion est bien connecté.", "#F59E0B");
-      }
+      const res = await fetch(`${API_BASE}/api/notion/create-db`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ parentPageId: notionParentPageId.trim() }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setNotionStatus("ok");
+      setNotionDbId(data.dbId);
+      setNotionDbUrl(data.dbUrl);
+      localStorage.setItem("notion_db_id", data.dbId);
+      if (data.dbUrl) localStorage.setItem("notion_db_url", data.dbUrl);
+      toast("✅ Base Notion créée !");
+      setShowNotionModal(false);
     } catch (e) {
       setNotionStatus("error");
-      toast("❌ Erreur Notion: " + (e.message || "inconnue"), "#EF4444");
+      toast(`❌ Notion : ${e.message}`, "#EF4444");
     }
   };
 
-  // ── NOTION: sauvegarder post ───────────────────────────────────────────────
   const savePostToNotion = async (post) => {
-    if (!notionDbId) { setShowNotionModal(true); return; }
+    const dbId = notionDbId || localStorage.getItem("notion_db_id");
+    if (!dbId) { toast("⚠️ Initialisez Notion d'abord", "#F59E0B"); return; }
     setNotionLoadingPostId(post.id);
     try {
-      const title = post.content.slice(0, 80).replace(/\n/g, " ").replace(/"/g, "'");
-      const content = post.content.replace(/"/g, "'");
-      const statusMap = { published: "Publié", scheduled: "Planifié", draft: "Brouillon" };
-      const result = await notionAction(
-        `Utilise l'outil "create-pages" de Notion pour créer une page dans la base de données avec l'id "${notionDbId}".
-Propriétés de la page:
-- "Nom" (title): "${title}..."
-- "Statut" (select): "${statusMap[post.status] || "Brouillon"}"
-- "Date" (date): "${post.date.split(" ")[0]}"
-- "Likes" (number): ${post.likes}
-- "Commentaires" (number): ${post.comments}
-
-Contenu (body/children): un bloc paragraphe avec le texte: "${content}"
-
-Retourne: {"success":true,"data":{"id":"<page_id>","url":"<page_url>"}}`
-      );
-      if (result?.success !== false) {
-        const pageId = result?.data?.id || "saved";
-        const pageUrl = result?.data?.url || null;
-        setPosts(prev => prev.map(p => p.id === post.id ? { ...p, notionId: pageId, notionUrl: pageUrl } : p));
-        toast("✅ Post sauvegardé dans Notion !");
-      } else {
-        toast("❌ Échec: " + (result?.error || "erreur inconnue"), "#EF4444");
-      }
+      const res = await fetch(`${API_BASE}/api/notion/save-post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: post.content, status: post.status, date: post.date, dbId }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      setPosts(prev => prev.map(p => p.id === post.id ? { ...p, notionId: data.notionId } : p));
+      toast("✅ Post sauvegardé dans Notion !");
     } catch (e) {
-      toast("❌ " + (e.message || "Erreur Notion"), "#EF4444");
+      toast(`❌ ${e.message}`, "#EF4444");
+    } finally {
+      setNotionLoadingPostId(null);
     }
-    setNotionLoadingPostId(null);
   };
 
-  // ── NOTION: enregistrer brouillon ─────────────────────────────────────────
   const saveDraftToNotion = async () => {
     if (!postContent.trim()) return;
-    if (!notionDbId) { setShowNotionModal(true); return; }
+    const dbId = notionDbId || localStorage.getItem("notion_db_id");
+    if (!dbId) { toast("⚠️ Initialisez Notion d'abord", "#F59E0B"); return; }
     setNotionDraftLoading(true);
     try {
-      const title = (topic.trim() || postContent.slice(0, 60).replace(/\n/g, " ")).replace(/"/g, "'");
-      const content = postContent.replace(/"/g, "'");
-      const tags = hashtags.map(h => "#" + h).join(" ");
-      const result = await notionAction(
-        `Utilise l'outil "create-pages" de Notion pour créer une page dans la base de données avec l'id "${notionDbId}".
-Propriétés de la page:
-- "Nom" (title): "${title}"
-- "Statut" (select): "Brouillon"
-- "Ton" (select): "${tone}"
-- "Type" (select): "${postType}"
-- "Hashtags" (rich_text): "${tags}"
-
-Contenu (body/children): un bloc paragraphe avec le texte: "${content}"
-
-Retourne: {"success":true,"data":{"id":"<page_id>","url":"<page_url>"}}`
-      );
-      if (result?.success !== false) {
-        toast("📝 Brouillon enregistré dans Notion !");
-        const newPost = {
-          id: Date.now(), content: postContent, status: "draft",
-          date: new Date().toISOString().slice(0, 16).replace("T", " "),
-          likes: 0, comments: 0,
-          notionId: result?.data?.id || "draft",
-          notionUrl: result?.data?.url || null,
-        };
-        setPosts(prev => [newPost, ...prev]);
-        setPostContent("");
-      } else {
-        toast("❌ Échec: " + (result?.error || "erreur inconnue"), "#EF4444");
-      }
+      const res = await fetch(`${API_BASE}/api/notion/save-post`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: postContent, status: "draft", tone, postType, hashtags, date: new Date().toISOString().slice(0, 16), dbId }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      toast("📝 Brouillon enregistré dans Notion !");
     } catch (e) {
-      toast("❌ " + (e.message || "Erreur Notion"), "#EF4444");
+      toast(`❌ ${e.message}`, "#EF4444");
+    } finally {
+      setNotionDraftLoading(false);
     }
-    setNotionDraftLoading(false);
   };
 
-  // ── IA HELPERS ─────────────────────────────────────────────────────────────
+  const callClaude = async (prompt, maxTokens = 1024) => {
+    const res = await fetch(`${API_BASE}/api/claude`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: maxTokens,
+        messages: [{ role: "user", content: prompt }],
+      }),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data.content?.[0]?.text || "";
+  };
+
   const generatePost = async () => {
     if (!topic.trim()) return;
     setIsGenerating(true); setSuggestions([]); setAnalysis(null); setHashtags([]);
     try {
       const text = await callClaude(
-        `Expert personal branding LinkedIn. Crée des posts percutants. Réponds UNIQUEMENT avec le texte du post.
-Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${tone} | Type: ${postType} | Max 3000 chars | Langue: français`,
-        `Sujet: ${topic}`
+        `Tu es un expert en rédaction de contenu LinkedIn pour des professionnels de la data et du consulting en France.\n\nGénère un post LinkedIn en français avec ces paramètres :\n- Sujet : ${topic}\n- Ton : ${tone}\n- Type : ${postType}\n\nLe post doit :\n- Commencer par une accroche forte (première ligne percutante, max 120 caractères)\n- Avoir une structure aérée avec des lignes vides entre les paragraphes\n- Contenir une question ou appel à l'action à la fin\n- Faire entre 800 et 1500 caractères\n- Être naturel et authentique\n- Utiliser des emojis avec parcimonie si le ton le permet\n\nRéponds UNIQUEMENT avec le contenu du post, sans commentaire ni titre.`
       );
-      setPostContent(text);
-      toast("✨ Post généré !");
-    } catch { toast("Erreur génération", "#EF4444"); }
-    setIsGenerating(false);
+      setPostContent(text.slice(0, MAX_CHARS));
+      toast("✨ Post généré par Claude !");
+    } catch (e) {
+      setPostContent(generatePostLocal(topic, tone, postType));
+      toast("⚠️ Claude indisponible — génération locale", "#F59E0B");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const analyzePost = async () => {
@@ -420,13 +481,17 @@ Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${t
     setIsAnalyzing(true);
     try {
       const text = await callClaude(
-        `Analyste LinkedIn. JSON uniquement: {"score":85,"accroche":"Forte","cta":"Présent","longueur":"Idéale","conseil":"conseil court"}`,
-        `Post: ${postContent}`
+        `Analyse ce post LinkedIn et réponds UNIQUEMENT avec un objet JSON valide (sans markdown) ayant ces champs :\n{"score": number 0-100, "accroche": "Forte" ou "À améliorer", "cta": "Présent" ou "Absent", "longueur": "Trop court" ou "Courte" ou "Idéale" ou "Trop long", "conseil": "conseil court en une phrase"}\n\nPost :\n${postContent}`,
+        300
       );
-      setAnalysis(JSON.parse(stripFences(text)));
-      toast("📊 Analyse terminée");
-    } catch { toast("Erreur analyse", "#EF4444"); }
-    setIsAnalyzing(false);
+      setAnalysis(JSON.parse(text));
+      toast("📊 Analyse par Claude terminée");
+    } catch {
+      setAnalysis(analyzePostLocal(postContent));
+      toast("📊 Analyse locale (Claude indisponible)");
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const generateHashtags = async () => {
@@ -434,27 +499,34 @@ Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${t
     setIsHashtagging(true);
     try {
       const text = await callClaude(
-        `Expert hashtags LinkedIn. JSON uniquement: {"hashtags":["tag1","tag2"]} — 8-12 hashtags sans #.`,
-        `Contenu: ${postContent || topic}`
+        `Génère 8 à 10 hashtags LinkedIn pertinents en français et anglais pour ce contenu :\n\n${postContent || topic}\n\nRéponds UNIQUEMENT avec les hashtags séparés par des virgules, sans le symbole #, sans espaces.`,
+        200
       );
-      const parsed = JSON.parse(stripFences(text));
-      setHashtags(parsed.hashtags || []);
-      toast("# Hashtags générés");
-    } catch { toast("Erreur hashtags", "#EF4444"); }
-    setIsHashtagging(false);
+      const tags = text.split(",").map(t => t.trim()).filter(Boolean).slice(0, 10);
+      setHashtags(tags);
+      toast("# Hashtags générés par Claude");
+    } catch {
+      setHashtags(generateHashtagsLocal(postContent || topic));
+      toast("# Hashtags locaux (Claude indisponible)");
+    } finally {
+      setIsHashtagging(false);
+    }
   };
 
   const getSuggestions = async () => {
     setIsGenerating(true); setSuggestions([]);
     try {
       const text = await callClaude(
-        `Expert LinkedIn. JSON uniquement: {"suggestions":["idée 1","idée 2","idée 3"]} — 3 idées 1-2 phrases.`,
-        `Profil: entrepreneur, tech, Afrique francophone`
+        `Génère 3 idées originales de sujets de posts LinkedIn pour un consultant data analyst freelance en France (spécialiste Power BI, Python, SQL, automatisation, Microsoft Fabric).\n\nRéponds UNIQUEMENT avec 3 lignes, une idée par ligne, sans numérotation ni tiret ni guillemets.`,
+        250
       );
-      const parsed = JSON.parse(stripFences(text));
-      setSuggestions(parsed.suggestions || []);
-    } catch {}
-    setIsGenerating(false);
+      const ideas = text.split("\n").map(l => l.trim()).filter(Boolean).slice(0, 3);
+      setSuggestions(ideas.length ? ideas : [...TOPIC_SUGGESTIONS].sort(() => Math.random() - 0.5).slice(0, 3));
+    } catch {
+      setSuggestions([...TOPIC_SUGGESTIONS].sort(() => Math.random() - 0.5).slice(0, 3));
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const addHashtagToPost = (tag) => setPostContent(p => p + (p.endsWith("\n") ? "" : "\n") + "#" + tag + " ");
@@ -512,7 +584,12 @@ Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${t
               <div className="topbar-title">{tab==="compose"?"Composer un post":tab==="posts"?"Mes publications":"Analytics LinkedIn"}</div>
               <div className="topbar-sub">{new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}</div>
             </div>
-            <div className="profile-badge"><div className="avatar">VP</div><span style={{fontSize:12,fontWeight:500}}>Votre profil</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:10}}>
+              <div className="profile-badge"><div className="avatar">VP</div><span style={{fontSize:12,fontWeight:500}}>Votre profil</span></div>
+              {onClose && (
+                <button onClick={onClose} style={{width:32,height:32,borderRadius:"50%",background:"var(--surface2)",border:"1px solid var(--border)",color:"var(--text-muted)",cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,transition:"all .15s"}} onMouseEnter={e=>e.currentTarget.style.color="var(--text)"} onMouseLeave={e=>e.currentTarget.style.color="var(--text-muted)"} title="Fermer">✕</button>
+              )}
+            </div>
           </div>
 
           <div className="content">
@@ -653,13 +730,13 @@ Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${t
                         <div style={{fontSize:12,color:"var(--success)",display:"flex",alignItems:"center",gap:6}}><NIcon name="check" size={12}/> Base "LinkedIn Posts Manager" active</div>
                         <div style={{fontSize:11,color:"var(--text-muted)"}}>{notionSynced} post{notionSynced!==1?"s":""} synchronisé{notionSynced!==1?"s":""}</div>
                         {notionDbUrl && <a href={notionDbUrl} target="_blank" rel="noopener noreferrer" className="notion-db-link"><NIcon name="external" size={11}/> Ouvrir dans Notion</a>}
-                        <button className="btn btn-secondary btn-sm" onClick={initNotionDb} style={{width:"100%",justifyContent:"center"}}><NIcon name="refresh" size={11}/> Resynchroniser</button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => { setNotionStatus("loading"); fetch(`${API_BASE}/api/notion/status`).then(r=>r.json()).then(d=>{ if(d.configured){setNotionStatus("ok");setNotionDbId(d.dbId);setNotionDbUrl(d.dbUrl);}else{setNotionStatus("idle");} }).catch(()=>setNotionStatus("error")); }} style={{width:"100%",justifyContent:"center"}}><NIcon name="refresh" size={11}/> Resynchroniser</button>
                       </div>
                     ) : (
                       <div style={{display:"flex",flexDirection:"column",gap:10}}>
                         <div style={{fontSize:12,color:"var(--text-muted)",lineHeight:1.5}}>Connectez Notion pour sauvegarder vos posts et brouillons directement dans votre workspace.</div>
-                        <button className="btn btn-notion" onClick={initNotionDb} disabled={notionStatus==="loading"} style={{width:"100%",justifyContent:"center"}}>
-                          {notionStatus==="loading"?<><span className="loader loader-dark" style={{width:11,height:11}}/>Initialisation...</>:<>⚡ Initialiser Notion</>}
+                        <button className="btn btn-notion" onClick={() => setShowNotionModal(true)} disabled={notionStatus==="loading"} style={{width:"100%",justifyContent:"center"}}>
+                          {notionStatus==="loading"?<><span className="loader loader-dark" style={{width:11,height:11}}/>Connexion...</>:<>⚡ Initialiser Notion</>}
                         </button>
                       </div>
                     )}
@@ -766,18 +843,32 @@ Format LinkedIn: émojis pertinents, sauts de ligne, appel à l'action. Ton: ${t
               <div className="modal-title">Intégration Notion</div>
             </div>
             <div className="modal-sub">
-              L'initialisation va automatiquement créer une base de données <strong>"LinkedIn Posts Manager"</strong> dans votre workspace Notion avec ces propriétés :<br/><br/>
-              📋 Titre &nbsp;·&nbsp; 🏷️ Statut &nbsp;·&nbsp; 📅 Date &nbsp;·&nbsp; 🎨 Ton &nbsp;·&nbsp; 📝 Type &nbsp;·&nbsp; # Hashtags &nbsp;·&nbsp; 👍 Likes &nbsp;·&nbsp; 💬 Commentaires<br/><br/>
-              Vous pourrez ensuite sauvegarder chaque post <em>et</em> enregistrer vos brouillons directement depuis le composeur.
+              Crée automatiquement la base <strong>"LinkedIn Posts Manager"</strong> dans votre workspace Notion.<br/><br/>
+              <strong>Prérequis :</strong><br/>
+              1. Créez une intégration sur <a href="https://www.notion.so/my-integrations" target="_blank" rel="noopener noreferrer" style={{color:"var(--accent)"}}>notion.so/my-integrations</a> et copiez le token dans <code style={{background:"var(--bg)",padding:"1px 5px",borderRadius:4}}>backend/.env</code> → <code style={{background:"var(--bg)",padding:"1px 5px",borderRadius:4}}>NOTION_TOKEN</code><br/>
+              2. Créez une page Notion, partagez-la avec l'intégration, puis collez son ID ci-dessous.
             </div>
             {notionStatus==="ok"
               ? <div style={{padding:"12px 14px",background:"rgba(34,197,94,.08)",border:"1px solid rgba(34,197,94,.3)",borderRadius:"var(--radius-sm)",fontSize:13,color:"var(--success)",display:"flex",alignItems:"center",gap:8}}>
-                  <NIcon name="check" size={14}/> Base de données déjà active !
+                  <NIcon name="check" size={14}/> Base de données active !
                   {notionDbUrl && <a href={notionDbUrl} target="_blank" rel="noopener noreferrer" className="notion-db-link" style={{marginLeft:"auto"}}>Ouvrir <NIcon name="external" size={11}/></a>}
                 </div>
-              : <button className="btn btn-notion" onClick={()=>{setShowNotionModal(false);initNotionDb()}} disabled={notionStatus==="loading"} style={{width:"100%",justifyContent:"center",padding:"12px"}}>
-                  {notionStatus==="loading"?<><span className="loader loader-dark" style={{width:13,height:13}}/>Initialisation...</>:<>⚡ Initialiser la base Notion</>}
-                </button>}
+              : <div style={{display:"flex",flexDirection:"column",gap:10}}>
+                  <div>
+                    <div className="field-label">ID de la page parent Notion</div>
+                    <input
+                      className="field-input"
+                      placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                      value={notionParentPageId}
+                      onChange={e => setNotionParentPageId(e.target.value)}
+                      style={{fontFamily:"monospace",fontSize:12}}
+                    />
+                    <div style={{fontSize:10,color:"var(--text-dim)",marginTop:4}}>Copiez l'ID depuis l'URL Notion : notion.so/Mon-titre-<strong>xxxxxxxx...</strong></div>
+                  </div>
+                  <button className="btn btn-notion" onClick={initNotionDb} disabled={notionStatus==="loading"||!notionParentPageId.trim()} style={{width:"100%",justifyContent:"center",padding:"12px"}}>
+                    {notionStatus==="loading"?<><span className="loader loader-dark" style={{width:13,height:13}}/>Création...</>:<>⚡ Créer la base de données</>}
+                  </button>
+                </div>}
             <div className="modal-actions"><button className="btn btn-secondary btn-sm" onClick={()=>setShowNotionModal(false)}>Fermer</button></div>
           </div>
         </div>

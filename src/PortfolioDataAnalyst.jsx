@@ -35,12 +35,12 @@ const projects = [
   },
   {
     id: 3,
-    title: "Life Calculator · Vibe Coding",
-    description: "Application React interactive pour visualiser les jours vécus, les jours restants estimés et la progression de vie.",
-    emoji: "⏳",
+    title: "Vibe Coding",
+    description: "Mini-applications construites en mode vibe coding : gestion d'école, analyse de marché, calculateur de vie, gestionnaire de tâches et simulateur de budget personnel.",
+    emoji: "⚡",
     access: "public",
-    buttonLabel: "Lancer l'application",
-    action: "calculator",
+    buttonLabel: "Voir les projets",
+    action: "vibe",
   },
 ];
 
@@ -228,6 +228,7 @@ function ContactForm() {
 export default function PortfolioDataAnalyst() {
   const { role, logout } = useAuth();
   const [showCalculator, setShowCalculator] = useState(false);
+  const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showLinkedInManager, setShowLinkedInManager] = useState(false);
@@ -235,7 +236,7 @@ export default function PortfolioDataAnalyst() {
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
 
   const handleProjectAction = (action) => {
-    if (action === 'calculator') setShowCalculator(true);
+    if (action === 'vibe') setShowVibeCoding(true);
     else if (action === 'data') setShowDataProject(true);
     else if (action === 'admin') setShowAdminPanel(true);
   };
@@ -281,9 +282,12 @@ export default function PortfolioDataAnalyst() {
         <button onClick={logout} className="text-xs text-slate-500 hover:text-red-400 transition">Déconnexion</button>
       </div>
     ) : (
-      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
-        <span>👁️</span> Mode Visiteur
-      </span>
+      <div className="flex items-center gap-3">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
+          <span>👁️</span> Mode Visiteur
+        </span>
+        <button onClick={logout} className="text-xs text-slate-500 hover:text-red-400 transition">Quitter</button>
+      </div>
     )}
     {/* Nav links */}
     <div className="flex items-center gap-6">
@@ -520,7 +524,7 @@ export default function PortfolioDataAnalyst() {
           <span className="text-3xl">📊</span>
           <h2 className="text-4xl font-bold">Projets</h2>
         </div>
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${visibleProjects.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
           {visibleProjects.map((project) => (
             <ProjectCard
               key={project.id}
@@ -655,24 +659,76 @@ export default function PortfolioDataAnalyst() {
                 className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
                 ✕
               </button>
-              <LinkedInManager />
+              <LinkedInManager onClose={() => setShowLinkedInManager(false)} />
+            </div>
+          </div>
+        )}
+
+        {/* Modale Vibe Coding — liste des projets */}
+        {showVibeCoding && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+            <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl p-10">
+              <button onClick={() => setShowVibeCoding(false)}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                ✕
+              </button>
+              <div className="flex items-center gap-3 mb-8">
+                <span className="text-3xl">⚡</span>
+                <h2 className="text-3xl font-bold">Vibe Coding</h2>
+              </div>
+              <div className="space-y-4">
+                {[
+                  { emoji: "🏫", title: "Gestion d'école", desc: "Application de gestion des élèves, classes, notes et absences — tableau de bord complet pour les établissements scolaires.", tags: ["React", "Node.js", "SQL"], available: false },
+                  { emoji: "📈", title: "Analyse de marché", desc: "Outil d'analyse et de visualisation de données de marché : tendances, segments et opportunités business.", tags: ["Python", "DataViz", "API"], available: false },
+                  { emoji: "⏳", title: "Calculateur de vie", desc: "Visualisez vos jours vécus, les jours restants estimés et votre progression de vie sous forme graphique.", tags: ["React", "Charts"], available: true, onLaunch: () => { setShowVibeCoding(false); setShowCalculator(true); } },
+                  { emoji: "✅", title: "Gestionnaire de tâches", desc: "Application de productivité avec kanban, priorités, rappels et suivi d'avancement des projets personnels.", tags: ["React", "LocalStorage"], available: false },
+                  { emoji: "💰", title: "Simulateur de budget", desc: "Planifiez vos revenus et dépenses, simulez des scénarios financiers et visualisez votre épargne projetée.", tags: ["React", "Charts"], available: false },
+                ].map(({ emoji, title, desc, tags, available, onLaunch }) => (
+                  <div key={title} className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                    <div className="flex items-start gap-4">
+                      <span className="text-3xl">{emoji}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg font-bold">{title}</h3>
+                          {available
+                            ? <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 border border-green-500/30 text-green-400">Disponible</span>
+                            : <span className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-500">En cours</span>
+                          }
+                        </div>
+                        <p className="text-slate-400 text-sm leading-relaxed mb-3">{desc}</p>
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          {tags.map(t => (
+                            <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{t}</span>
+                          ))}
+                        </div>
+                        {available && onLaunch && (
+                          <button onClick={onLaunch}
+                            className="px-4 py-2 rounded-xl bg-white text-black text-xs font-semibold hover:scale-105 transition">
+                            Lancer l'application →
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         )}
 
         {/* Modale Calculateur de vie */}
-          {showCalculator && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-              <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
-                <button
-                  onClick={() => setShowCalculator(false)}
-                  className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
-                  ✕
-                </button>
-                <LifeCalculator />
-              </div>
+        {showCalculator && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+            <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
+              <button
+                onClick={() => { setShowCalculator(false); setShowVibeCoding(true); }}
+                className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+                ✕
+              </button>
+              <LifeCalculator />
             </div>
-          )}
+          </div>
+        )}
 
         {/* Footer */}
         <footer className="border-t border-slate-800 py-8 px-6">
