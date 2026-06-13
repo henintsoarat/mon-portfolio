@@ -254,6 +254,7 @@ export default function PortfolioDataAnalyst() {
   const typedText = useTypewriter([
     "spécialisé en DataViz Power BI",
     "automatisation et reporting décisionnel",
+    "Vibe Coding Fullstack avec Claude Code",
     "expert Microsoft Fabric & Python",
     "disponible pour missions freelance",
   ]);
