@@ -677,7 +677,7 @@ export default function PortfolioDataAnalyst() {
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 hover:border-slate-500 hover:bg-slate-800 text-xs font-semibold text-slate-300 transition duration-200"
               title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
             >
-              {lang === 'fr' ? <><span>🇬🇧</span> EN</> : <><span>🇫🇷</span> FR</>}
+              {lang === 'fr' ? <span className="text-base">🇬🇧</span> : <span className="text-base">🇫🇷</span>}
             </button>
           </div>
         </div>
