@@ -350,8 +350,9 @@ export default function PortfolioDataAnalyst() {
                 Votre photo
               </div>
             </div>
-            <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              Henintsoa
+            <h1 className="text-4xl lg:text-6xl font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              Henintsoa Andrianaivo<br />
+              <span className="text-blue-400">RATOVONIRINA</span>
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
               Consultant en
@@ -774,7 +775,7 @@ export default function PortfolioDataAnalyst() {
         <footer className="border-t border-slate-800 py-8 px-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} Henintsoa — Tous droits réservés.
+              © {new Date().getFullYear()} Henintsoa Andrianaivo RATOVONIRINA — Tous droits réservés.
             </p>
             <div className="flex items-center gap-2 text-slate-600 text-xs">
               <span>🇲🇬</span>
