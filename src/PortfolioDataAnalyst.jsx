@@ -18,7 +18,7 @@ const projects = [
   {
     id: 1,
     title: "Pilotage & Reporting Data",
-    description: "Dashboards Power BI, KPI métiers et automatisation des reportings opérationnels — du traitement brut à la visualisation décisionnelle.",
+    description: "Dashboards Power BI, KPI métiers et automatisation des reportings opérationnels, du traitement brut à la visualisation décisionnelle.",
     emoji: "📊",
     access: "public",
     buttonLabel: "Voir les projets",
@@ -36,7 +36,7 @@ const projects = [
   {
     id: 3,
     title: "Vibe Coding avec Claude Code",
-    description: "Applications fullstack conçues en vibe coding pour résoudre des problèmes concrets du quotidien : piloter un établissement scolaire, décrypter un marché, simuler ses finances personnelles, organiser ses tâches et prendre de meilleures décisions de vie — chaque outil transforme une complexité métier en interface simple et actionnable.",
+    description: "Applications fullstack conçues en vibe coding pour résoudre des problèmes concrets du quotidien : piloter un établissement scolaire, décrypter un marché, simuler ses finances personnelles, organiser ses tâches et prendre de meilleures décisions de vie. Chaque outil transforme une complexité métier en interface simple et actionnable.",
     emoji: "⚡",
     access: "public",
     buttonLabel: "Voir les projets",
@@ -193,10 +193,10 @@ function ContactForm() {
           <select name="subject" value={form.subject} onChange={handleChange}
             className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500">
             <option value="">-- Choisir un objet --</option>
-            <option value="Mission freelance - Data Analysis">Mission freelance — Data Analysis</option>
-            <option value="Mission freelance - Power BI">Mission freelance — Power BI</option>
-            <option value="Mission freelance - Automatisation">Mission freelance — Automatisation</option>
-            <option value="Mission freelance - Reporting">Mission freelance — Developpeur FullStack avec Claude</option>
+            <option value="Mission freelance - Data Analysis">Mission freelance, Data Analysis</option>
+            <option value="Mission freelance - Power BI">Mission freelance, Power BI</option>
+            <option value="Mission freelance - Automatisation">Mission freelance, Automatisation</option>
+            <option value="Mission freelance - Reporting">Mission freelance, Developpeur FullStack avec Claude</option>
             <option value="Collaboration / Partenariat">Collaboration / Partenariat</option>
             <option value="Autre demande">Autre demande</option>
           </select>
@@ -441,10 +441,10 @@ export default function PortfolioDataAnalyst() {
               Je suis <strong className="text-white">consultant Data Analyst freelance</strong> avec plus de 5 ans d'expérience dans la transformation des données en leviers de performance. Basé à Madagascar et intervenant en remote pour des entreprises françaises et internationales, j'accompagne mes clients dans la mise en place de <strong className="text-white">solutions data sur mesure</strong> : dashboards Power BI, automatisation de flux avec Python et n8n, modélisation de données sous Microsoft Fabric, et reporting métier orienté décision.
             </p>
             <p className="text-slate-400 leading-relaxed mb-5">
-              Fort d'une expertise reconnue dans le <strong className="text-white">secteur de l'assurance</strong>, j'ai conduit plus de 20 missions opérationnelles — pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.
+              Fort d'une expertise reconnue dans le <strong className="text-white">secteur de l'assurance</strong>, j'ai conduit plus de 20 missions opérationnelles, pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.
             </p>
             <p className="text-slate-400 leading-relaxed">
-              Disponible pour des <strong className="text-white">missions freelance en Data Analysis</strong>, Power BI, automatisation et reporting. Réactif, rigoureux et orienté résultats — je transforme vos données brutes en décisions opérationnelles concrètes.
+              Disponible pour des <strong className="text-white">missions freelance en Data Analysis</strong>, Power BI, automatisation et reporting. Réactif, rigoureux et orienté résultats. Je transforme vos données brutes en décisions opérationnelles concrètes.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -466,7 +466,7 @@ export default function PortfolioDataAnalyst() {
                 <circle cx="14" cy="13" r="4" fill="#f87171" opacity="0.8"/>
                 <circle cx="28" cy="13" r="4" fill="#fbbf24" opacity="0.8"/>
                 <circle cx="42" cy="13" r="4" fill="#4ade80" opacity="0.8"/>
-                <text x="56" y="17" fontFamily="monospace" fontSize="7.5" fill="#334155">Power BI · Niveau d'expertise — Compétences clés</text>
+                <text x="56" y="17" fontFamily="monospace" fontSize="7.5" fill="#334155">Power BI · Niveau d'expertise, Compétences clés</text>
 
                 {/* KPI cards — 4 cartes x=0,91,182,273 w=87 */}
                 <rect x="0"   y="33" width="87" height="34" rx="6" fill="#0f172a"/>
@@ -655,7 +655,7 @@ export default function PortfolioDataAnalyst() {
                 <span className="text-3xl">🔐</span>
                 <h2 className="text-3xl font-bold">Espace Administration</h2>
               </div>
-              <p className="text-slate-500 text-sm mb-8">Accès restreint — session admin active</p>
+              <p className="text-slate-500 text-sm mb-8">Accès restreint, session admin active</p>
               <div className="space-y-4">
                 <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
                   <h3 className="font-bold mb-2 flex items-center gap-2"><span>📁</span> Projets confidentiels</h3>
@@ -670,7 +670,7 @@ export default function PortfolioDataAnalyst() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                     LinkedIn Manager
                   </h3>
-                  <p className="text-slate-400 text-sm mb-4">Outil de gestion de posts LinkedIn — génération IA, planification et intégration Notion.</p>
+                  <p className="text-slate-400 text-sm mb-4">Outil de gestion de posts LinkedIn, génération IA, planification et intégration Notion.</p>
                   <button
                     onClick={() => { setShowAdminPanel(false); setShowLinkedInManager(true); }}
                     className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition duration-300"
@@ -715,7 +715,7 @@ export default function PortfolioDataAnalyst() {
               </div>
               <div className="space-y-4">
                 {[
-                  { emoji: "🏫", title: "Gestion d'école", desc: "Application de gestion des élèves, classes, notes et absences — tableau de bord complet pour les établissements scolaires.", tags: ["React", "Node.js", "SQL"], available: false },
+                  { emoji: "🏫", title: "Gestion d'école", desc: "Application de gestion des élèves, classes, notes et absences. Tableau de bord complet pour les établissements scolaires.", tags: ["React", "Node.js", "SQL"], available: false },
                   { emoji: "📈", title: "Analyse de marché", desc: "Outil d'analyse et de visualisation de données de marché : tendances, segments et opportunités business.", tags: ["Python", "DataViz", "API"], available: false },
                   { emoji: "⏳", title: "Calculateur de vie", desc: "Visualisez vos jours vécus, les jours restants estimés et votre progression de vie sous forme graphique.", tags: ["React", "Charts"], available: true, onLaunch: () => { setShowVibeCoding(false); setShowCalculator(true); } },
                   { emoji: "✅", title: "Gestionnaire de tâches", desc: "Application de productivité avec kanban, priorités, rappels et suivi d'avancement des projets personnels.", tags: ["React", "LocalStorage"], available: false },
@@ -771,7 +771,7 @@ export default function PortfolioDataAnalyst() {
         <footer className="border-t border-slate-800 py-8 px-6">
           <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-slate-500 text-sm">
-              © {new Date().getFullYear()} Henintsoa Andrianaivo RATOVONIRINA — Tous droits réservés.
+              © {new Date().getFullYear()} Henintsoa Andrianaivo RATOVONIRINA. Tous droits réservés.
             </p>
             <div className="flex items-center gap-2 text-slate-600 text-xs">
               <span>🇲🇬</span>
