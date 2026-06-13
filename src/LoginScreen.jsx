@@ -133,7 +133,7 @@ export default function LoginScreen() {
         )}
       </div>
 
-      <p className="mt-12 text-slate-700 text-xs">© {new Date().getFullYear()} Henintsoa, Madagascar</p>
+      <p className="mt-12 text-slate-700 text-xs">© {new Date().getFullYear()} Henintsoa — Madagascar</p>
     </div>
   );
 }
