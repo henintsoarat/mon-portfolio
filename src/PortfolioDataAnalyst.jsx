@@ -10,7 +10,7 @@ const EMAILJS_PUBLIC_KEY = "hVKKAZFnXWGFCz2LZ";
 
 const skills = [
   "Power BI", "Python", "SQL", "Microsoft Fabric",
-  "Cognos Analytics", "n8n", "DataViz", "Web Scraping",
+  "Cognos Analytics", "n8n", "Azure DevOps", "Web Scraping",
   "Git/GitHub", "REST API",
 ];
 
