@@ -283,7 +283,7 @@ export default function PortfolioDataAnalyst() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#09090B] text-white overflow-hidden scroll-smooth" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <main className="min-h-screen bg-[#09090B] text-white scroll-smooth" style={{ fontFamily: "'Inter', sans-serif" }}>
 
 {/* Bandeau défilant */}
 <div className="w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
