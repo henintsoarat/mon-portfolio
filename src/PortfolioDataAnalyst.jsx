@@ -73,7 +73,7 @@ const T = {
     ],
     hero: {
       consultantIn: "Consultant en",
-      badges: ["Data Analyst", "Data Visualisation", "Reporting Décisionnel"],
+      badges: ["Data Analyst", "Data Visualisation", "Reporting Décisionnel", "Développeur Fullstack (vibe coding)"],
       description: "J'aide les entreprises à transformer leurs données en décisions opérationnelles grâce à la DataViz, l'automatisation des flux et la modélisation de données orientée métier.",
       viewProjects: "Voir mes projets",
       bookCall: "Réserver un appel",
@@ -232,7 +232,7 @@ const T = {
     ],
     hero: {
       consultantIn: "Consultant in",
-      badges: ["Data Analyst", "Data Visualisation", "Decision Reporting"],
+      badges: ["Data Analyst", "Data Visualisation", "Decision Reporting", "Fullstack Developer (vibe coding)"],
       description: "I help companies turn their data into operational decisions through DataViz, workflow automation, and business-driven data modelling.",
       viewProjects: "View my projects",
       bookCall: "Book a call",
@@ -697,10 +697,10 @@ export default function PortfolioDataAnalyst() {
               <span className="block text-blue-400 text-5xl lg:text-7xl">RATOVONIRINA</span>
               <span className="block text-white text-3xl lg:text-5xl font-bold">Henintsoa Andrianaivo</span>
             </h1>
-            <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
-              {t.hero.consultantIn}
-            </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap items-center gap-2 mt-8">
+              <span className="text-slate-500 text-sm font-medium uppercase tracking-widest shrink-0">
+                {t.hero.consultantIn}
+              </span>
               {t.hero.badges.map(b => (
                 <span key={b} className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">{b}</span>
               ))}
