@@ -91,7 +91,7 @@ const T = {
     ],
     about: {
       title: "Qui suis-je",
-      subtitle: "Consultant Data indépendant,",
+      subtitle: "Consultant indépendant,",
       p1: "Je suis <strong class=\"text-white\">consultant Data Analyst freelance</strong> avec plus de 5 ans d'expérience dans la transformation des données en leviers de performance. Basé à Madagascar et intervenant en remote pour des entreprises françaises et internationales, j'accompagne mes clients dans la mise en place de <strong class=\"text-white\">solutions data sur mesure</strong> : dashboards Power BI, automatisation de flux avec Python et n8n, modélisation de données sous Microsoft Fabric, et reporting métier orienté décision.",
       p2: "Fort d'une expertise reconnue dans le <strong class=\"text-white\">secteur de l'assurance</strong>, j'ai conduit plus de 20 missions opérationnelles, pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.",
       p3: "Disponible pour des <strong class=\"text-white\">missions freelance en Data Analysis</strong>, Power BI, automatisation et reporting. Réactif, rigoureux et orienté résultats. Je transforme vos données brutes en décisions opérationnelles concrètes.",
