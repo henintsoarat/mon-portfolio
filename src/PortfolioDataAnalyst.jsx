@@ -1153,7 +1153,7 @@ export default function PortfolioDataAnalyst() {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-slate-500 text-sm">{t.footer.rights}</p>
           <div className="flex items-center gap-2 text-slate-600 text-xs">
-            <span>🇲🇬</span>
+            <img src="https://flagcdn.com/20x15/mg.png" srcSet="https://flagcdn.com/40x30/mg.png 2x" width="20" height="15" alt="Madagascar" style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }} />
             <span>{t.footer.made}</span>
           </div>
           <p className="text-slate-600 text-xs">{t.footer.tech}</p>

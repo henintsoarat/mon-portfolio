@@ -26,6 +26,7 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setRole('visitor');
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
   }, []);
 
   const loginAsAdmin = useCallback(async (username, password) => {
@@ -53,6 +54,7 @@ export function AuthProvider({ children }) {
     sessionStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setRole(null);
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
   }, []);
 
   return (
