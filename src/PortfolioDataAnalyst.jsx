@@ -286,7 +286,7 @@ export default function PortfolioDataAnalyst() {
     <main className="min-h-screen bg-[#09090B] text-white overflow-hidden scroll-smooth" style={{ fontFamily: "'Inter', sans-serif" }}>
 
 {/* Bandeau défilant */}
-<div className="sticky top-0 z-40 w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
+<div className="w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
   <div className="animate-marquee whitespace-nowrap flex gap-20 text-base font-medium text-slate-300">
     {[
       "👋 Bienvenue sur mon portfolio !",
@@ -310,7 +310,7 @@ export default function PortfolioDataAnalyst() {
 </div>
 
 {/* Menu navigation */}
-<div className="sticky top-12 z-30 w-full bg-slate-950 border-b border-slate-800 py-3">
+<div className="sticky top-0 z-30 w-full bg-slate-950/95 backdrop-blur border-b border-slate-800 py-3">
   <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-6">
     {/* Badge mode */}
     {role === 'admin' ? (
@@ -345,14 +345,9 @@ export default function PortfolioDataAnalyst() {
       <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="reveal">
-            <div className="flex items-center gap-6 mb-6 flex-wrap">
-              <div className="w-28 h-28 rounded-3xl border border-slate-800 bg-slate-900 flex items-center justify-center text-slate-500 text-sm text-center p-4">
-                Votre photo
-              </div>
-            </div>
-            <h1 className="font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              <span className="block text-blue-400 text-3xl lg:text-4xl">RATOVONIRINA</span>
-              <span className="block text-white text-2xl lg:text-3xl font-bold">Henintsoa Andrianaivo</span>
+            <h1 className="font-black leading-tight tracking-tight mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <span className="block text-blue-400 text-5xl lg:text-7xl">RATOVONIRINA</span>
+              <span className="block text-white text-3xl lg:text-5xl font-bold">Henintsoa Andrianaivo</span>
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
               Consultant en
