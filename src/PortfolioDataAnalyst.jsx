@@ -350,9 +350,9 @@ export default function PortfolioDataAnalyst() {
                 Votre photo
               </div>
             </div>
-            <h1 className="text-4xl lg:text-6xl font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              Henintsoa Andrianaivo<br />
-              <span className="text-blue-400">RATOVONIRINA</span>
+            <h1 className="font-black leading-tight tracking-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <span className="block text-blue-400 text-3xl lg:text-4xl">RATOVONIRINA</span>
+              <span className="block text-white text-2xl lg:text-3xl font-bold">Henintsoa Andrianaivo</span>
             </h1>
             <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
               Consultant en
