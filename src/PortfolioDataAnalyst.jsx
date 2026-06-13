@@ -675,15 +675,15 @@ export default function PortfolioDataAnalyst() {
             <div className="inline-flex items-center rounded-xl border border-slate-700 overflow-hidden">
               <button
                 onClick={() => setLang('fr')}
-                className={`px-2.5 py-1.5 text-base transition duration-200 ${lang === 'fr' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
+                className={`px-2.5 py-2 transition duration-200 ${lang === 'fr' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
                 title="Passer en français"
-              >🇫🇷</button>
+              ><span className="fi fi-fr" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} /></button>
               <span className="w-px h-5 bg-slate-700" />
               <button
                 onClick={() => setLang('en')}
-                className={`px-2.5 py-1.5 text-base transition duration-200 ${lang === 'en' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
+                className={`px-2.5 py-2 transition duration-200 ${lang === 'en' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
                 title="Switch to English"
-              >🇬🇧</button>
+              ><span className="fi fi-gb" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} /></button>
             </div>
           </div>
         </div>
