@@ -35,8 +35,8 @@ const projects = [
   },
   {
     id: 3,
-    title: "Vibe Coding",
-    description: "Mini-applications construites en mode vibe coding : gestion d'école, analyse de marché, calculateur de vie, gestionnaire de tâches et simulateur de budget personnel.",
+    title: "Vibe Coding avec Claude Code",
+    description: "Applications fullstack conçues en vibe coding pour résoudre des problèmes concrets du quotidien : piloter un établissement scolaire, décrypter un marché, simuler ses finances personnelles, organiser ses tâches et prendre de meilleures décisions de vie — chaque outil transforme une complexité métier en interface simple et actionnable.",
     emoji: "⚡",
     access: "public",
     buttonLabel: "Voir les projets",
@@ -196,7 +196,7 @@ function ContactForm() {
             <option value="Mission freelance - Data Analysis">Mission freelance — Data Analysis</option>
             <option value="Mission freelance - Power BI">Mission freelance — Power BI</option>
             <option value="Mission freelance - Automatisation">Mission freelance — Automatisation</option>
-            <option value="Mission freelance - Reporting">Mission freelance — Reporting</option>
+            <option value="Mission freelance - Reporting">Mission freelance — Developpeur FullStack avec Claude</option>
             <option value="Collaboration / Partenariat">Collaboration / Partenariat</option>
             <option value="Autre demande">Autre demande</option>
           </select>
