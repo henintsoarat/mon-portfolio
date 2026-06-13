@@ -700,9 +700,9 @@ export default function PortfolioDataAnalyst() {
             <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
               {t.hero.consultantIn}
             </p>
-            <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1">
+            <div className="flex flex-wrap gap-2">
               {t.hero.badges.map(b => (
-                <span key={b} className="whitespace-nowrap px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default shrink-0">{b}</span>
+                <span key={b} className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">{b}</span>
               ))}
             </div>
             <p className="text-slate-400 text-lg leading-relaxed mt-8 max-w-2xl" style={{ lineHeight: '1.75' }}>
