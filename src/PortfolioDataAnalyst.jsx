@@ -672,13 +672,19 @@ export default function PortfolioDataAnalyst() {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               {t.downloadCV}
             </a>
-            <button
-              onClick={() => setLang(l => l === 'fr' ? 'en' : 'fr')}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-700 hover:border-slate-500 hover:bg-slate-800 text-xs font-semibold text-slate-300 transition duration-200"
-              title={lang === 'fr' ? 'Switch to English' : 'Passer en français'}
-            >
-              {lang === 'fr' ? <span className="text-base">🇬🇧</span> : <span className="text-base">🇫🇷</span>}
-            </button>
+            <div className="inline-flex items-center rounded-xl border border-slate-700 overflow-hidden">
+              <button
+                onClick={() => setLang('fr')}
+                className={`px-2.5 py-1.5 text-base transition duration-200 ${lang === 'fr' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
+                title="Passer en français"
+              >🇫🇷</button>
+              <span className="w-px h-5 bg-slate-700" />
+              <button
+                onClick={() => setLang('en')}
+                className={`px-2.5 py-1.5 text-base transition duration-200 ${lang === 'en' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
+                title="Switch to English"
+              >🇬🇧</button>
+            </div>
           </div>
         </div>
       </div>
