@@ -3,14 +3,18 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        heading: ['Poppins', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        heading: ['Arial', 'sans-serif'],
+        body:    ['Arial', 'sans-serif'],
+        mono:    ['"JetBrains Mono"', 'monospace'],
       },
       colors: {
-        brand: {
-          blue: '#2563EB',
-          dark: '#09090B',
-          card: '#111113',
+        core: {
+          cyan:    '#00F0FF',
+          red:     '#FF003C',
+          bg:      '#030508',
+          surface: '#0D1117',
+          border:  '#27272A',
+          muted:   '#A1A1AA',
         },
       },
       keyframes: {
@@ -18,14 +22,19 @@ export default {
           '0%':   { opacity: '0', transform: 'translateY(24px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
-        fadeIn: {
-          '0%':   { opacity: '0' },
-          '100%': { opacity: '1' },
+        coreAlertPulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%':      { opacity: '0.3' },
+        },
+        coreCyanPulse: {
+          '0%, 100%': { opacity: '0.5' },
+          '50%':      { opacity: '1' },
         },
       },
       animation: {
-        'fade-up':  'fadeUp 0.6s ease forwards',
-        'fade-in':  'fadeIn 0.5s ease forwards',
+        'fade-up':    'fadeUp 0.6s ease forwards',
+        'core-alert': 'coreAlertPulse 1.5s ease-in-out infinite',
+        'core-cyan':  'coreCyanPulse 2.5s ease-in-out infinite',
       },
     },
   },

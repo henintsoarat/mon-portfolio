@@ -60,7 +60,7 @@ const T = {
     admin: "Admin",
     logout: "Déconnexion",
     quit: "Quitter",
-    downloadCV: "Télécharger le CV",
+    downloadCV: "Lire le CV",
     cvFile: "/CV_Henintsoa_Andrianaivo.pdf",
     marquee: [
       "👋 Bienvenue sur mon portfolio !",
@@ -219,7 +219,7 @@ const T = {
     admin: "Admin",
     logout: "Logout",
     quit: "Quit",
-    downloadCV: "Download CV",
+    downloadCV: "Read CV",
     cvFile: "/CV_Henintsoa_Andrianaivo_EN.pdf",
     marquee: [
       "👋 Welcome to my portfolio!",
@@ -376,8 +376,8 @@ const T = {
 
 function SkillCard({ skill }) {
   return (
-    <div className="bg-[#111113] border border-slate-800 rounded-2xl p-5 text-center hover:-translate-y-1 hover:border-slate-600 hover:bg-slate-800/50 transition duration-200 cursor-default">
-      <span className="text-sm md:text-base font-medium text-slate-300">{skill}</span>
+    <div className="core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-5 text-center cursor-default">
+      <span className="text-xs md:text-sm font-mono text-[#A1A1AA] tracking-widest uppercase">{skill}</span>
     </div>
   );
 }
@@ -386,12 +386,12 @@ function ProgressBar({ label, value }) {
   const safeValue = Math.min(100, Math.max(0, value));
   return (
     <div>
-      <div className="flex justify-between text-sm mb-2">
-        <span>{label}</span>
-        <span>{safeValue}%</span>
+      <div className="flex justify-between text-xs mb-1.5 font-mono">
+        <span className="text-[#A1A1AA] uppercase tracking-widest">{label}</span>
+        <span className="text-[#00F0FF]">{safeValue}%</span>
       </div>
-      <div className="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
-        <div className="h-3 bg-white rounded-full transition-all duration-500" style={{ width: `${safeValue}%` }} />
+      <div className="w-full h-1 bg-[#27272A] overflow-hidden">
+        <div className="h-1 bg-[#00F0FF] core-progress-bar transition-all duration-700" style={{ width: `${safeValue}%` }} />
       </div>
     </div>
   );
@@ -404,19 +404,24 @@ function ProjectCard({ project, lang, onAction }) {
   const adminNote = lang === 'en' ? "Admin access only" : "Accès admin uniquement";
 
   return (
-    <div className="bg-[#111113] border border-slate-800 rounded-3xl p-8 shadow-xl flex flex-col hover:-translate-y-2 hover:border-slate-600 hover:shadow-2xl hover:shadow-blue-500/5 transition duration-200 h-full">
-      <div className="text-4xl mb-6">{project.emoji}</div>
-      <h3 className="text-2xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>{title}</h3>
-      <p className="text-slate-400 leading-relaxed flex-1" style={{ lineHeight: '1.75' }}>{description}</p>
+    <div className="core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-8 flex flex-col h-full">
+      <div className="mb-6">
+        <div className="w-8 h-8 rounded bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center">
+          <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-core-cyan" />
+        </div>
+      </div>
+      <h3 className="text-xl font-bold mb-4 tracking-tight text-white">{title}</h3>
+      <p className="text-[#A1A1AA] leading-relaxed flex-1 text-sm" style={{ lineHeight: '1.75' }}>{description}</p>
       {project.access === 'admin' && (
-        <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-yellow-500/70">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+        <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-[#FF003C]/70 font-mono">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
           <span>{adminNote}</span>
         </div>
       )}
       <button
+        type="button"
         onClick={onAction}
-        className="mt-6 w-full px-4 py-3 rounded-2xl bg-white text-black font-semibold text-sm hover:bg-slate-100 hover:scale-[1.02] active:scale-[0.98] transition duration-200 cursor-pointer"
+        className="core-btn mt-6 w-full px-4 py-3 rounded-lg bg-[#00F0FF] text-black font-bold text-sm hover:bg-white active:scale-[0.98] transition duration-200 cursor-pointer"
       >
         {buttonLabel} →
       </button>
@@ -504,27 +509,27 @@ function ContactForm({ tc }) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm text-slate-400 mb-1">{tc.formName}</label>
+          <label className="block text-[10px] font-mono text-[#A1A1AA] mb-1.5 uppercase tracking-widest">{tc.formName}</label>
           <input name="from_name" value={form.from_name} onChange={handleChange}
             placeholder={tc.formNamePlaceholder} maxLength={100} type="text"
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" />
+            className="core-input w-full bg-[#030508] border border-[#27272A] rounded-lg px-4 py-3 text-sm text-white placeholder-[#3f3f46] font-mono transition duration-200" />
         </div>
         <div>
-          <label className="block text-sm text-slate-400 mb-1">{tc.formEmail}</label>
+          <label className="block text-[10px] font-mono text-[#A1A1AA] mb-1.5 uppercase tracking-widest">{tc.formEmail}</label>
           <input name="from_email" value={form.from_email} onChange={handleChange}
             placeholder={tc.formEmailPlaceholder} maxLength={150} type="email"
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" />
+            className="core-input w-full bg-[#030508] border border-[#27272A] rounded-lg px-4 py-3 text-sm text-white placeholder-[#3f3f46] font-mono transition duration-200" />
         </div>
         <div>
-          <label className="block text-sm text-slate-400 mb-1">{tc.formCompany}</label>
+          <label className="block text-[10px] font-mono text-[#A1A1AA] mb-1.5 uppercase tracking-widest">{tc.formCompany}</label>
           <input name="company" value={form.company} onChange={handleChange}
             placeholder={tc.formCompanyPlaceholder} maxLength={100} type="text"
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500" />
+            className="core-input w-full bg-[#030508] border border-[#27272A] rounded-lg px-4 py-3 text-sm text-white placeholder-[#3f3f46] font-mono transition duration-200" />
         </div>
         <div>
-          <label className="block text-sm text-slate-400 mb-1">{tc.formSubject}</label>
+          <label className="block text-[10px] font-mono text-[#A1A1AA] mb-1.5 uppercase tracking-widest">{tc.formSubject}</label>
           <select name="subject" value={form.subject} onChange={handleChange}
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-blue-500">
+            className="core-input w-full bg-[#030508] border border-[#27272A] rounded-lg px-4 py-3 text-sm text-white font-mono transition duration-200">
             <option value="">{tc.formSubjectDefault}</option>
             {tc.subjects.map(s => (
               <option key={s.value} value={s.value}>{s.label}</option>
@@ -532,23 +537,25 @@ function ContactForm({ tc }) {
           </select>
         </div>
         <div className="md:col-span-2">
-          <label className="block text-sm text-slate-400 mb-1">{tc.formMessage}</label>
+          <label className="block text-[10px] font-mono text-[#A1A1AA] mb-1.5 uppercase tracking-widest">{tc.formMessage}</label>
           <textarea name="message" value={form.message} onChange={handleChange}
             placeholder={tc.formMessagePlaceholder} maxLength={2000} rows={4}
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-y" />
+            className="core-input w-full bg-[#030508] border border-[#27272A] rounded-lg px-4 py-3 text-sm text-white placeholder-[#3f3f46] font-mono transition duration-200 resize-y" />
         </div>
       </div>
 
       {status && (
-        <div className={`mt-4 text-sm text-center px-4 py-3 rounded-xl ${
-          status.type === "success" ? "bg-green-950 text-green-400" : "bg-red-950 text-red-400"
+        <div className={`mt-4 text-xs text-center px-4 py-3 rounded-lg font-mono uppercase tracking-widest ${
+          status.type === "success"
+            ? "bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/20"
+            : "bg-[#FF003C]/10 text-[#FF003C] border border-[#FF003C]/20"
         }`}>
           {status.msg}
         </div>
       )}
 
       <button onClick={handleSubmit} disabled={loading}
-        className="mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-white text-black font-semibold hover:scale-105 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100">
+        className="core-btn mt-4 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-lg bg-[#00F0FF] text-black font-bold hover:bg-white transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
         {loading ? tc.formSending : tc.formSend}
       </button>
     </div>
@@ -592,6 +599,7 @@ export default function PortfolioDataAnalyst() {
 
   const typedText = useTypewriter(t.typewriter, lang);
 
+  const [showCV, setShowCV] = useState(false);
   const [showCalculator, setShowCalculator] = useState(false);
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
@@ -599,6 +607,12 @@ export default function PortfolioDataAnalyst() {
   const [showLinkedInManager, setShowLinkedInManager] = useState(false);
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
+
+  const anyModalOpen = showCV || showCalculator || showVibeCoding || showDataProject || showAdminPanel || showLinkedInManager;
+  useEffect(() => {
+    document.body.style.overflow = anyModalOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [anyModalOpen]);
 
   const handleProjectAction = (action) => {
     if (action === 'vibe') setShowVibeCoding(true);
@@ -618,142 +632,153 @@ export default function PortfolioDataAnalyst() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#09090B] text-white scroll-smooth" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <main className="min-h-screen bg-[#030508] text-white scroll-smooth core-scanlines" style={{ fontFamily: 'Arial, sans-serif' }}>
 
-      {/* Bandeau défilant */}
-      <div className="w-full bg-slate-900 border-b border-slate-800 overflow-hidden py-3">
-        <div className="animate-marquee whitespace-nowrap flex gap-20 text-base font-medium text-slate-300">
+      {/* Tactical ticker */}
+      <div className="w-full bg-[#030508] border-b border-[#27272A] overflow-hidden py-2" style={{ borderTop: '1px solid rgba(0,240,255,0.2)' }}>
+        <div className="animate-marquee whitespace-nowrap flex gap-24 text-sm font-mono text-[#A1A1AA] tracking-widest">
           {[...t.marquee, ...t.marquee].map((msg, i) => (
-            <span key={i}>{msg}</span>
+            <span key={i} className="inline-flex items-center gap-3">
+              <span className="text-[#00F0FF]">▸</span>
+              <span className="uppercase">{msg}</span>
+            </span>
           ))}
         </div>
       </div>
 
-      {/* Menu navigation */}
-      <div className="sticky top-0 z-30 w-full bg-slate-950/95 backdrop-blur border-b border-slate-800 py-3">
+      {/* Navigation */}
+      <div className="sticky top-0 z-30 w-full border-b border-[#27272A] py-3 backdrop-blur-md" style={{ backgroundColor: 'rgba(3,5,8,0.55)', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          {/* Badge mode */}
-          {role === 'admin' ? (
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-medium">
-                <span>🔐</span> {t.admin}
-              </span>
-              <button onClick={logout} className="text-xs text-slate-500 hover:text-red-400 transition">{t.logout}</button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-xs">
-                <span>👁️</span> {t.visitor}
-              </span>
-              <button onClick={logout} className="text-xs text-slate-500 hover:text-red-400 transition">{t.quit}</button>
-            </div>
-          )}
-
-          {/* Nav links */}
-          <div className="hidden md:flex items-center gap-5">
-            <a href="#about" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">{t.nav.about}</a>
-            <span className="text-slate-700">|</span>
-            <a href="#experience" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">{t.nav.experience}</a>
-            <span className="text-slate-700">|</span>
-            <a href="#competences" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">{t.nav.skills}</a>
-            <span className="text-slate-700">|</span>
-            <a href="#projects" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">{t.nav.projects}</a>
-            <span className="text-slate-700">|</span>
-            <a href="#contact" className="text-slate-300 hover:text-white text-sm font-medium transition duration-300">{t.nav.contact}</a>
+          {/* Mode badge */}
+          <div className="flex items-center gap-4">
+            {role === 'admin' ? (
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-[10px] font-mono uppercase tracking-widest">
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                  {t.admin}
+                </span>
+                <button onClick={logout} className="text-[10px] font-mono text-[#FF003C]/60 hover:text-[#FF003C] transition uppercase tracking-widest">{t.logout}</button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0D1117] border border-[#27272A] text-[#52525b] text-[10px] font-mono uppercase tracking-widest">
+                  <span className="w-1 h-1 rounded-full bg-[#A1A1AA]/30" /> {t.visitor}
+                </span>
+                <button onClick={logout} className="text-[10px] font-mono text-[#FF003C]/60 hover:text-[#FF003C] transition uppercase tracking-widest">{t.quit}</button>
+              </div>
+            )}
           </div>
 
-          {/* Right: CV download + lang toggle */}
+          {/* Nav links */}
+          <div className="hidden md:flex items-center gap-5 font-mono">
+            <a href="#about" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.about}</a>
+            <span className="text-[#27272A]">/</span>
+            <a href="#experience" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.experience}</a>
+            <span className="text-[#27272A]">/</span>
+            <a href="#competences" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.skills}</a>
+            <span className="text-[#27272A]">/</span>
+            <a href="#projects" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.projects}</a>
+            <span className="text-[#27272A]">/</span>
+            <a href="#contact" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.contact}</a>
+          </div>
+
+          {/* CV + lang */}
           <div className="flex items-center gap-3">
-            <a
-              href={t.cvFile}
-              download
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold transition duration-200"
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <button onClick={() => setShowCV(true)}
+              className="core-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00F0FF] hover:bg-white text-black text-[10px] font-mono font-bold uppercase tracking-widest transition duration-200 cursor-pointer">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               {t.downloadCV}
-            </a>
-            <div className="inline-flex items-center rounded-xl border border-slate-700 overflow-hidden">
-              <button
-                onClick={() => setLang('fr')}
-                className={`px-2.5 py-2 transition duration-200 ${lang === 'fr' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
-                title="Passer en français"
-              ><span className="fi fi-fr" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} /></button>
-              <span className="w-px h-5 bg-slate-700" />
-              <button
-                onClick={() => setLang('en')}
-                className={`px-2.5 py-2 transition duration-200 ${lang === 'en' ? 'bg-slate-700' : 'opacity-40 hover:opacity-70 hover:bg-slate-800'}`}
-                title="Switch to English"
-              ><span className="fi fi-gb" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} /></button>
+            </button>
+            <div className="inline-flex items-center rounded-lg border border-[#27272A] overflow-hidden">
+              <button onClick={() => setLang('fr')}
+                className={`px-2.5 py-2 transition duration-200 ${lang === 'fr' ? 'bg-[#27272A]' : 'opacity-40 hover:opacity-70'}`}
+                title="Passer en français">
+                <span className="fi fi-fr" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} />
+              </button>
+              <span className="w-px h-5 bg-[#27272A]" />
+              <button onClick={() => setLang('en')}
+                className={`px-2.5 py-2 transition duration-200 ${lang === 'en' ? 'bg-[#27272A]' : 'opacity-40 hover:opacity-70'}`}
+                title="Switch to English">
+                <span className="fi fi-gb" style={{ width: '1.4em', height: '1em', display: 'inline-block', backgroundSize: 'cover', borderRadius: '2px' }} />
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Hero */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="reveal">
-            <h1 className="font-black leading-tight tracking-tight mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              <span className="block text-blue-400 text-5xl lg:text-7xl">RATOVONIRINA</span>
-              <span className="block text-white text-3xl lg:text-5xl font-bold">Henintsoa Andrianaivo</span>
-            </h1>
-            <p className="text-slate-500 text-sm font-medium mt-8 mb-2 uppercase tracking-widest">
-              {t.hero.consultantIn}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {t.hero.badges.map(b => (
-                <span key={b} className="px-3 py-1 rounded-full border border-slate-700 text-slate-300 text-sm font-medium cursor-default">{b}</span>
-              ))}
-            </div>
-            <p className="text-slate-400 text-lg leading-relaxed mt-8 max-w-2xl" style={{ lineHeight: '1.75' }}>
-              {t.hero.description}
-            </p>
-            <div className="flex flex-wrap gap-4 mt-10">
-              <a href="#projects"
-                className="px-6 py-4 rounded-2xl bg-white text-black font-semibold hover:scale-105 hover:shadow-lg hover:shadow-white/10 transition duration-200 text-center cursor-pointer">
-                {t.hero.viewProjects}
-              </a>
-              <button type="button" onClick={openLinkedIn}
-                className="relative z-50 inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-900 hover:border-slate-500 transition duration-200 cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                LinkedIn
-              </button>
-              <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 transition duration-200 text-center cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                {t.hero.bookCall}
-              </a>
-            </div>
-          </div>
+      <section className="relative core-grid-bg core-dither overflow-hidden">
+        <div className="pointer-events-none absolute -top-32 -right-32 w-[500px] h-[500px] bg-[#FF003C]/4 blur-[120px] rounded-full" />
+        <div className="pointer-events-none absolute top-1/2 -left-20 w-[350px] h-[350px] bg-[#00F0FF]/5 blur-[100px] rounded-full -translate-y-1/2" />
+        <div className="pointer-events-none absolute top-0 left-0 w-full h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)' }} />
+        <div className="pointer-events-none absolute bottom-0 left-0 w-full h-px" style={{ background: 'linear-gradient(90deg,transparent,rgba(255,0,60,0.2),transparent)' }} />
+        <div className="core-scan-beam absolute inset-0 pointer-events-none" />
 
-          <div className="relative">
-            <div className="absolute inset-0 bg-blue-500/10 blur-3xl rounded-full" />
-            <div className="relative inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-900 border border-slate-800 text-sm mb-4">
-              <span>🧠</span>
-              <span className="text-base text-slate-300">{t.hero.expBadge}</span>
-            </div>
-            <div className="relative bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl">
-              <div className="flex items-center justify-between mb-8 gap-6">
-                <div>
-                  <p className="text-slate-400 text-sm mb-3">{t.hero.fieldExp}</p>
-                  <ul className="space-y-2">
-                    <li className="flex items-start gap-2 text-sm">
-                      <span className="text-white mt-1">•</span>
-                      <span className="text-slate-300">
-                        {lang === 'fr'
-                          ? <>Plus de <span className="text-white font-semibold">20 missions</span> réalisées dans le secteur de l'assurance, au service de <span className="text-white font-semibold">dizaines de clients accompagnés</span> dans leurs projets data.</>
-                          : <>Over <span className="text-white font-semibold">20 missions</span> completed in the insurance sector, supporting <span className="text-white font-semibold">dozens of clients</span> in their data projects.</>
-                        }
-                      </span>
-                    </li>
-                  </ul>
-                </div>
-                <span className="text-5xl">📉</span>
+        <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="reveal">
+              <h1 className="font-black leading-none tracking-tighter mb-6" style={{ fontFamily: 'Arial, sans-serif' }}>
+                <span className="block text-[#00F0FF] core-glow text-4xl lg:text-6xl">RATOVONIRINA</span>
+                <span className="block text-white text-3xl lg:text-5xl font-bold mt-2">Henintsoa Andrianaivo</span>
+              </h1>
+
+              {/* Protocol label */}
+              <div className="inline-flex items-center gap-3 mb-8 px-3 py-2 border border-[#27272A] rounded-lg bg-[#0D1117]/60">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+                <span className="text-sm font-mono text-[#A1A1AA] uppercase tracking-widest">
+                  {t.hero.consultantIn}
+                </span>
               </div>
-              <div className="space-y-5">
-                <ProgressBar label={t.progressLabels[0]} value={92} />
-                <ProgressBar label={t.progressLabels[1]} value={95} />
-                <ProgressBar label={t.progressLabels[2]} value={96} />
+
+              <div className="flex flex-wrap gap-2 mb-8">
+                {t.hero.badges.map(b => (
+                  <span key={b} className="px-3 py-1.5 border border-[#27272A] hover:border-[#00F0FF]/30 text-[#A1A1AA] text-xs font-mono uppercase tracking-widest cursor-default transition duration-200">{b}</span>
+                ))}
+              </div>
+
+              <p className="text-[#A1A1AA] text-base leading-relaxed max-w-2xl" style={{ lineHeight: '1.75' }}>
+                {t.hero.description}
+              </p>
+
+              <div className="flex flex-wrap gap-4 mt-10">
+                <a href="#projects"
+                  className="core-btn px-6 py-4 rounded-lg bg-[#00F0FF] text-black font-bold text-sm hover:bg-white transition duration-200 cursor-pointer tracking-wide">
+                  {t.hero.viewProjects}
+                </a>
+                <button type="button" onClick={openLinkedIn}
+                  className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-lg border border-[#27272A] hover:border-[#00F0FF]/40 hover:bg-[#0D1117] transition duration-200 cursor-pointer font-mono text-sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#00F0FF' }}><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  LinkedIn
+                </button>
+                <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-4 rounded-lg border border-[#FF003C]/30 text-[#FF003C] hover:bg-[#FF003C]/10 transition duration-200 cursor-pointer font-mono text-sm">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  {t.hero.bookCall}
+                </a>
+              </div>
+            </div>
+
+            {/* Stats panel */}
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 border border-[#27272A] rounded-lg font-mono text-[10px]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+                <span className="text-[#A1A1AA] text-xs uppercase tracking-widest">{t.hero.expBadge}</span>
+              </div>
+              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-8" style={{ boxShadow: '0 0 40px rgba(0,240,255,0.04)' }}>
+                <p className="text-[#52525b] text-[10px] font-mono mb-4 uppercase tracking-widest">{t.hero.fieldExp}</p>
+                <div className="flex items-start gap-2 text-sm mb-6">
+                  <span className="text-[#00F0FF] mt-1 shrink-0 font-mono">▸</span>
+                  <span className="text-[#A1A1AA] text-sm">
+                    {lang === 'fr'
+                      ? <>Plus de <span className="text-white font-bold">20 missions</span> dans le secteur assurance, <span className="text-white font-bold">dizaines de clients</span> accompagnés.</>
+                      : <>Over <span className="text-white font-bold">20 missions</span> in insurance, <span className="text-white font-bold">dozens of clients</span> supported.</>}
+                  </span>
+                </div>
+                <div className="space-y-4">
+                  <ProgressBar label={t.progressLabels[0]} value={92} />
+                  <ProgressBar label={t.progressLabels[1]} value={95} />
+                  <ProgressBar label={t.progressLabels[2]} value={96} />
+                </div>
               </div>
             </div>
           </div>
@@ -763,33 +788,33 @@ export default function PortfolioDataAnalyst() {
       {/* Qui suis-je */}
       <section id="about" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
-          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{t.about.title}</h2>
+          <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.about.title}</h2>
         </div>
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           <div>
             <h3 className="text-2xl font-bold mb-6 leading-snug text-white">
               {t.about.subtitle}
-              <span className="block text-blue-400 min-h-[1.4em]">
+              <span className="block text-[#00F0FF] min-h-[1.4em]">
                 {typedText}
                 <span className="inline-block w-[2px] h-[1.1em] bg-blue-400 ml-[2px] align-middle animate-pulse" />
               </span>
             </h3>
-            <p className="text-slate-400 leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: t.about.p1 }} />
-            <p className="text-slate-400 leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: t.about.p2 }} />
-            <p className="text-slate-400 leading-relaxed" dangerouslySetInnerHTML={{ __html: t.about.p3 }} />
+            <p className="text-[#A1A1AA] leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: t.about.p1 }} />
+            <p className="text-[#A1A1AA] leading-relaxed mb-5" dangerouslySetInnerHTML={{ __html: t.about.p2 }} />
+            <p className="text-[#A1A1AA] leading-relaxed" dangerouslySetInnerHTML={{ __html: t.about.p3 }} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
               { emoji: "📊", number: "20+", label: t.about.statMissions },
               { emoji: "🗓️", number: "5+", label: t.about.statYears },
             ].map(({ emoji, number, label }) => (
-              <div key={label} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-center hover:-translate-y-1 transition duration-300">
+              <div key={label} className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6 text-center hover:-translate-y-1 transition duration-300">
                 <div className="text-3xl mb-2">{emoji}</div>
                 <div className="text-3xl font-black mb-1">{number}</div>
-                <div className="text-slate-400 text-sm">{label}</div>
+                <div className="text-[#A1A1AA] text-sm">{label}</div>
               </div>
             ))}
-            <div className="col-span-2 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden p-4">
+            <div className="col-span-2 bg-[#0D1117] border border-[#27272A] rounded-lg overflow-hidden p-4">
               <svg viewBox="0 0 360 178" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto">
                 <rect width="360" height="26" rx="10" fill="#1e293b"/>
                 <rect y="13" width="360" height="13" fill="#1e293b"/>
@@ -849,7 +874,7 @@ export default function PortfolioDataAnalyst() {
       {/* Parcours / Experience */}
       <section id="experience" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
-          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{t.experience.title}</h2>
+          <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.experience.title}</h2>
         </div>
         <div className="relative">
           {/* Timeline line */}
@@ -860,40 +885,40 @@ export default function PortfolioDataAnalyst() {
                 {/* Timeline dot */}
                 <div className={`absolute left-[18px] top-6 w-4 h-4 rounded-full border-2 hidden md:block ${job.current ? 'bg-blue-400 border-blue-400' : 'bg-slate-900 border-slate-600'}`} />
 
-                <div className="bg-[#111113] border border-slate-800 rounded-3xl p-7 hover:border-slate-700 transition duration-200">
+                <div className="bg-[#0D1117] border border-[#27272A] rounded-3xl p-7 hover:border-slate-700 transition duration-200">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-5">
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <h3 className="text-lg font-bold text-white">{job.title}</h3>
                         {job.current && (
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400">
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-blue-500/10 border border-blue-500/30 text-[#00F0FF]">
                             {job.periodEnd}
                           </span>
                         )}
-                        <span className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{job.type}</span>
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#A1A1AA]">{job.type}</span>
                       </div>
-                      <p className="text-slate-400 text-sm font-medium">{job.company}</p>
+                      <p className="text-[#A1A1AA] text-sm font-medium">{job.company}</p>
                     </div>
-                    <span className="text-slate-500 text-sm whitespace-nowrap shrink-0">
+                    <span className="text-[#52525b] text-sm whitespace-nowrap shrink-0">
                       {job.period} → {job.periodEnd}
                     </span>
                   </div>
 
                   <ul className="space-y-1.5 mb-5">
                     {job.points.map((point, j) => (
-                      <li key={j} className="flex items-start gap-2 text-sm text-slate-400">
+                      <li key={j} className="flex items-start gap-2 text-sm text-[#A1A1AA]">
                         <span className="text-slate-600 mt-1 shrink-0">▸</span>
                         {point}
                       </li>
                     ))}
                   </ul>
 
-                  <div className="border-t border-slate-800 pt-4 mb-4">
-                    <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-2">{t.experience.achievementsLabel}</p>
+                  <div className="border-t border-[#27272A] pt-4 mb-4">
+                    <p className="text-xs text-[#52525b] font-semibold uppercase tracking-wider mb-2">{t.experience.achievementsLabel}</p>
                     <ul className="space-y-1">
                       {job.achievements.map((a, j) => (
                         <li key={j} className="flex items-start gap-2 text-sm text-slate-300">
-                          <span className="text-blue-400 mt-1 shrink-0">✦</span>
+                          <span className="text-[#00F0FF] mt-1 shrink-0">✦</span>
                           {a}
                         </li>
                       ))}
@@ -902,7 +927,7 @@ export default function PortfolioDataAnalyst() {
 
                   <div className="flex flex-wrap gap-2">
                     {job.tags.map(tag => (
-                      <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{tag}</span>
+                      <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#A1A1AA]">{tag}</span>
                     ))}
                   </div>
                 </div>
@@ -915,7 +940,7 @@ export default function PortfolioDataAnalyst() {
       {/* Compétences */}
       <section id="competences" className="max-w-7xl mx-auto px-6 py-10 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
-          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{t.skills.title}</h2>
+          <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.skills.title}</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {skills.map((skill) => <SkillCard key={skill} skill={skill} />)}
@@ -925,7 +950,7 @@ export default function PortfolioDataAnalyst() {
       {/* Projets */}
       <section id="projects" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
-          <h2 className="text-4xl font-bold" style={{ fontFamily: "'Poppins', sans-serif" }}>{t.projects.title}</h2>
+          <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.projects.title}</h2>
         </div>
         <div className={`grid gap-6 ${visibleProjects.length === 2 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
           {visibleProjects.map((project, i) => (
@@ -947,21 +972,21 @@ export default function PortfolioDataAnalyst() {
 
       {/* Contact */}
       <section id="contact" className="max-w-7xl mx-auto px-6 pb-24 scroll-mt-24">
-        <div className="bg-[#111113] border border-slate-800 rounded-3xl p-10 shadow-2xl reveal">
+        <div className="bg-[#0D1117] border border-[#27272A] rounded-3xl p-10 shadow-2xl reveal">
           <div className="text-center">
-            <h2 className="text-4xl font-bold mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>{t.contact.title}</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto leading-relaxed mb-6" style={{ lineHeight: '1.75' }}>
+            <h2 className="text-4xl font-bold mb-4" style={{ fontFamily: 'Arial, sans-serif' }}>{t.contact.title}</h2>
+            <p className="text-[#A1A1AA] max-w-2xl mx-auto leading-relaxed mb-6" style={{ lineHeight: '1.75' }}>
               {t.contact.subtitle}
             </p>
             <div className="flex items-center justify-center gap-4 flex-wrap">
               <button type="button" onClick={openLinkedIn}
                 className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-2xl border border-slate-700 hover:bg-slate-800 hover:border-slate-500 transition duration-200 cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-[#00F0FF]"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                 <span>LinkedIn</span>
               </button>
               <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-semibold hover:shadow-lg hover:shadow-blue-500/25 transition duration-200 cursor-pointer">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                className="inline-flex items-center gap-2 px-6 py-4 rounded-lg border border-[#FF003C]/30 text-[#FF003C] hover:bg-[#FF003C]/10 transition duration-200 cursor-pointer font-mono text-sm">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span>{t.contact.bookCall}</span>
               </a>
             </div>
@@ -972,16 +997,17 @@ export default function PortfolioDataAnalyst() {
 
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-110 transition duration-300 text-lg">
+        className="fixed bottom-6 right-6 z-50 w-12 h-12 rounded-lg bg-[#FF003C] text-white font-mono font-bold flex items-center justify-center shadow-lg hover:scale-110 hover:bg-[#cc002f] transition duration-200 text-lg cursor-pointer"
+        style={{ boxShadow: '0 0 20px rgba(255,0,60,0.3)' }}>
         ↑
       </button>
 
       {/* Modale Projets Data */}
       {showDataProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl p-10">
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#030508] rounded-lg border border-[#27272A] shadow-2xl p-10">
             <button onClick={() => setShowDataProject(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
             <div className="flex items-center gap-3 mb-8">
@@ -989,7 +1015,7 @@ export default function PortfolioDataAnalyst() {
               <h2 className="text-3xl font-bold">{lang === 'en' ? 'Data Piloting & Reporting' : 'Pilotage & Reporting Data'}</h2>
             </div>
             <div className="space-y-6">
-              {lang === 'fr' ? [
+              {(lang === 'fr' ? [
                 { emoji: "📉", title: "Pilotage d'activité Assurance", desc: "Création de dashboards opérationnels pour le suivi des délais, KPI métiers et performances des équipes expertise.", tags: ["Power BI", "DAX", "Microsoft Fabric"] },
                 { emoji: "⚙️", title: "Automatisation de flux de données", desc: "Automatisation des traitements et reportings via Python et n8n afin de réduire les tâches manuelles répétitives.", tags: ["Python", "n8n", "REST API"] },
                 { emoji: "🗄️", title: "Modélisation & Reporting", desc: "Conception de modèles de données orientés métier pour améliorer la qualité des analyses et la prise de décision.", tags: ["SQL", "Cognos Analytics", "DataViz"] },
@@ -997,16 +1023,16 @@ export default function PortfolioDataAnalyst() {
                 { emoji: "📉", title: "Insurance Activity Piloting", desc: "Operational dashboards for tracking deadlines, business KPIs, and expertise team performance.", tags: ["Power BI", "DAX", "Microsoft Fabric"] },
                 { emoji: "⚙️", title: "Data Flow Automation", desc: "Automated data processing and reporting with Python and n8n to reduce repetitive manual tasks.", tags: ["Python", "n8n", "REST API"] },
                 { emoji: "🗄️", title: "Modelling & Reporting", desc: "Business-oriented data models to improve analysis quality and support decision-making.", tags: ["SQL", "Cognos Analytics", "DataViz"] },
-              ].map(({ emoji, title, desc, tags }) => (
-                <div key={title} className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              ]).map(({ emoji, title, desc, tags }) => (
+                <div key={title} className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
                   <div className="flex items-start gap-4">
                     <span className="text-3xl">{emoji}</span>
                     <div className="flex-1">
                       <h3 className="text-lg font-bold mb-2">{title}</h3>
-                      <p className="text-slate-400 text-sm leading-relaxed mb-3">{desc}</p>
+                      <p className="text-[#A1A1AA] text-sm leading-relaxed mb-3">{desc}</p>
                       <div className="flex flex-wrap gap-2">
                         {tags.map(t => (
-                          <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{t}</span>
+                          <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#A1A1AA]">{t}</span>
                         ))}
                       </div>
                     </div>
@@ -1023,32 +1049,32 @@ export default function PortfolioDataAnalyst() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-yellow-500/20 shadow-2xl p-10">
             <button onClick={() => setShowAdminPanel(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
             <div className="flex items-center gap-3 mb-2">
               <span className="text-3xl">🔐</span>
               <h2 className="text-3xl font-bold">{t.adminPanel.title}</h2>
             </div>
-            <p className="text-slate-500 text-sm mb-8">{t.adminPanel.subtitle}</p>
+            <p className="text-[#52525b] text-sm mb-8">{t.adminPanel.subtitle}</p>
             <div className="space-y-4">
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
                 <h3 className="font-bold mb-2 flex items-center gap-2"><span>📁</span> {t.adminPanel.projects}</h3>
-                <p className="text-slate-400 text-sm">{t.adminPanel.projectsDesc}</p>
+                <p className="text-[#A1A1AA] text-sm">{t.adminPanel.projectsDesc}</p>
               </div>
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
                 <h3 className="font-bold mb-2 flex items-center gap-2"><span>💼</span> {t.adminPanel.pricing}</h3>
-                <p className="text-slate-400 text-sm">{t.adminPanel.pricingDesc}</p>
+                <p className="text-[#A1A1AA] text-sm">{t.adminPanel.pricingDesc}</p>
               </div>
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
                 <h3 className="font-bold mb-3 flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-blue-400"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-[#00F0FF]"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                   {t.adminPanel.linkedinTitle}
                 </h3>
-                <p className="text-slate-400 text-sm mb-4">{t.adminPanel.linkedinDesc}</p>
+                <p className="text-[#A1A1AA] text-sm mb-4">{t.adminPanel.linkedinDesc}</p>
                 <button
                   onClick={() => { setShowAdminPanel(false); setShowLinkedInManager(true); }}
-                  className="w-full px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm transition duration-300"
+                  className="w-full px-4 py-2.5 rounded-xl core-btn bg-[#00F0FF] hover:bg-white text-black text-white font-semibold text-sm transition duration-300"
                 >
                   {t.adminPanel.linkedinBtn}
                 </button>
@@ -1065,10 +1091,10 @@ export default function PortfolioDataAnalyst() {
       {/* Modale LinkedIn Manager */}
       {showLinkedInManager && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="relative w-full h-full max-w-[1400px] max-h-[95vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
+          <div className="relative w-full h-full max-w-[1400px] max-h-[95vh] overflow-y-auto rounded-3xl border border-[#27272A] shadow-2xl">
             <button
               onClick={() => setShowLinkedInManager(false)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
             <LinkedInManager onClose={() => setShowLinkedInManager(false)} />
@@ -1079,9 +1105,9 @@ export default function PortfolioDataAnalyst() {
       {/* Modale Vibe Coding */}
       {showVibeCoding && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-slate-800 shadow-2xl p-10">
+          <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#030508] rounded-lg border border-[#27272A] shadow-2xl p-10">
             <button onClick={() => setShowVibeCoding(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
             <div className="flex items-center gap-3 mb-8">
@@ -1102,7 +1128,7 @@ export default function PortfolioDataAnalyst() {
                 { emoji: "✅", title: "Task Manager", desc: "Productivity app with kanban board, priorities, reminders, and personal project tracking.", tags: ["React", "LocalStorage"], available: false },
                 { emoji: "💰", title: "Budget Simulator", desc: "Plan income and expenses, simulate financial scenarios, and visualise projected savings.", tags: ["React", "Charts"], available: false },
               ]).map(({ emoji, title, desc, tags, available, onLaunch }) => (
-                <div key={title} className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <div key={title} className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
                   <div className="flex items-start gap-4">
                     <span className="text-3xl">{emoji}</span>
                     <div className="flex-1">
@@ -1110,13 +1136,13 @@ export default function PortfolioDataAnalyst() {
                         <h3 className="text-lg font-bold">{title}</h3>
                         {available
                           ? <span className="px-2 py-0.5 text-xs rounded-full bg-green-500/10 border border-green-500/30 text-green-400">{lang === 'en' ? 'Available' : 'Disponible'}</span>
-                          : <span className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-500">{lang === 'en' ? 'In progress' : 'En cours'}</span>
+                          : <span className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#52525b]">{lang === 'en' ? 'In progress' : 'En cours'}</span>
                         }
                       </div>
-                      <p className="text-slate-400 text-sm leading-relaxed mb-3">{desc}</p>
+                      <p className="text-[#A1A1AA] text-sm leading-relaxed mb-3">{desc}</p>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {tags.map(tag => (
-                          <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-slate-400">{tag}</span>
+                          <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#A1A1AA]">{tag}</span>
                         ))}
                       </div>
                       {available && onLaunch && (
@@ -1134,13 +1160,37 @@ export default function PortfolioDataAnalyst() {
         </div>
       )}
 
+      {/* Modale CV */}
+      {showCV && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-4xl bg-[#030508] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl" style={{ height: '90vh' }}>
+            <div className="flex items-center justify-between px-5 py-3 border-b border-[#27272A]">
+              <div className="flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+                <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-widest">CV — Henintsoa Andrianaivo Ratovonirina</span>
+              </div>
+              <button onClick={() => setShowCV(false)}
+                className="w-8 h-8 rounded bg-[#0D1117] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono text-sm cursor-pointer">
+                ✕
+              </button>
+            </div>
+            <iframe
+              src={`${t.cvFile}#toolbar=0&navpanes=0&scrollbar=1`}
+              className="w-full border-0"
+              style={{ height: 'calc(100% - 48px)' }}
+              title="CV Henintsoa Andrianaivo"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Modale Calculateur de vie */}
       {showCalculator && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-slate-800 shadow-2xl">
+          <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-3xl border border-[#27272A] shadow-2xl">
             <button
               onClick={() => { setShowCalculator(false); setShowVibeCoding(true); }}
-              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-white transition">
+              className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
             <LifeCalculator />
@@ -1149,14 +1199,14 @@ export default function PortfolioDataAnalyst() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 py-8 px-6">
+      <footer className="border-t border-[#27272A] py-8 px-6" style={{ borderTop: '1px solid rgba(0,240,255,0.1)' }}>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-slate-500 text-sm">{t.footer.rights}</p>
-          <div className="flex items-center gap-2 text-slate-600 text-xs">
+          <p className="text-[#52525b] text-[10px] font-mono uppercase tracking-widest">{t.footer.rights}</p>
+          <div className="flex items-center gap-2 text-[#52525b] text-[10px] font-mono uppercase tracking-widest">
             <img src="https://flagcdn.com/20x15/mg.png" srcSet="https://flagcdn.com/40x30/mg.png 2x" width="20" height="15" alt="Madagascar" style={{ borderRadius: '2px', display: 'inline-block', verticalAlign: 'middle' }} />
             <span>{t.footer.made}</span>
           </div>
-          <p className="text-slate-600 text-xs">{t.footer.tech}</p>
+          <p className="text-[#3f3f46] text-[10px] font-mono uppercase tracking-widest">{t.footer.tech}</p>
         </div>
       </footer>
     </main>

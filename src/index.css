@@ -1,32 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html {
-  scroll-behavior: smooth;
+/* ── C.O.R.E. SEC Variables ── */
+:root {
+  --core-cyan:    #00F0FF;
+  --core-red:     #FF003C;
+  --core-bg:      #030508;
+  --core-surface: #0D1117;
+  --core-border:  #27272A;
+  --core-muted:   #A1A1AA;
 }
 
+html { scroll-behavior: smooth; }
+
 body {
-  font-family: 'Inter', sans-serif;
-  background-color: #09090B;
+  font-family: Arial, sans-serif;
+  background-color: #030508;
+  color: #ffffff;
 }
 
 h1, h2, h3, h4 {
-  font-family: 'Poppins', sans-serif;
+  font-family: Arial, sans-serif;
 }
 
-/* Scroll entrance animations */
+/* ── C.O.R.E.: Tactical grid ── */
+.core-grid {
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ── C.O.R.E.: Scan line overlay (fixed, full page) ── */
+.core-scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 240, 255, 0.012) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* ── C.O.R.E.: Moving scan beam ── */
+.core-scan-beam::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.15), transparent);
+  animation: coreScanBeam 8s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes coreScanBeam {
+  0%   { top: -2px; }
+  100% { top: 100%; }
+}
+
+/* ── C.O.R.E.: Dither noise ── */
+.core-dither::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect x='0' y='0' width='1' height='1' fill='rgba(255,255,255,0.02)'/%3E%3Crect x='2' y='2' width='1' height='1' fill='rgba(255,255,255,0.02)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── C.O.R.E.: Glow text cyan ── */
+.core-glow {
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.6), 0 0 60px rgba(0, 240, 255, 0.2);
+}
+
+/* ── C.O.R.E.: Red glow ── */
+.core-red-glow {
+  text-shadow: 0 0 12px rgba(255, 0, 60, 0.7);
+}
+
+/* ── C.O.R.E.: Card hover ── */
+.core-card {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.core-card:hover {
+  border-color: rgba(0, 240, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.06), 0 0 1px rgba(0, 240, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ── C.O.R.E.: Button primary ── */
+.core-btn {
+  position: relative;
+  overflow: hidden;
+}
+.core-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.core-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+}
+
+/* ── C.O.R.E.: Alert dot ── */
+.core-alert {
+  animation: coreAlertPulse 1.5s ease-in-out infinite;
+}
+@keyframes coreAlertPulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── C.O.R.E.: Progress bar ── */
+.core-progress-bar {
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* ── C.O.R.E.: Input focus ── */
+.core-input:focus {
+  border-color: #00F0FF !important;
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.15);
+  outline: none;
+}
+
+/* ── Scroll entrance ── */
 .reveal {
   opacity: 0;
   transform: translateY(28px);
-  transition: opacity 0.65s ease, transform 0.65s ease;
+  transition: opacity 0.6s ease, transform 0.6s ease;
 }
-
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
-
 .reveal-delay-1 { transition-delay: 0.1s; }
 .reveal-delay-2 { transition-delay: 0.2s; }
 .reveal-delay-3 { transition-delay: 0.3s; }
@@ -34,15 +151,22 @@ h1, h2, h3, h4 {
 
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
+  .core-scan-beam::after { animation: none; }
 }
 
+/* ── Marquee ── */
 @keyframes marquee {
   0%   { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
-
 .animate-marquee {
-  animation: marquee 40s linear infinite;
+  animation: marquee 35s linear infinite;
   display: inline-flex;
   width: max-content;
+}
+
+/* ── C.O.R.E.: Section divider ── */
+.core-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.3), transparent);
 }
