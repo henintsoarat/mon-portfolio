@@ -165,6 +165,15 @@ h1, h2, h3, h4 {
   width: max-content;
 }
 
+/* ── C.O.R.E.: Chip glow pulse ── */
+@keyframes coreChipGlow {
+  0%, 100% { border-color: #27272A; background-color: transparent; box-shadow: none; }
+  50%       { border-color: rgba(0, 240, 255, 0.45); background-color: rgba(0, 240, 255, 0.08); box-shadow: 0 0 10px rgba(0, 240, 255, 0.12); }
+}
+.core-chip-anim {
+  animation: coreChipGlow 3s ease-in-out infinite;
+}
+
 /* ── C.O.R.E.: Section divider ── */
 .core-divider {
   height: 1px;
