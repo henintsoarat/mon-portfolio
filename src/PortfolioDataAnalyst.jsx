@@ -55,7 +55,7 @@ const PROJECTS = [
 
 const T = {
   fr: {
-    nav: { about: "Qui suis-je", skills: "Compétences", experience: "Parcours", projects: "Projets", contact: "Contact" },
+    nav: { about: "Qui suis-je", skills: "Compétences", experience: "Parcours", projects: "Projets", tarifs: "Tarifs", contact: "Contact" },
     visitor: "Mode Visiteur",
     admin: "Admin",
     logout: "Déconnexion",
@@ -164,6 +164,64 @@ const T = {
       ],
     },
     projects: { title: "Projets", adminNote: "🔐 Un projet est réservé à l'espace admin." },
+    pricing: {
+      title: "Tarifs",
+      subtitle: "Quatre façons de transformer vos données en décisions, du diagnostic rapide à l'accompagnement dans la durée.",
+      baseRate: "TJM de référence : 400 – 550 € HT / jour",
+      baseRateNote: "Budgets forfaitaires indicatifs, confirmés après l'atelier de cadrage. Licences Power BI (Pro / Premium) et capacité Microsoft Fabric à la charge du client. Missions réalisables à distance.",
+      ctaLabel: "Parlons-en",
+      ctaDesc: "20 minutes pour cadrer votre besoin et identifier l'offre la plus adaptée.",
+      offers: [
+        {
+          num: "01",
+          title: "Dashboard Power BI décisionnel",
+          problem: "Vos décisions reposent encore sur des fichiers Excel ressaisis à la main et un reporting qui arrive trop tard pour agir.",
+          what: "Un tableau de bord unique, fiable et lisible — chaque indicateur relié à une décision, accessible selon le profil (direction, métiers, terrain).",
+          duration: "2 à 5 semaines",
+          tiers: [
+            { name: "Essentiel", scope: "1 dashboard, 1 source principale, 1 public", effort: "~14 j", price: "2 400 – 3 300 €" },
+            { name: "Standard", scope: "Multi-sources, modèle en étoile, RLS, 2 publics", effort: "~23 j", price: "4 800 – 6 600 €" },
+            { name: "Sur-mesure", scope: "Socle Fabric, RLS fine, plusieurs publics, doc complète", effort: "+30 j", price: "8 000 – 11 000 €" },
+          ],
+        },
+        {
+          num: "02",
+          title: "Audit & optimisation de rapports existants",
+          problem: "Vos rapports Power BI rament, certains chiffres sont contestés et la dette technique freine toute évolution.",
+          what: "Un diagnostic clair (performance, modèle, KPI, sécurité) et un plan d'action priorisé avec des quick wins immédiatement applicables.",
+          duration: "1 à 3 semaines",
+          tiers: [
+            { name: "Audit flash", scope: "~10 rapports : diagnostic + quick wins", effort: "~10 j", price: "1 200 – 1 650 €" },
+            { name: "Audit complet", scope: "Parc étendu : perf, modèle, KPI, RLS, plan priorisé", effort: "~20 j", price: "2 400 – 3 300 €" },
+            { name: "Audit + remédiation", scope: "Audit complet + mise en œuvre des correctifs prioritaires", effort: "+20 j", price: "4 800 – 6 600 €" },
+          ],
+        },
+        {
+          num: "03",
+          title: "Migration & modernisation BI",
+          problem: "Vous dépendez encore de Cognos, de macros Excel ou d'outils en fin de vie — migrer fait peur quand des centaines de rapports sont en jeu.",
+          what: "Une migration maîtrisée vers Power BI / Microsoft Fabric, menée par lots, sans rupture de service.",
+          duration: "Cadrage 2–3 sem., puis par lots",
+          tiers: [
+            { name: "Phase 1 — Cadrage & pilote", scope: "Inventaire, cartographie, cible, 1 lot pilote validé", effort: "~10 j", price: "4 000 – 5 500 € (forfait)" },
+            { name: "Phase 2 — Migration", scope: "Industrialisation par lots, facturée au TJM", effort: "400 – 550 € / j", price: "Estimée après pilote" },
+            { name: "Repère indicatif", scope: "~50 rapports standardisés", effort: "~20 à 30 j", price: "3 200 – 6 600 € / lot" },
+          ],
+        },
+        {
+          num: "04",
+          title: "Partenaire data récurrent",
+          problem: "Vos dashboards vieillissent et tout repose sur des interventions ponctuelles à relancer à chaque fois.",
+          what: "Un partenaire data disponible chaque mois pour faire évoluer vos tableaux de bord, animer des ateliers et monter vos équipes en compétence.",
+          duration: "3 mois minimum, reconductible",
+          tiers: [
+            { name: "Essentiel", scope: "Maintenance et petites évolutions", effort: "~3 j / mois", price: "800 – 1 100 € / mois" },
+            { name: "Suivi", scope: "Évolutions régulières et ateliers", effort: "~4 j / mois", price: "1 600 – 2 200 € / mois" },
+            { name: "Intensif", scope: "Accompagnement rapproché et montée en compétence", effort: "~5 j / mois", price: "2 400 – 3 300 € / mois" },
+          ],
+        },
+      ],
+    },
     contact: {
       title: "Transformons vos données en décisions.",
       subtitle: "Disponible pour des missions freelance en Data Analysis, automatisation et reporting métier.",
@@ -218,7 +276,7 @@ const T = {
     },
   },
   en: {
-    nav: { about: "About", skills: "Skills", experience: "Experience", projects: "Projects", contact: "Contact" },
+    nav: { about: "About", skills: "Skills", experience: "Experience", projects: "Projects", tarifs: "Pricing", contact: "Contact" },
     visitor: "Visitor Mode",
     admin: "Admin",
     logout: "Logout",
@@ -327,6 +385,64 @@ const T = {
       ],
     },
     projects: { title: "Projects", adminNote: "🔐 One project is reserved for the admin space." },
+    pricing: {
+      title: "Pricing",
+      subtitle: "Four ways to turn your data into decisions, from a quick diagnosis to a long-term partnership.",
+      baseRate: "Day rate: €400 – 550 excl. VAT / day",
+      baseRateNote: "Fixed-price budgets are indicative and confirmed after the scoping workshop. Power BI (Pro / Premium) licences and Microsoft Fabric capacity are client-side. Missions deliverable remotely.",
+      ctaLabel: "Let's talk",
+      ctaDesc: "20 minutes to scope your need and find the right fit.",
+      offers: [
+        {
+          num: "01",
+          title: "Decision-making Power BI Dashboard",
+          problem: "Your decisions still rely on hand-keyed Excel files and reporting that arrives too late to act on.",
+          what: "A single, reliable, readable dashboard — each metric tied to a decision, access-controlled by role (executive, business, field).",
+          duration: "2 to 5 weeks",
+          tiers: [
+            { name: "Essentials", scope: "1 dashboard, 1 source, 1 audience", effort: "~14 d", price: "€2,400 – 3,300" },
+            { name: "Standard", scope: "Multi-source, star schema, RLS, 2 audiences", effort: "~23 d", price: "€4,800 – 6,600" },
+            { name: "Custom", scope: "Fabric layer, fine-grained RLS, multiple audiences, full docs", effort: "+30 d", price: "€8,000 – 11,000" },
+          ],
+        },
+        {
+          num: "02",
+          title: "Audit & Optimisation of Existing Reports",
+          problem: "Your Power BI reports are slow, figures are disputed and technical debt is blocking every change.",
+          what: "A clear diagnosis (performance, model, KPIs, security) and a prioritised action plan with immediate quick wins.",
+          duration: "1 to 3 weeks",
+          tiers: [
+            { name: "Flash audit", scope: "~10 reports: diagnosis + quick wins", effort: "~10 d", price: "€1,200 – 1,650" },
+            { name: "Full audit", scope: "Extended estate: perf, model, KPIs, RLS, priority plan", effort: "~20 d", price: "€2,400 – 3,300" },
+            { name: "Audit + remediation", scope: "Full audit + implementation of priority fixes", effort: "+20 d", price: "€4,800 – 6,600" },
+          ],
+        },
+        {
+          num: "03",
+          title: "BI Migration & Modernisation",
+          problem: "You still depend on Cognos, Excel macros or end-of-life tools — migrating feels risky when hundreds of reports are involved.",
+          what: "A controlled migration to Power BI / Microsoft Fabric, run in batches with zero service disruption.",
+          duration: "Scoping 2–3 wks, then per batch",
+          tiers: [
+            { name: "Phase 1 — Scoping & pilot", scope: "Inventory, mapping, target arch, 1 validated pilot batch", effort: "~10 d", price: "€4,000 – 5,500 (fixed)" },
+            { name: "Phase 2 — Migration", scope: "Batch industrialisation, billed per day", effort: "€400 – 550 / d", price: "Quoted after pilot" },
+            { name: "Benchmark", scope: "~50 standardised reports", effort: "~20 to 30 d", price: "€3,200 – 6,600 / batch" },
+          ],
+        },
+        {
+          num: "04",
+          title: "Recurring Data Partner",
+          problem: "Your dashboards are ageing and everything relies on one-off interventions you have to chase every time.",
+          what: "A monthly data partner to keep dashboards evolving, run workshops and upskill your teams.",
+          duration: "3-month minimum, renewable",
+          tiers: [
+            { name: "Essentials", scope: "Maintenance and minor updates", effort: "~3 d / mo", price: "€800 – 1,100 / mo" },
+            { name: "Regular", scope: "Ongoing updates and workshops", effort: "~4 d / mo", price: "€1,600 – 2,200 / mo" },
+            { name: "Intensive", scope: "Close support and team upskilling", effort: "~5 d / mo", price: "€2,400 – 3,300 / mo" },
+          ],
+        },
+      ],
+    },
     contact: {
       title: "Let's turn your data into decisions.",
       subtitle: "Available for freelance missions in Data Analysis, automation and business reporting.",
@@ -687,6 +803,8 @@ export default function PortfolioDataAnalyst() {
             <span className="text-[#27272A]">/</span>
             <a href="#projects" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.projects}</a>
             <span className="text-[#27272A]">/</span>
+            <a href="#tarifs" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.tarifs}</a>
+            <span className="text-[#27272A]">/</span>
             <a href="#contact" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.contact}</a>
           </div>
 
@@ -976,6 +1094,67 @@ export default function PortfolioDataAnalyst() {
             {t.projects.adminNote}
           </p>
         )}
+      </section>
+
+      {/* Tarifs */}
+      <section id="tarifs" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+        <div className="flex items-center gap-3 mb-4 reveal">
+          <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.pricing.title}</h2>
+        </div>
+        <p className="text-[#A1A1AA] max-w-2xl mb-6 reveal" style={{ lineHeight: '1.75' }}>{t.pricing.subtitle}</p>
+        <div className="inline-flex items-center gap-2 px-3 py-2 border border-[#27272A] rounded-lg bg-[#0D1117]/60 mb-12 reveal">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+          <span className="text-xs font-mono text-[#A1A1AA] uppercase tracking-widest">{t.pricing.baseRate}</span>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          {t.pricing.offers.map((offer, i) => (
+            <div key={offer.num} className={`core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-6 flex flex-col reveal reveal-delay-${(i % 4) + 1}`}>
+              {/* Header */}
+              <div className="flex items-start gap-3 mb-4">
+                <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0 mt-0.5">{offer.num}</span>
+                <h3 className="text-base font-bold text-white leading-snug">{offer.title}</h3>
+              </div>
+              {/* Problem */}
+              <p className="text-[#52525b] text-xs font-mono mb-3 leading-relaxed border-l-2 border-[#27272A] pl-3">{offer.problem}</p>
+              {/* What you get */}
+              <p className="text-[#A1A1AA] text-sm mb-5 leading-relaxed flex-1">{offer.what}</p>
+
+              {/* Tiers */}
+              <div className="border border-[#27272A] rounded-lg overflow-hidden mb-3">
+                {offer.tiers.map((tier, j) => (
+                  <div key={tier.name} className={`flex items-start gap-3 px-4 py-3 ${j < offer.tiers.length - 1 ? 'border-b border-[#27272A]' : ''} ${j === 0 ? 'bg-[#00F0FF]/[0.03]' : ''}`}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-[11px] font-mono font-semibold text-white">{tier.name}</div>
+                      <div className="text-[10px] text-[#52525b] mt-0.5 leading-snug">{tier.scope}</div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className="text-[11px] font-mono font-bold text-[#00F0FF]">{tier.price}</div>
+                      <div className="text-[10px] font-mono text-[#52525b] mt-0.5">{tier.effort}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Duration */}
+              <div className="flex items-center gap-1.5">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#52525b] shrink-0"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                <span className="text-[10px] font-mono text-[#52525b] uppercase tracking-widest">{offer.duration}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="mt-10 bg-[#0D1117] border border-[#27272A] rounded-lg p-8 text-center reveal">
+          <p className="text-xs font-mono text-[#52525b] mb-3 max-w-2xl mx-auto leading-relaxed">{t.pricing.baseRateNote}</p>
+          <p className="text-[#A1A1AA] text-sm mb-6">{t.pricing.ctaDesc}</p>
+          <a href="https://calendly.com/henintsoa_ratovonirina" target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-4 rounded-lg border border-[#FF003C]/30 text-[#FF003C] hover:bg-[#FF003C]/10 transition duration-200 cursor-pointer font-mono text-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            {t.pricing.ctaLabel}
+          </a>
+        </div>
       </section>
 
       {/* Contact */}
