@@ -111,7 +111,7 @@ const T = {
           periodEnd: "Aujourd'hui",
           current: true,
           points: [
-            "Migration de 750+ rapports Cognos Analytics vers Power BI Report Builder.",
+            "Migration de 20+ rapports Cognos Analytics vers Power BI Report Builder.",
             "Conception de tableaux de bord KPI pour direction, métiers et technique.",
             "Modélisation scalable sous Microsoft Fabric (PySpark, T-SQL, DAX).",
             "Animation d'ateliers métiers et coordination en mode Agile / Scrum.",
@@ -270,7 +270,7 @@ const T = {
           periodEnd: "Present",
           current: true,
           points: [
-            "Migration of 750+ Cognos Analytics reports to Power BI Report Builder.",
+            "Migration of 20+ Cognos Analytics reports to Power BI Report Builder.",
             "KPI dashboard design tailored to management, business, and technical teams.",
             "Scalable modelling in Microsoft Fabric (PySpark, T-SQL, DAX).",
             "Business workshops facilitation and team coordination in Agile / Scrum mode.",
@@ -770,8 +770,8 @@ export default function PortfolioDataAnalyst() {
                   <span className="text-[#00F0FF] mt-1 shrink-0 font-mono">▸</span>
                   <span className="text-[#A1A1AA] text-sm">
                     {lang === 'fr'
-                      ? <>Plus de <span className="text-white font-bold">20 missions</span> dans le secteur assurance, <span className="text-white font-bold">dizaines de clients</span> accompagnés.</>
-                      : <>Over <span className="text-white font-bold">20 missions</span> in insurance, <span className="text-white font-bold">dozens of clients</span> supported.</>}
+                      ? <>Plus de <span className="text-white font-bold">30 missions</span> dans le secteur assurance, <span className="text-white font-bold">dizaines de clients</span> accompagnés.</>
+                      : <>Over <span className="text-white font-bold">30 missions</span> in insurance, <span className="text-white font-bold">dozens of clients</span> supported.</>}
                   </span>
                 </div>
                 <div className="space-y-4">
