@@ -73,7 +73,7 @@ const T = {
     ],
     hero: {
       consultantIn: "Consultant en",
-      badges: ["Data Analyst", "Data Visualisation", "Reporting Décisionnel", "Développeur Fullstack (vibe coding)"],
+      badges: ["Data Analyst", "Data Visualisation", "Reporting Décisionnel", "BI Développeur", "Développeur Fullstack (vibe coding)"],
       description: "J'aide les entreprises à transformer leurs données en décisions opérationnelles grâce à la DataViz, l'automatisation des flux et la modélisation de données orientée métier.",
       viewProjects: "Voir mes projets",
       bookCall: "Réserver un appel",
@@ -283,7 +283,7 @@ const T = {
     ],
     hero: {
       consultantIn: "Consultant in",
-      badges: ["Data Analyst", "Data Visualisation", "Decision Reporting", "Fullstack Developer (vibe coding)"],
+      badges: ["Data Analyst", "Data Visualisation", "Decision Reporting", "BI Developer", "Fullstack Developer (vibe coding)"],
       description: "I help companies turn their data into operational decisions through DataViz, workflow automation, and business-driven data modelling.",
       viewProjects: "View my projects",
       bookCall: "Book a call",
