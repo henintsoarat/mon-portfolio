@@ -93,7 +93,7 @@ const T = {
       title: "Qui suis-je",
       subtitle: "Consultant indépendant,",
       p1: "Je suis <strong class=\"text-white\">consultant Data Analyst freelance</strong> avec plus de 5 ans d'expérience dans la transformation des données en leviers de performance. Basé à Madagascar et intervenant en remote pour des entreprises françaises et internationales, j'accompagne mes clients dans la mise en place de <strong class=\"text-white\">solutions data sur mesure</strong> : dashboards Power BI, automatisation de flux avec Python et n8n, modélisation de données sous Microsoft Fabric, et reporting métier orienté décision.",
-      p2: "Fort d'une expertise reconnue dans le <strong class=\"text-white\">secteur de l'assurance</strong>, j'ai conduit plus de 20 missions opérationnelles, pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.",
+      p2: "Fort d'une expertise reconnue dans le <strong class=\"text-white\">secteur de l'assurance</strong>, j'ai conduit plus de 30 missions opérationnelles, pilotage d'activité, suivi des KPI, industrialisation des reportings et accompagnement des équipes métier. Mon approche : des livrables clairs, une communication transparente et une vraie compréhension des enjeux business.",
       p3: "Disponible pour des <strong class=\"text-white\">missions freelance en Data Analysis</strong>, Power BI, automatisation et reporting. Réactif, rigoureux et orienté résultats. Je transforme vos données brutes en décisions opérationnelles concrètes.",
       statMissions: "Missions réalisées",
       statYears: "Années d'expérience",
@@ -195,7 +195,7 @@ const T = {
           num: "03",
           title: "Migration Cognos vers Power BI & Microsoft Fabric",
           problem: "Votre organisation s'appuie sur Cognos, Excel ou des outils historiques qui freinent désormais vos évolutions.",
-          what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, avec une expérience sur plus de 750 rapports migrés.",
+          what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, avec une expérience directe sur la migration de reportings Cognos vers Power BI Report Builder, sans rupture de service.",
           deliverables: ["Inventaire & cartographie de l'existant", "Définition de l'architecture cible", "Migration d'un lot pilote", "Plan de migration détaillé", "Documentation technique & fonctionnelle", "Transfert de compétences"],
           price: "À partir de 6 000 € HT",
           commitment: null,
@@ -303,7 +303,7 @@ const T = {
       title: "About me",
       subtitle: "Independent Data Consultant,",
       p1: "I am a <strong class=\"text-white\">freelance Data Analyst consultant</strong> with over 5 years of experience transforming data into performance drivers. Based in Madagascar and working remotely for French and international companies, I help clients implement <strong class=\"text-white\">tailor-made data solutions</strong>: Power BI dashboards, Python & n8n workflow automation, Microsoft Fabric data modelling, and business-oriented decision reporting.",
-      p2: "With recognised expertise in the <strong class=\"text-white\">insurance sector</strong>, I have led over 20 operational missions covering activity management, KPI tracking, reporting industrialisation, and business team support. My approach: clear deliverables, transparent communication, and a genuine understanding of business stakes.",
+      p2: "With recognised expertise in the <strong class=\"text-white\">insurance sector</strong>, I have led over 30 operational missions covering activity management, KPI tracking, reporting industrialisation, and business team support. My approach: clear deliverables, transparent communication, and a genuine understanding of business stakes.",
       p3: "Available for <strong class=\"text-white\">freelance missions in Data Analysis</strong>, Power BI, automation and reporting. Responsive, rigorous, and results-driven. I turn your raw data into concrete operational decisions.",
       statMissions: "Missions completed",
       statYears: "Years of experience",
@@ -405,7 +405,7 @@ const T = {
           num: "03",
           title: "Cognos to Power BI & Microsoft Fabric Migration",
           problem: "Your organisation relies on Cognos, Excel or legacy tools that are now slowing down every change.",
-          what: "A progressive, controlled migration to Power BI and Microsoft Fabric, backed by experience on 750+ migrated reports.",
+          what: "A progressive, controlled migration to Power BI and Microsoft Fabric, backed by hands-on experience migrating Cognos reports to Power BI Report Builder with zero service disruption.",
           deliverables: ["Inventory & mapping of existing reports", "Target architecture definition", "Pilot batch migration", "Detailed migration plan", "Technical & functional documentation", "Knowledge transfer"],
           price: "From €6,000 excl. VAT",
           commitment: null,
@@ -909,7 +909,7 @@ export default function PortfolioDataAnalyst() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { emoji: "📊", number: "20+", label: t.about.statMissions },
+              { emoji: "📊", number: "30+", label: t.about.statMissions },
               { emoji: "🗓️", number: "5+", label: t.about.statYears },
             ].map(({ emoji, number, label }) => (
               <div key={label} className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6 text-center hover:-translate-y-1 transition duration-300">
@@ -928,7 +928,7 @@ export default function PortfolioDataAnalyst() {
                 <text x="56" y="17" fontFamily="monospace" fontSize="7.5" fill="#334155">Power BI · {lang === 'fr' ? 'Niveau d\'expertise, Compétences clés' : 'Expertise level, Key skills'}</text>
                 <rect x="0"   y="33" width="87" height="34" rx="6" fill="#0f172a"/>
                 <text x="10"  y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">{lang === 'fr' ? 'Missions' : 'Missions'}</text>
-                <text x="10"  y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#f1f5f9">20+</text>
+                <text x="10"  y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#f1f5f9">30+</text>
                 <rect x="91"  y="33" width="87" height="34" rx="6" fill="#0f172a"/>
                 <text x="101" y="46" fontFamily="sans-serif" fontSize="6.5" fill="#64748b">{lang === 'fr' ? 'Expérience' : 'Experience'}</text>
                 <text x="101" y="59" fontFamily="sans-serif" fontSize="13" fontWeight="700" fill="#f1f5f9">{lang === 'fr' ? '5 ans' : '5 yrs'}</text>
