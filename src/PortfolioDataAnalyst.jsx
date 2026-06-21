@@ -837,6 +837,54 @@ export default function PortfolioDataAnalyst() {
 
 
 
+  const [flippedCard, setFlippedCard] = useState(null);
+  const flippedCardRef = useRef(null);
+  const cardRefs = useRef([]);
+  const flipTimers = useRef({});
+  const isAnimating = useRef(false);
+  const pendingFlip = useRef(undefined);
+
+  const applySettledClass = (idx) => {
+    // Manipulation DOM directe : pas de re-render React → le contexte preserve-3d reste intact
+    cardRefs.current.forEach((el, i) => {
+      if (!el) return;
+      if (i === idx) el.classList.add('pricing-card-in-verso');
+      else el.classList.remove('pricing-card-in-verso');
+    });
+  };
+
+  const triggerFlip = (val) => {
+    if (val === flippedCardRef.current) {
+      isAnimating.current = false;
+      pendingFlip.current = undefined;
+      return;
+    }
+    isAnimating.current = true;
+    flippedCardRef.current = val;
+    if (val === null) applySettledClass(null); // retire la classe settled dès le début de l'unflip
+    setFlippedCard(val);
+  };
+  const handleCardEnter = (i) => {
+    if (flipTimers.current[i]) clearTimeout(flipTimers.current[i]);
+    if (isAnimating.current) { pendingFlip.current = i; }
+    else { triggerFlip(i); }
+  };
+  const handleCardLeave = (i) => {
+    if (flipTimers.current[i]) clearTimeout(flipTimers.current[i]);
+    if (isAnimating.current) { pendingFlip.current = null; }
+    else { flipTimers.current[i] = setTimeout(() => { if (flippedCardRef.current === i) triggerFlip(null); }, 300); }
+  };
+  const handleFlipEnd = (e) => {
+    if (e.propertyName !== 'transform') return;
+    isAnimating.current = false;
+    if (pendingFlip.current !== undefined) {
+      const next = pendingFlip.current;
+      pendingFlip.current = undefined;
+      triggerFlip(next);
+    } else {
+      applySettledClass(flippedCardRef.current); // ajoute la classe settled sans re-render
+    }
+  };
   const [showCalculator, setShowCalculator] = useState(false);
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
@@ -1210,13 +1258,14 @@ export default function PortfolioDataAnalyst() {
           {t.pricing.offers.map((offer, i) => (
             <div
               key={offer.num}
+              ref={el => { cardRefs.current[i] = el; }}
               className={`pricing-card reveal reveal-delay-${(i % 4) + 1}`}
+              onMouseEnter={() => handleCardEnter(i)}
+              onMouseLeave={() => handleCardLeave(i)}
             >
-              <div className="pricing-card-inner">
-                {/* Recto */}
-                <div
-                  className="pricing-card-front bg-[#0D1117] border border-[#27272A] p-6"
-                >
+              <div className={`pricing-card-inner${flippedCard === i ? " flipped" : ""}`} onTransitionEnd={handleFlipEnd}>
+                {/* Recto — problème + solution + prix */}
+                <div className="pricing-card-front bg-[#0D1117] border border-[#27272A] p-6">
                   <div className="flex items-start gap-3 mb-4">
                     <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0 mt-0.5">{offer.num}</span>
                     <h3 className="text-base font-bold text-white leading-snug">{offer.title}</h3>
@@ -1237,7 +1286,7 @@ export default function PortfolioDataAnalyst() {
                   </div>
                 </div>
 
-                {/* Verso */}
+                {/* Verso — sections périmètre / non inclus */}
                 <div className="pricing-card-back bg-[#060D1A] border border-[#00F0FF]/20 p-5 overflow-y-auto">
                   <div className="flex items-start gap-2 mb-5">
                     <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0">{offer.num}</span>
