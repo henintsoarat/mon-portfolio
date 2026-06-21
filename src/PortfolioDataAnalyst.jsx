@@ -177,8 +177,8 @@ const T = {
         {
           num: "01",
           title: "Tableau de bord décisionnel Power BI",
-          problem: "Chaque semaine, vos équipes consolident manuellement des données provenant de plusieurs fichiers. Les chiffres diffèrent selon les sources, les décisions sont retardées.",
-          what: "Un tableau de bord unique, fiable et lisible : chaque indicateur défini avec vous et associé à une décision métier concrète.",
+          problem: "Chaque semaine, vos équipes consolident à la main des données venues de plusieurs fichiers et applications. Le travail est sérieux, mais le résultat reste fragile : selon la source ouverte, les chiffres présentés en réunion ne concordent pas toujours. Vous passez alors plus de temps à vérifier les données qu'à les exploiter, les décisions se prennent en retard, et la confiance dans le reporting s'érode. À mesure que l'activité grandit, ce bricolage devient un point de blocage.",
+          what: "Un tableau de bord unique, fiable et lisible, construit autour des décisions que vous avez réellement à prendre, pas une collection de graphiques. Chaque indicateur est défini avec vous, relié à une action concrète et accessible selon le profil de chacun. Les sources sont connectées et fiabilisées une fois pour toutes : fini la ressaisie. Vos équipes partagent enfin une même version des chiffres et décident plus vite, sur une base solide.",
           deliverables: ["Atelier de cadrage métier", "Connexion et fiabilisation des sources", "Modélisation des données", "Développement du tableau de bord Power BI", "Gestion des accès (RLS)", "Documentation & formation"],
           price: "À partir de 4 500 € TTC",
           commitment: null,
@@ -200,8 +200,8 @@ const T = {
         {
           num: "02",
           title: "Audit & optimisation Power BI",
-          problem: "Les rapports deviennent plus lents, certains chiffres sont remis en question et chaque évolution demande davantage d'efforts que prévu.",
-          what: "Un diagnostic complet de votre environnement Power BI accompagné d'un plan d'action priorisé.",
+          problem: "Votre environnement Power BI s'est construit au fil des demandes : un rapport ajouté ici, quelques indicateurs là, plusieurs personnes qui ont modifié les modèles au fil du temps. Aujourd'hui, les rapports rament, certains chiffres sont contestés en réunion, et la moindre évolution demande plus d'efforts que prévu. Personne n'a de vision claire de ce qui tourne sous le capot, et la dette technique ralentit tout le monde sans qu'on sache par où commencer.",
+          what: "Un diagnostic complet et lisible de votre parc : performances, modèle de données, qualité des indicateurs, sécurité des accès. Surtout, vous repartez avec un plan d'action priorisé : une matrice impact/effort qui dit quoi corriger, dans quel ordre et pourquoi, accompagnée de quick wins applicables tout de suite. Vous reprenez le contrôle de votre environnement au lieu de le subir, et vos évolutions futures redeviennent simples.",
           deliverables: ["Analyse des performances", "Revue du modèle de données", "Contrôle des KPI et indicateurs", "Audit sécurité & accès", "Plan d'action priorisé"],
           price: "À partir de 3 000 € TTC",
           commitment: null,
@@ -223,8 +223,8 @@ const T = {
         {
           num: "03",
           title: "Migration Cognos vers Power BI & Microsoft Fabric",
-          problem: "Votre organisation s'appuie sur Cognos, Excel ou des outils historiques qui freinent désormais vos évolutions.",
-          what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, avec une expérience directe sur la migration de reportings Cognos vers Power BI Report Builder, sans rupture de service.",
+          problem: "Votre organisation s'appuie depuis des années sur Cognos, Excel ou d'autres outils historiques. Ils ont fait le travail, mais aujourd'hui ils coûtent cher à maintenir, les compétences pour les faire vivre se raréfient, et chaque évolution se transforme en chantier. Vous savez qu'il faut moderniser, mais migrer des centaines de rapports sans interrompre l'activité fait hésiter, et le statu quo s'installe.",
+          what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, menée par lots pour ne jamais rompre le service. On démarre par un inventaire, une cartographie de l'existant et un lot pilote validé : la démarche est éprouvée avant d'être généralisée. À l'arrivée, vous gagnez un socle moderne, plus rapide à faire évoluer, et vos équipes montent en compétence au passage. Cette méthode, je l'ai appliquée sur la migration de plus de 750 rapports Cognos vers Power BI Report Builder.",
           deliverables: ["Inventaire & cartographie de l'existant", "Définition de l'architecture cible", "Migration d'un lot pilote", "Plan de migration détaillé", "Documentation technique & fonctionnelle", "Transfert de compétences"],
           price: "À partir de 6 000 € TTC",
           commitment: null,
@@ -251,8 +251,8 @@ const T = {
         {
           num: "04",
           title: "Partenaire data longue durée",
-          problem: "Vos dashboards existent mais vieillissent : les besoins évoluent et tout repose sur des interventions ponctuelles à relancer à chaque fois.",
-          what: "Un partenaire data unique qui intervient sur vos tableaux de bord, vos flux et vos automatisations, sans avoir à mobiliser plusieurs prestataires.",
+          problem: "Vous avez investi dans des tableaux de bord et des outils de reporting, mais les besoins métier, eux, continuent d'évoluer. De nouveaux indicateurs apparaissent, les questions affluent, et tout repose sur des interventions ponctuelles qu'il faut relancer à chaque fois. Résultat : vos outils vieillissent plus vite qu'ils ne s'améliorent, et vous dépendez de prestataires qu'il faut à chaque fois remettre dans le contexte.",
+          what: "Un partenaire data unique, disponible dans la durée, qui connaît vos enjeux et votre organisation. Il fait évoluer vos tableaux de bord, crée de nouveaux KPI, automatise les tâches chronophages et accompagne vos équipes, sans que vous ayez à mobiliser plusieurs prestataires. Un budget mensuel lissé, des priorités revues ensemble, une expertise transverse sur toute votre chaîne data. Vos outils progressent au rythme de votre activité, au lieu de prendre du retard.",
           deliverables: ["Évolutions & améliorations des tableaux de bord", "Création de nouveaux KPI", "Automatisation des flux (Python, Fabric)", "Ateliers métiers", "Accompagnement des équipes", "Conseil & support continu"],
           price: "4 000 € TTC / mois",
           commitment: "Engagement minimum 3 mois",
