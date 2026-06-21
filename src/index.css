@@ -49,6 +49,52 @@ h1, h2, h3, h4 {
   z-index: 9998;
 }
 
+/* ── Pricing flip card ── */
+/*
+  Chaîne de hauteur :
+  grid (align-items:stretch) → .pricing-card (flex col) → .pricing-card-inner (flex:1)
+  → .pricing-card-front (flex:1) → prix toujours visible en bas
+*/
+.pricing-card {
+  perspective: 1200px;
+  display: flex;
+  flex-direction: column;
+}
+.pricing-card-inner {
+  position: relative;
+  flex: 1;
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  /* délai 400ms sur le retour verso→recto pour absorber les sorties accidentelles de souris */
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1) 0.4s;
+  -webkit-transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1) 0.4s;
+}
+.pricing-card:hover .pricing-card-inner {
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+  /* pas de délai sur le flip recto→verso */
+  transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+  -webkit-transition: -webkit-transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+.pricing-card-front {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.5rem;
+}
+.pricing-card-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: rotateY(180deg);
+  -webkit-transform: rotateY(180deg);
+  border-radius: 0.5rem;
+}
+
 /* ── C.O.R.E.: Moving scan beam ── */
 .core-scan-beam::after {
   content: '';

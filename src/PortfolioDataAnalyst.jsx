@@ -170,6 +170,7 @@ const T = {
       conditionsTitle: "Conditions & modalités",
       baseRateNote: ["Prix en euros TTC", "Licences à la charge du client", "Acompte 30 % · solde à la livraison", "100 % à distance"],
       investLabel: "Investissement",
+      hoverHint: "Survoler pour le détail",
       ctaLabel: "Parlons-en",
       ctaDesc: "30 minutes pour cadrer votre besoin et identifier l'offre la plus adaptée.",
       offers: [
@@ -179,8 +180,22 @@ const T = {
           problem: "Chaque semaine, vos équipes consolident manuellement des données provenant de plusieurs fichiers. Les chiffres diffèrent selon les sources, les décisions sont retardées.",
           what: "Un tableau de bord unique, fiable et lisible : chaque indicateur défini avec vous et associé à une décision métier concrète.",
           deliverables: ["Atelier de cadrage métier", "Connexion et fiabilisation des sources", "Modélisation des données", "Développement du tableau de bord Power BI", "Gestion des accès (RLS)", "Documentation & formation"],
-          price: "4 800 € TTC",
+          price: "À partir de 4 500 € TTC",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Périmètre",
+                negative: false,
+                included: ["Jusqu'à 3 sources de données", "Jusqu'à 10 KPI stratégiques", "4 tableaux de bord principal", "Modélisation et préparation des données", "Développement Power BI", "Gestion des accès utilisateurs", "Documentation utilisateur", "Formation à la prise en main", "Développement d'applications métier", "Architecture Microsoft Fabric"],
+              },
+              {
+                title: "Non inclus",
+                negative: true,
+                included: ["Plus de 3 sources de données complexes", "Développements ou intégrations non définis lors du cadrage initial", "Refonte complète du système décisionnel"],
+              },
+            ],
+          },
         },
         {
           num: "02",
@@ -188,8 +203,22 @@ const T = {
           problem: "Les rapports deviennent plus lents, certains chiffres sont remis en question et chaque évolution demande davantage d'efforts que prévu.",
           what: "Un diagnostic complet de votre environnement Power BI accompagné d'un plan d'action priorisé.",
           deliverables: ["Analyse des performances", "Revue du modèle de données", "Contrôle des KPI et indicateurs", "Audit sécurité & accès", "Plan d'action priorisé"],
-          price: "2 500 € TTC",
+          price: "À partir de 3 000 € TTC",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Périmètre",
+                negative: false,
+                included: ["Analyse de l'environnement Power BI existant", "Audit jusqu'à 5 rapports", "Revue du modèle de données", "Analyse des performances", "Vérification des KPI", "Contrôle des accès et de la sécurité", "Identification des risques et de la dette technique", "Plan d'action priorisé", "Mise en œuvre des corrections prioritaires", "Refonte partielle des rapports existants"],
+              },
+              {
+                title: "Non inclus",
+                negative: true,
+                included: ["Création de nouveaux tableaux de bord", "Développement de nouvelles sources de données", "Refonte complète de l'architecture décisionnelle", "Audits non définis lors du cadrage initial"],
+              },
+            ],
+          },
         },
         {
           num: "03",
@@ -199,6 +228,25 @@ const T = {
           deliverables: ["Inventaire & cartographie de l'existant", "Définition de l'architecture cible", "Migration d'un lot pilote", "Plan de migration détaillé", "Documentation technique & fonctionnelle", "Transfert de compétences"],
           price: "À partir de 6 000 € TTC",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Périmètre",
+                negative: false,
+                included: ["Inventaire des rapports existants", "Cartographie de l'environnement BI", "Définition de l'architecture cible", "Migration d'un lot pilote", "Validation métier", "Documentation de migration", "Accompagnement des équipes", "Audit de l'existant", "Plan de migration détaillé", "Refonte des règles métier lorsque nécessaire pour assurer la cohérence de la cible"],
+              },
+              {
+                title: "Le forfait de départ à 6 000 € TTC comprend",
+                negative: false,
+                included: ["Audit de l'existant", "Cartographie de l'environnement BI", "Définition de l'architecture cible", "Migration d'un lot pilote", "Élaboration du plan de migration"],
+              },
+              {
+                title: "Non inclus",
+                negative: true,
+                included: ["Migration complète de l'ensemble du parc", "Développement spécifique non définis lors du cadrage initial", "Refonte globale des processus métiers"],
+              },
+            ],
+          },
         },
         {
           num: "04",
@@ -206,8 +254,27 @@ const T = {
           problem: "Vos dashboards existent mais vieillissent : les besoins évoluent et tout repose sur des interventions ponctuelles à relancer à chaque fois.",
           what: "Un partenaire data unique qui intervient sur vos tableaux de bord, vos flux et vos automatisations, sans avoir à mobiliser plusieurs prestataires.",
           deliverables: ["Évolutions & améliorations des tableaux de bord", "Création de nouveaux KPI", "Automatisation des flux (Python, Fabric)", "Ateliers métiers", "Accompagnement des équipes", "Conseil & support continu"],
-          price: "3 500 € TTC / mois",
+          price: "4 000 € TTC / mois",
           commitment: "Engagement minimum 3 mois",
+          back: {
+            sections: [
+              {
+                title: "Périmètre",
+                negative: false,
+                included: ["Accompagnement continu", "Évolutions des tableaux de bord", "Création de nouveaux KPI", "Analyses ponctuelles", "Automatisation des flux de données (Python, Fabric)", "Support aux équipes métiers", "Ateliers de cadrage et de pilotage", "Conseils sur les bonnes pratiques data", "Priorisation mensuelle des besoins"],
+              },
+              {
+                title: "Modalités",
+                negative: false,
+                included: ["Engagement minimum de 3 mois", "Réunion de pilotage mensuelle", "Accompagnement continu selon les priorités définies ensemble"],
+              },
+              {
+                title: "Non inclus",
+                negative: true,
+                included: ["Refonte complète d'un système décisionnel", "Projet de migration complet", "Développement d'applications métier non définis lors du cadrage initial", "Refonte globale d'une architecture data existante"],
+              },
+            ],
+          },
         },
       ],
     },
@@ -380,6 +447,7 @@ const T = {
       conditionsTitle: "Terms & conditions",
       baseRateNote: ["Prices in euros excl. VAT", "Client-side licences", "30% deposit · balance on delivery", "Fully remote"],
       investLabel: "Investment",
+      hoverHint: "Hover for details",
       ctaLabel: "Let's talk",
       ctaDesc: "30 minutes to scope your need and find the right fit.",
       offers: [
@@ -389,8 +457,22 @@ const T = {
           problem: "Every week your teams manually consolidate data from multiple files. Figures differ depending on the source, decisions are delayed.",
           what: "A single, reliable, readable dashboard: each metric defined with you and tied to a concrete business decision.",
           deliverables: ["Business scoping workshop", "Source connection & validation", "Data modelling", "Power BI dashboard development", "Access control (RLS)", "Documentation & training"],
-          price: "€4,800 excl. VAT",
+          price: "From €4,500 excl. VAT",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Scope",
+                negative: false,
+                included: ["Up to 3 data sources", "Up to 10 strategic KPIs", "4 main dashboards", "Data modelling & preparation", "Power BI development", "User access management", "User documentation", "Onboarding training", "Business application development", "Microsoft Fabric architecture"],
+              },
+              {
+                title: "Not included",
+                negative: true,
+                included: ["More than 3 complex data sources", "Developments or integrations not defined during initial scoping", "Full BI system overhaul"],
+              },
+            ],
+          },
         },
         {
           num: "02",
@@ -398,8 +480,22 @@ const T = {
           problem: "Reports are getting slower, some figures are disputed and every change takes more effort than expected.",
           what: "A full diagnosis of your Power BI environment with a prioritised action plan.",
           deliverables: ["Performance analysis", "Data model review", "KPI & indicator audit", "Security & access audit", "Prioritised action plan"],
-          price: "€2,500 excl. VAT",
+          price: "From €3,000 excl. VAT",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Scope",
+                negative: false,
+                included: ["Analysis of existing Power BI environment", "Audit of up to 5 reports", "Data model review", "Performance analysis", "KPI verification", "Access & security audit", "Risk and technical debt identification", "Prioritised action plan", "Implementation of priority fixes", "Partial rework of existing reports"],
+              },
+              {
+                title: "Not included",
+                negative: true,
+                included: ["New dashboard creation", "New data source development", "Full BI architecture overhaul", "Audits not defined during initial scoping"],
+              },
+            ],
+          },
         },
         {
           num: "03",
@@ -409,6 +505,25 @@ const T = {
           deliverables: ["Inventory & mapping of existing reports", "Target architecture definition", "Pilot batch migration", "Detailed migration plan", "Technical & functional documentation", "Knowledge transfer"],
           price: "From €6,000 excl. VAT",
           commitment: null,
+          back: {
+            sections: [
+              {
+                title: "Scope",
+                negative: false,
+                included: ["Inventory of existing reports", "BI environment mapping", "Target architecture definition", "Pilot batch migration", "Business validation", "Migration documentation", "Team support", "Existing system audit", "Detailed migration plan", "Business rule rework where needed to ensure target consistency"],
+              },
+              {
+                title: "The €6,000 incl. VAT starting package includes",
+                negative: false,
+                included: ["Existing system audit", "BI environment mapping", "Target architecture definition", "Pilot batch migration", "Migration plan development"],
+              },
+              {
+                title: "Not included",
+                negative: true,
+                included: ["Full migration of the entire report estate", "Specific developments not defined during initial scoping", "Full business process overhaul"],
+              },
+            ],
+          },
         },
         {
           num: "04",
@@ -416,8 +531,27 @@ const T = {
           problem: "Your dashboards exist but are ageing: needs keep evolving and everything relies on one-off interventions you have to chase each time.",
           what: "A single data partner covering dashboards, data flows and automation: no need to juggle multiple providers.",
           deliverables: ["Dashboard updates & improvements", "New KPIs on demand", "Data flow automation (Python, Fabric)", "Business workshops", "Team support & upskilling", "Ongoing advice & support"],
-          price: "€3,500 excl. VAT / month",
+          price: "€4,000 excl. VAT / month",
           commitment: "3-month minimum engagement",
+          back: {
+            sections: [
+              {
+                title: "Scope",
+                negative: false,
+                included: ["Ongoing support", "Dashboard updates & improvements", "New KPI creation", "Ad-hoc analyses", "Data flow automation (Python, Fabric)", "Business team support", "Scoping & steering workshops", "Data best practice advisory", "Monthly needs prioritisation"],
+              },
+              {
+                title: "Terms",
+                negative: false,
+                included: ["3-month minimum engagement", "Monthly steering meeting", "Ongoing support based on jointly defined priorities"],
+              },
+              {
+                title: "Not included",
+                negative: true,
+                included: ["Full BI system overhaul", "Full migration project", "Business application development not defined during initial scoping", "Full existing data architecture overhaul"],
+              },
+            ],
+          },
         },
       ],
     },
@@ -700,6 +834,7 @@ export default function PortfolioDataAnalyst() {
   const t = T[lang];
 
   const typedText = useTypewriter(t.typewriter, lang);
+
 
 
   const [showCalculator, setShowCalculator] = useState(false);
@@ -1065,7 +1200,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Tarifs */}
-      <section id="tarifs" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+      <section id="tarifs" className="max-w-7xl mx-auto px-6 pt-4 pb-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-4 reveal">
           <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.pricing.title}</h2>
         </div>
@@ -1073,36 +1208,59 @@ export default function PortfolioDataAnalyst() {
 
         <div className="grid md:grid-cols-2 gap-6">
           {t.pricing.offers.map((offer, i) => (
-            <div key={offer.num} className={`core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-6 flex flex-col reveal reveal-delay-${(i % 4) + 1}`}>
-              {/* Header */}
-              <div className="flex items-start gap-3 mb-4">
-                <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0 mt-0.5">{offer.num}</span>
-                <h3 className="text-base font-bold text-white leading-snug">{offer.title}</h3>
-              </div>
-              {/* Problem */}
-              <p className="text-[#A1A1AA] text-xs font-mono mb-3 leading-relaxed border-l-2 border-[#00F0FF]/30 pl-3">{offer.problem}</p>
-              {/* What you get */}
-              <p className="text-[#A1A1AA] text-sm mb-4 leading-relaxed">{offer.what}</p>
-
-              {/* Deliverables */}
-              <ul className="space-y-1.5 mb-5 flex-1">
-                {offer.deliverables.map(d => (
-                  <li key={d} className="flex items-start gap-2 text-sm text-[#A1A1AA]">
-                    <span className="text-[#00F0FF] shrink-0 mt-0.5">▸</span>
-                    {d}
-                  </li>
-                ))}
-              </ul>
-
-              {/* Price */}
-              <div className="border-t border-[#27272A] pt-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-widest">{t.pricing.investLabel}</span>
-                  <span className="text-sm font-mono font-bold text-[#00F0FF]">{offer.price}</span>
+            <div
+              key={offer.num}
+              className={`pricing-card reveal reveal-delay-${(i % 4) + 1}`}
+            >
+              <div className="pricing-card-inner">
+                {/* Recto */}
+                <div
+                  className="pricing-card-front bg-[#0D1117] border border-[#27272A] p-6"
+                >
+                  <div className="flex items-start gap-3 mb-4">
+                    <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0 mt-0.5">{offer.num}</span>
+                    <h3 className="text-base font-bold text-white leading-snug">{offer.title}</h3>
+                  </div>
+                  <p className="text-[#A1A1AA] text-xs font-mono mb-3 leading-relaxed border-l-2 border-[#00F0FF]/30 pl-3">{offer.problem}</p>
+                  <p className="text-[#A1A1AA] text-sm mb-4 leading-relaxed flex-1">{offer.what}</p>
+                  <div className="border-t border-[#27272A] pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-widest">{t.pricing.investLabel}</span>
+                      <span className="text-sm font-mono font-bold text-[#00F0FF]">{offer.price}</span>
+                    </div>
+                    {offer.commitment && (
+                      <p className="text-[10px] font-mono text-[#A1A1AA] mt-1 text-right">{offer.commitment}</p>
+                    )}
+                    <p className="text-[10px] font-mono text-[#00F0FF]/40 mt-3 text-center uppercase tracking-widest">
+                      ⟳ {t.pricing.hoverHint}
+                    </p>
+                  </div>
                 </div>
-                {offer.commitment && (
-                  <p className="text-[10px] font-mono text-[#A1A1AA] mt-1 text-right">{offer.commitment}</p>
-                )}
+
+                {/* Verso */}
+                <div className="pricing-card-back bg-[#060D1A] border border-[#00F0FF]/20 p-5 overflow-y-auto">
+                  <div className="flex items-start gap-2 mb-5">
+                    <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0">{offer.num}</span>
+                    <h3 className="text-sm font-bold text-white leading-snug">{offer.title}</h3>
+                  </div>
+                  {offer.back.sections.map((section, si) => (
+                    <div key={si} className={si > 0 ? "mt-5" : ""}>
+                      <p className={`text-[10px] font-mono font-bold uppercase tracking-widest mb-2 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
+                        {section.title}
+                      </p>
+                      <ul className="space-y-1.5">
+                        {section.included.map((item, ii) => (
+                          <li key={ii} className="flex items-start gap-2 text-sm text-[#A1A1AA] leading-relaxed">
+                            <span className={`shrink-0 mt-0.5 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
+                              {section.negative ? "✕" : "▸"}
+                            </span>
+                            {item}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
