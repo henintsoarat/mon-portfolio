@@ -97,6 +97,7 @@ h1, h2, h3, h4 {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
   border-radius: 0.5rem;
+  overscroll-behavior: contain;
 }
 
 /* ── C.O.R.E.: Moving scan beam ── */

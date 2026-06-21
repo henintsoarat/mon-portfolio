@@ -850,6 +850,8 @@ export default function PortfolioDataAnalyst() {
     return () => window.removeEventListener('mousemove', track);
   }, []);
 
+
+
   const applySettledClass = (idx) => {
     // Manipulation DOM directe : pas de re-render React → le contexte preserve-3d reste intact
     cardRefs.current.forEach((el, i) => {
