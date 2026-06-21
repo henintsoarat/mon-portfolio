@@ -114,7 +114,7 @@ const T = {
             "Migré ~20 reportings clients de Cognos Analytics vers Power BI Report Builder, par lots et sans rupture de service (T-SQL, SQL).",
             "Automatisé 30+ reportings récurrents et conçu des modèles de données fiables et scalables sous Microsoft Fabric (architecture médaillon, PySpark, T-SQL).",
             "Industrialisé la préparation des données (Snowflake) : identification, nettoyage, transformation et modélisation (DAX, PySpark).",
-            "Livré des tableaux de bord KPI (Power BI Service) pour 3 publics — direction, métiers, technique : suivi CA et dossiers (« Expertise »), pilotage interne d'un grand compte assurance.",
+            "Livré des tableaux de bord KPI (Power BI Service) pour 3 publics (direction, métiers, technique) : suivi CA et dossiers (« Expertise »), pilotage interne d'un grand compte assurance.",
             "Collaboré au sein d'une équipe BI de 5 analystes (1 responsable BI), animé des ateliers métiers et coordonné les équipes opérationnelles.",
           ],
           achievements: [
@@ -177,7 +177,7 @@ const T = {
           num: "01",
           title: "Tableau de bord décisionnel Power BI",
           problem: "Chaque semaine, vos équipes consolident manuellement des données provenant de plusieurs fichiers. Les chiffres diffèrent selon les sources, les décisions sont retardées.",
-          what: "Un tableau de bord unique, fiable et lisible — chaque indicateur défini avec vous et associé à une décision métier concrète.",
+          what: "Un tableau de bord unique, fiable et lisible : chaque indicateur défini avec vous et associé à une décision métier concrète.",
           deliverables: ["Atelier de cadrage métier", "Connexion et fiabilisation des sources", "Modélisation des données", "Développement du tableau de bord Power BI", "Gestion des accès (RLS)", "Documentation & formation"],
           price: "4 800 € TTC",
           commitment: null,
@@ -203,7 +203,7 @@ const T = {
         {
           num: "04",
           title: "Partenaire data longue durée",
-          problem: "Vos dashboards existent mais vieillissent — les besoins évoluent et tout repose sur des interventions ponctuelles à relancer à chaque fois.",
+          problem: "Vos dashboards existent mais vieillissent : les besoins évoluent et tout repose sur des interventions ponctuelles à relancer à chaque fois.",
           what: "Un partenaire data unique qui intervient sur vos tableaux de bord, vos flux et vos automatisations, sans avoir à mobiliser plusieurs prestataires.",
           deliverables: ["Évolutions & améliorations des tableaux de bord", "Création de nouveaux KPI", "Automatisation des flux (Python, Fabric)", "Ateliers métiers", "Accompagnement des équipes", "Conseil & support continu"],
           price: "3 500 € TTC / mois",
@@ -324,7 +324,7 @@ const T = {
             "Migrated ~20 client reports from IBM Cognos Analytics to Power BI Report Builder, in batches and with zero service disruption (T-SQL, SQL).",
             "Automated 30+ recurring reports and built reliable, scalable data models on Microsoft Fabric (medallion architecture, PySpark, T-SQL).",
             "Industrialised data preparation (Snowflake): sourcing, cleansing, transformation and modelling (DAX, PySpark).",
-            "Delivered KPI dashboards (Power BI Service) for 3 audiences — executive, business, technical: revenue and case tracking ('Expertise') and internal steering for a major insurance account.",
+            "Delivered KPI dashboards (Power BI Service) for 3 audiences (executive, business, technical): revenue and case tracking ('Expertise') and internal steering for a major insurance account.",
             "Worked within a BI team of 5 analysts (1 BI lead); ran business workshops and coordinated operational teams.",
           ],
           achievements: [
@@ -387,7 +387,7 @@ const T = {
           num: "01",
           title: "Decision-making Power BI Dashboard",
           problem: "Every week your teams manually consolidate data from multiple files. Figures differ depending on the source, decisions are delayed.",
-          what: "A single, reliable, readable dashboard — each metric defined with you and tied to a concrete business decision.",
+          what: "A single, reliable, readable dashboard: each metric defined with you and tied to a concrete business decision.",
           deliverables: ["Business scoping workshop", "Source connection & validation", "Data modelling", "Power BI dashboard development", "Access control (RLS)", "Documentation & training"],
           price: "€4,800 excl. VAT",
           commitment: null,
@@ -413,8 +413,8 @@ const T = {
         {
           num: "04",
           title: "Long-term Data Partner",
-          problem: "Your dashboards exist but are ageing — needs keep evolving and everything relies on one-off interventions you have to chase each time.",
-          what: "A single data partner covering dashboards, data flows and automation — no need to juggle multiple providers.",
+          problem: "Your dashboards exist but are ageing: needs keep evolving and everything relies on one-off interventions you have to chase each time.",
+          what: "A single data partner covering dashboards, data flows and automation: no need to juggle multiple providers.",
           deliverables: ["Dashboard updates & improvements", "New KPIs on demand", "Data flow automation (Python, Fabric)", "Business workshops", "Team support & upskilling", "Ongoing advice & support"],
           price: "€3,500 excl. VAT / month",
           commitment: "3-month minimum engagement",
@@ -701,7 +701,7 @@ export default function PortfolioDataAnalyst() {
 
   const typedText = useTypewriter(t.typewriter, lang);
 
-  const [showCV, setShowCV] = useState(false);
+
   const [showCalculator, setShowCalculator] = useState(false);
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
@@ -710,7 +710,7 @@ export default function PortfolioDataAnalyst() {
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
 
-  const anyModalOpen = showCV || showCalculator || showVibeCoding || showDataProject || showAdminPanel || showLinkedInManager;
+  const anyModalOpen = showCalculator || showVibeCoding || showDataProject || showAdminPanel || showLinkedInManager;
   useEffect(() => {
     document.body.style.overflow = anyModalOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -786,13 +786,8 @@ export default function PortfolioDataAnalyst() {
             <a href="#contact" className="text-[#A1A1AA] hover:text-[#00F0FF] text-xs uppercase tracking-widest transition duration-200">{t.nav.contact}</a>
           </div>
 
-          {/* CV + lang */}
+          {/* lang */}
           <div className="flex items-center gap-3">
-            <button onClick={() => setShowCV(true)}
-              className="core-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#00F0FF] hover:bg-white text-black text-[10px] font-mono font-bold uppercase tracking-widest transition duration-200 cursor-pointer">
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-              {t.downloadCV}
-            </button>
             <div className="inline-flex items-center rounded-lg border border-[#27272A] overflow-hidden">
               <button onClick={() => setLang('fr')}
                 className={`px-2.5 py-2 transition duration-200 ${lang === 'fr' ? 'bg-[#27272A]' : 'opacity-40 hover:opacity-70'}`}
@@ -1324,29 +1319,6 @@ export default function PortfolioDataAnalyst() {
         </div>
       )}
 
-      {/* Modale CV */}
-      {showCV && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-4xl bg-[#030508] border border-[#27272A] rounded-lg overflow-hidden shadow-2xl" style={{ height: '90vh' }}>
-            <div className="flex items-center justify-between px-5 py-3 border-b border-[#27272A]">
-              <div className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
-                <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-widest">CV — Henintsoa Andrianaivo Ratovonirina</span>
-              </div>
-              <button onClick={() => setShowCV(false)}
-                className="w-8 h-8 rounded bg-[#0D1117] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono text-sm cursor-pointer">
-                ✕
-              </button>
-            </div>
-            <iframe
-              src={`${t.cvFile}#toolbar=0&navpanes=0&scrollbar=1`}
-              className="w-full border-0"
-              style={{ height: 'calc(100% - 48px)' }}
-              title="CV Henintsoa Andrianaivo"
-            />
-          </div>
-        </div>
-      )}
 
       {/* Modale Calculateur de vie */}
       {showCalculator && (
