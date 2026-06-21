@@ -843,6 +843,12 @@ export default function PortfolioDataAnalyst() {
   const flipTimers = useRef({});
   const isAnimating = useRef(false);
   const pendingFlip = useRef(undefined);
+  const mousePos = useRef({ x: 0, y: 0 });
+  useEffect(() => {
+    const track = (e) => { mousePos.current = { x: e.clientX, y: e.clientY }; };
+    window.addEventListener('mousemove', track, { passive: true });
+    return () => window.removeEventListener('mousemove', track);
+  }, []);
 
   const applySettledClass = (idx) => {
     // Manipulation DOM directe : pas de re-render React → le contexte preserve-3d reste intact
@@ -872,7 +878,19 @@ export default function PortfolioDataAnalyst() {
   const handleCardLeave = (i) => {
     if (flipTimers.current[i]) clearTimeout(flipTimers.current[i]);
     if (isAnimating.current) { pendingFlip.current = null; }
-    else { flipTimers.current[i] = setTimeout(() => { if (flippedCardRef.current === i) triggerFlip(null); }, 300); }
+    else {
+      flipTimers.current[i] = setTimeout(() => {
+        if (flippedCardRef.current !== i) return;
+        // Vérifie que le curseur est vraiment hors de la carte (évite les faux positifs du scrollbar)
+        const el = cardRefs.current[i];
+        if (el) {
+          const r = el.getBoundingClientRect();
+          const { x, y } = mousePos.current;
+          if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return;
+        }
+        triggerFlip(null);
+      }, 150);
+    }
   };
   const handleFlipEnd = (e) => {
     if (e.propertyName !== 'transform') return;
