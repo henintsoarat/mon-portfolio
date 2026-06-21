@@ -51,14 +51,6 @@ h1, h2, h3, h4 {
 
 /* ── Pricing flip card ── */
 /*
-  Quand le verso est stabilisé : hauteur fixe identique pour toutes les cartes.
-  On ne touche pas à position/inset pour ne pas casser le contexte preserve-3d.
-*/
-.pricing-card-in-verso {
-  align-self: start !important;
-  height: 380px !important;
-}
-/*
   Chaîne de hauteur :
   grid (align-items:stretch) → .pricing-card (flex col) → .pricing-card-inner (flex:1)
   → .pricing-card-front (flex:1) → prix toujours visible en bas

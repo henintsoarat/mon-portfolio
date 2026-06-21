@@ -850,6 +850,18 @@ export default function PortfolioDataAnalyst() {
     return () => window.removeEventListener('mousemove', track);
   }, []);
 
+  useEffect(() => {
+    const equalizeCardHeights = () => {
+      const cards = cardRefs.current.filter(Boolean);
+      cards.forEach(el => { el.style.height = 'auto'; });
+      const maxH = Math.max(...cards.map(el => el.getBoundingClientRect().height));
+      cards.forEach(el => { el.style.height = maxH + 'px'; });
+    };
+    equalizeCardHeights();
+    window.addEventListener('resize', equalizeCardHeights);
+    return () => window.removeEventListener('resize', equalizeCardHeights);
+  }, []);
+
 
 
   const applySettledClass = (idx) => {
@@ -1306,29 +1318,43 @@ export default function PortfolioDataAnalyst() {
                   </div>
                 </div>
 
-                {/* Verso — sections périmètre / non inclus */}
-                <div className="pricing-card-back bg-[#060D1A] border border-[#00F0FF]/20 p-5 overflow-y-auto">
-                  <div className="flex items-start gap-2 mb-5">
-                    <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0">{offer.num}</span>
-                    <h3 className="text-sm font-bold text-white leading-snug">{offer.title}</h3>
-                  </div>
-                  {offer.back.sections.map((section, si) => (
-                    <div key={si} className={si > 0 ? "mt-5" : ""}>
-                      <p className={`text-[10px] font-mono font-bold uppercase tracking-widest mb-2 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
-                        {section.title}
-                      </p>
-                      <ul className="space-y-1.5">
-                        {section.included.map((item, ii) => (
-                          <li key={ii} className="flex items-start gap-2 text-sm text-[#A1A1AA] leading-relaxed">
-                            <span className={`shrink-0 mt-0.5 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
-                              {section.negative ? "✕" : "▸"}
-                            </span>
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
+                {/* Verso — sections périmètre / non inclus + prix */}
+                <div className="pricing-card-back bg-[#060D1A] border border-[#00F0FF]/20 overflow-y-auto flex flex-col">
+                  <div className="p-5 flex-1">
+                    <div className="flex items-start gap-2 mb-5">
+                      <span className="text-[10px] font-mono font-bold text-[#00F0FF] bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded px-2 py-1 shrink-0">{offer.num}</span>
+                      <h3 className="text-sm font-bold text-white leading-snug">{offer.title}</h3>
                     </div>
-                  ))}
+                    {offer.back.sections.map((section, si) => (
+                      <div key={si} className={si > 0 ? "mt-5" : ""}>
+                        <p className={`text-[10px] font-mono font-bold uppercase tracking-widest mb-2 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
+                          {section.title}
+                        </p>
+                        <ul className="space-y-1.5">
+                          {section.included.map((item, ii) => (
+                            <li key={ii} className="flex items-start gap-2 text-sm text-[#A1A1AA] leading-relaxed">
+                              <span className={`shrink-0 mt-0.5 ${section.negative ? "text-[#FF003C]" : "text-[#00F0FF]"}`}>
+                                {section.negative ? "✕" : "▸"}
+                              </span>
+                              {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="sticky bottom-0 border-t border-[#00F0FF]/20 bg-[#060D1A] px-5 py-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-[#A1A1AA] uppercase tracking-widest">{t.pricing.investLabel}</span>
+                      <span className="text-sm font-mono font-bold text-[#00F0FF]">{offer.price}</span>
+                    </div>
+                    {offer.commitment && (
+                      <p className="text-[10px] font-mono text-[#A1A1AA] mt-1 text-right">{offer.commitment}</p>
+                    )}
+                    <p className="text-[10px] font-mono text-[#00F0FF]/40 mt-2 text-center uppercase tracking-widest">
+                      ⟳ {t.pricing.hoverHint}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
