@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RH · Pipeline Recrutement &amp; Formation · arbi-data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F1; --paper2:#FBFAF7; --ink:#1B1D21; --muted:#6B7079;
+    --line:#E2DED3; --line2:#D6D1C4;
+    --bronze:#A86A3D; --bronze-bg:#F3E7DC;
+    --silver:#6C757F; --silver-bg:#E9ECEF;
+    --gold:#A6841C; --gold-bg:#F4ECCF;
+    /* opérations */
+    --op-cast:#2F6F8F; --op-cast-bg:#E4EEF3;
+    --op-derive:#3E7D53; --op-derive-bg:#E6F0E9;
+    --op-rename:#B5751E; --op-rename-bg:#F6ECDA;
+    --op-struct:#B0473B; --op-struct-bg:#F6E4E1;
+    --op-join:#6E5AA3; --op-join-bg:#ECE7F4;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --disp:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;background-position:-1px -1px;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  a{color:inherit}
+
+  /* ---------- HEADER ---------- */
+  header{padding:64px 0 40px;border-bottom:2px solid var(--ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .eyebrow b{color:var(--bronze);font-weight:700}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-.02em;margin:18px 0 14px}
+  h1 .pipe{display:inline-block;background:linear-gradient(90deg,var(--bronze),var(--silver),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:18px;color:#3a3d42;max-width:60ch}
+  .metrics{display:flex;flex-wrap:wrap;gap:0;margin-top:34px;border:1px solid var(--line2);background:var(--paper2)}
+  .metric{flex:1 1 160px;padding:18px 20px;border-right:1px solid var(--line2)}
+  .metric:last-child{border-right:none}
+  .metric .v{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:-.02em}
+  .metric .l{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .metric.ok .v{color:var(--op-derive)}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:54px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .sec-title{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.01em}
+  .sec-sub{color:var(--muted);font-size:15px;margin:0 0 28px;max-width:70ch}
+
+  /* ---------- LEGEND ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:10px}
+  .chip-key{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:2px;border-left:3px solid;display:inline-flex;gap:7px;align-items:center}
+  .k-cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .k-derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .k-rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .k-struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .k-join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+
+  /* ---------- FLOW : 3 LANES ---------- */
+  .flow{display:grid;grid-template-columns:1fr 1.5fr 1.35fr;gap:18px;align-items:start}
+  .lane{position:relative}
+  .lane-head{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.02em;position:sticky;top:0;z-index:5}
+  .lane-head .tag{font-family:var(--mono);font-weight:500;font-size:11px;opacity:.85;margin-left:auto}
+  .lane.bronze .lane-head{background:var(--bronze)}
+  .lane.silver .lane-head{background:var(--silver)}
+  .lane.gold .lane-head{background:var(--gold)}
+  .lane-body{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+
+  .card{background:var(--paper2);border:1px solid var(--line2);border-radius:3px;border-left-width:4px;padding:13px 14px}
+  .lane.bronze .card{border-left-color:var(--bronze)}
+  .lane.silver .card{border-left-color:var(--silver)}
+  .lane.gold .card{border-left-color:var(--gold)}
+  .card.fact{border-left-color:var(--ink);background:#fff}
+  .card .tname{font-family:var(--mono);font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .dims{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+  .card .role{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:600}
+
+  /* transformation chips */
+  .ops{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+  .op{font-family:var(--mono);font-size:11.5px;line-height:1.35;padding:5px 9px;border-radius:2px;border-left:3px solid;display:block}
+  .op .col{font-weight:700}
+  .op .to{opacity:.55;padding:0 4px}
+  .op.cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .op.derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .op.rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .op.struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .op.join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+  .grp{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px;font-weight:700}
+  .grp:first-child{margin-top:0}
+
+  .measures{font-family:var(--mono);font-size:10.5px;color:#3a3d42;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2)}
+  .measures b{color:var(--ink)}
+
+  /* ---------- STAR SCHEMA ---------- */
+  .starwrap{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:8px}
+  svg{display:block;width:100%;height:auto}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- DASHBOARD ---------- */
+  .tabs{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;letter-spacing:.01em;transition:background .12s,color .12s;text-align:center}
+  .tab:last-child{border-right:none}
+  .tab:hover{background:#fff;color:var(--ink)}
+  .tab.active{background:var(--ink);color:var(--paper)}
+  .tab:focus-visible{outline:2px solid var(--op-cast);outline-offset:-2px}
+  .panel{display:none}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1 / -1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px;font-family:var(--body)}
+  .pane svg{overflow:visible}
+
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .big .up{color:#7BBF8E}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4;font-family:var(--body)}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}
+  .insight.gold .lbl{color:#5a4a08}
+
+  .kpibar{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:16px 18px;border-right:1px solid var(--line2)}
+  .kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:23px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:12px;color:var(--muted);margin-top:3px}
+
+  /* chart primitives */
+  .axis{stroke:var(--line2);stroke-width:1}
+  .blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}
+  .glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+
+  @media (max-width:960px){
+    .flow{grid-template-columns:1fr;gap:30px}
+    .lane-head{position:static}
+    .dash-grid{grid-template-columns:1fr}
+    .kpibar{grid-template-columns:repeat(2,1fr)}
+    .kpibar .k:nth-child(2n){border-right:none}
+    .tab{flex-basis:33%}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .card{transition:transform .15s ease,box-shadow .15s ease}
+    .card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}
+  }
+
+  /* ---------- DASHBOARD RH ---------- */
+  .ctrl{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
+  .ctrl label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+  .ctrl select{font-family:var(--mono);font-size:13px;padding:8px 12px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:2px;cursor:pointer;min-width:180px}
+  .ctrl select:hover{border-color:var(--ink)}.ctrl select:focus-visible{outline:2px solid var(--op-cast);outline-offset:1px}
+  .hint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tabs{display:flex;flex-wrap:wrap;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;text-align:center}
+  .tab:last-child{border-right:none}.tab:hover{background:#fff;color:var(--ink)}.tab.active{background:var(--ink);color:var(--paper)}
+  .tab:focus-visible{outline:2px solid var(--op-cast);outline-offset:-2px}
+  .panel{display:none}.panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1 / -1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .pane svg{overflow:visible}
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}.insight.gold .lbl{color:#5a4a08}
+  .kpibar{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:16px 16px;border-right:1px solid var(--line2)}.kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:21px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:3px;opacity:0;transition:opacity .1s;z-index:99;white-space:nowrap;transform:translate(-50%,-130%)}
+  .axis{stroke:var(--line2);stroke-width:1}.blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}.glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+  /* doc */
+  .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .doc-grid.three{grid-template-columns:repeat(3,1fr)}
+  .doc-block{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px}
+  .doc-block h4{font-family:var(--disp);font-weight:600;font-size:14.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .doc-block h4 .badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:700;letter-spacing:.08em}
+  .doc-block h4 .badge.s{background:var(--silver)}.doc-block h4 .badge.g{background:var(--gold);color:#1a0e00}
+  .doc-table{width:100%;border-collapse:collapse;font-size:12px}
+  .doc-table th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line2);padding:5px 8px;text-align:left;white-space:nowrap}
+  .doc-table td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top;line-height:1.4}
+  .doc-table tr:last-child td{border-bottom:none}
+  .doc-table .col-name{font-family:var(--mono);font-weight:700;font-size:11.5px;color:var(--op-cast);white-space:nowrap}
+  .doc-table .col-type{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .tag-d{background:var(--op-derive-bg);color:var(--op-derive);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .tag-f{background:var(--op-struct-bg);color:var(--op-struct);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .formula-box{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:10px 14px;font-family:var(--mono);font-size:12px;margin-top:10px}
+  .formula-box .f-row{display:flex;gap:12px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}
+  .formula-box .f-row:last-child{border-bottom:none}
+  .formula-box .f-kpi{font-weight:700;color:var(--ink);min-width:200px}
+  .formula-box .f-eq{color:var(--muted);padding:0 4px}
+  .formula-box .f-formula{color:var(--op-cast)}
+  .formula-box .col{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:#fff;border:1px solid var(--line2);border-radius:2px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+  .doc-note{font-size:12.5px;color:var(--muted);background:var(--paper2);border-left:3px solid var(--line2);padding:10px 14px;margin:6px 0;border-radius:0 3px 3px 0}
+  .doc-note code{font-family:var(--mono);font-size:11.5px;color:var(--op-cast)}
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media(max-width:960px){.flow{grid-template-columns:1fr;gap:30px}.dash-grid{grid-template-columns:1fr}
+    .kpibar{grid-template-columns:repeat(2,1fr)}.kpibar .k:nth-child(2n){border-right:none}.tab{flex-basis:33%}
+    .doc-grid,.doc-grid.three{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:no-preference){.card{transition:transform .15s ease,box-shadow .15s ease}.card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="eyebrow"><b>arbi-data</b> <span>/</span> data lineage <span>/</span> ressources humaines</div>
+  <h1>Ressources Humaines : <span class="pipe">pipeline recrutement &amp; formation</span></h1>
+  <p class="lede">Du dossier candidat au bilan de formation. Deux tables sources reliées par l'identifiant salarié, transformées en modèle dimensionnel et en indicateurs RH opérationnels. Prototypé en pandas, portable sur Fabric.</p>
+  <div class="metrics">
+    <div class="metric"><div class="v">3 000</div><div class="l">candidats</div></div>
+    <div class="metric"><div class="v">3 000</div><div class="l">sessions de formation</div></div>
+    <div class="metric"><div class="v">20,3 %</div><div class="l">taux d'offre</div></div>
+    <div class="metric"><div class="v">50,3 %</div><div class="l">taux de réussite formation</div></div>
+    <div class="metric ok"><div class="v">0</div><div class="l">lien manquant entre tables</div></div>
+  </div>
+</div></header>
+
+<!-- 00 LÉGENDE -->
+<section style="padding-top:40px;padding-bottom:0"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">00</span><h2 class="sec-title">Grammaire des transformations</h2></div>
+  <p class="sec-sub">Chaque chip code une opération réelle du pipeline. La couleur indique sa nature ; le texte monospace nomme la colonne et l'effet.</p>
+  <div class="legend">
+    <span class="chip-key k-cast">typage : texte → date / nombre</span>
+    <span class="chip-key k-derive">colonne calculée : âge / tranche / ratio</span>
+    <span class="chip-key k-struct">nettoyage : suppression / flag</span>
+    <span class="chip-key k-join">jointure : enrichissement depuis une autre table</span>
+  </div>
+</div></section>
+
+<!-- 01 FLUX -->
+<section><div class="wrap">
+  <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Le flux, couche par couche</h2></div>
+  <p class="sec-sub">Deux tables sources liées par un identifiant commun (candidat = salarié). Silver nettoie, type et protège les données personnelles. Gold construit le modèle dimensionnel et les indicateurs.</p>
+  <div class="flow">
+    <!-- BRONZE -->
+    <div class="lane bronze">
+      <div class="lane-head">Bronze<span class="tag">raw</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">recruitment_data<span class="dims">3 000 × 18</span></div><div class="role">candidats · parcours recrutement</div></div>
+        <div class="card"><div class="tname">training_and_development_data<span class="dims">3 000 × 9</span></div><div class="role">formations · résultats</div></div>
+      </div>
+    </div>
+    <!-- SILVER -->
+    <div class="lane silver">
+      <div class="lane-head">Silver<span class="tag">cleaned · conformed</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">recruitment<span class="dims">3 000 × 20</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">application_date · date_of_birth</span><span class="to">→</span>date</span>
+            <span class="op cast"><span class="col">desired_salary</span><span class="to">→</span>décimal</span>
+            <span class="op cast"><span class="col">gender · status · education_level</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op derive"><span class="col">+ age</span><span class="to">=</span>date_candidature − date_naissance</span>
+            <span class="op derive"><span class="col">+ age_band · exp_band · salary_band</span></span>
+            <span class="op derive"><span class="col">+ is_offered · is_rejected · app_month</span></span>
+            <span class="op struct"><span class="col">suppression</span><span class="to">nom, email, téléphone, adresse (RGPD)</span></span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">training<span class="dims">3 000 × 14</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">training_date</span><span class="to">→</span>date</span>
+            <span class="op cast"><span class="col">training_type · training_outcome · training_program</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op cast"><span class="col">training_duration_days · training_cost</span><span class="to">→</span>nombre</span>
+            <span class="op derive"><span class="col">+ is_successful</span><span class="to">=</span>Passed ou Completed</span>
+            <span class="op derive"><span class="col">+ is_failed · cost_per_day · train_month</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- GOLD -->
+    <div class="lane gold">
+      <div class="lane-head">Gold<span class="tag">star + marts</span></div>
+      <div class="lane-body">
+        <div class="grp">Tableaux de référence</div>
+        <div class="card"><div class="tname">dim_education<span class="dims">4 × 3</span></div><div class="role">niveaux d'études · rang ordinal</div></div>
+        <div class="card"><div class="tname">dim_job<span class="dims">636 × 2</span></div><div class="role">titres de poste</div></div>
+        <div class="card"><div class="tname">dim_training_program<span class="dims">5 × 3</span></div><div class="role">programmes de formation</div></div>
+        <div class="card"><div class="tname">dim_date<span class="dims">366 × 10</span></div><div class="role">calendrier · attributs temporels</div></div>
+        <div class="grp">Tableaux de transactions</div>
+        <div class="card fact"><div class="tname">fact_recruitment<span class="dims">3 000 × 19</span></div>
+          <div class="role">grain : candidat</div>
+          <div class="measures">Liens <b>education_sk · job_sk · app_date_key</b><br>Mesures <b>desired_salary · years_of_experience</b></div></div>
+        <div class="card fact"><div class="tname">fact_training<span class="dims">3 000 × 14</span></div>
+          <div class="role">grain : session de formation</div>
+          <div class="measures">Liens <b>program_sk · train_date_key · applicant_id</b><br>Mesures <b>training_cost · training_duration_days</b></div></div>
+        <div class="grp">Indicateurs clés</div>
+        <div class="card"><div class="tname">kpi_recruitment_funnel<span class="dims">80 × 6</span></div></div>
+        <div class="card"><div class="tname">kpi_training_effectiveness<span class="dims">10 × 8</span></div></div>
+        <div class="card"><div class="tname">kpi_recruitment_x_training<span class="dims">25 × 5</span></div></div>
+        <div class="card"><div class="tname">kpi_monthly_activity<span class="dims">13 × 6</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 ÉTOILE -->
+<section style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Le modèle dimensionnel (Gold)</h2></div>
+  <p class="sec-sub">Deux faits liés par l'identifiant candidat/salarié, partageant la dimension date. Le lien recrutement → formation est le croisement analytique différenciant du portfolio.</p>
+  <div class="starwrap">
+    <svg viewBox="0 0 1000 500" role="img" aria-label="Modèle en étoile RH">
+      <defs><style>
+        .dim{fill:#FBFAF7;stroke:var(--gold);stroke-width:2}.fct{fill:#fff;stroke:var(--ink);stroke-width:2}
+        .tt{font-family:var(--mono);font-weight:700;font-size:14px;fill:var(--ink)}.ts{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+        .lk{stroke:var(--line2);stroke-width:1.5}.lk.c{stroke:var(--op-cast);stroke-width:1.5;stroke-dasharray:4 3}
+      </style></defs>
+      <!-- liens dimensions → fact_recruitment -->
+      <line class="lk" x1="120" y1="130" x2="310" y2="340"/>
+      <line class="lk" x1="330" y1="130" x2="360" y2="340"/>
+      <line class="lk" x1="540" y1="130" x2="400" y2="340"/>
+      <line class="lk c" x1="750" y1="130" x2="430" y2="340"/>
+      <!-- liens dimensions → fact_training -->
+      <line class="lk" x1="540" y1="145" x2="650" y2="340"/>
+      <line class="lk c" x1="750" y1="145" x2="680" y2="340"/>
+      <!-- lien entre les deux faits -->
+      <line stroke="#1B1D21" stroke-width="2" stroke-dasharray="6 3" x1="480" y1="380" x2="600" y2="380"/>
+      <text class="ts" x="540" y="373" text-anchor="middle">applicant_id</text>
+      <!-- DIMENSIONS -->
+      <g><rect class="dim" x="40" y="75" width="160" height="60" rx="4"/><text class="tt" x="120" y="103" text-anchor="middle">dim_education</text><text class="ts" x="120" y="121" text-anchor="middle">4 niveaux</text></g>
+      <g><rect class="dim" x="250" y="75" width="160" height="60" rx="4"/><text class="tt" x="330" y="103" text-anchor="middle">dim_job</text><text class="ts" x="330" y="121" text-anchor="middle">636 postes</text></g>
+      <g><rect class="dim" x="460" y="75" width="175" height="60" rx="4"/><text class="tt" x="547" y="103" text-anchor="middle">dim_training_program</text><text class="ts" x="547" y="121" text-anchor="middle">5 programmes</text></g>
+      <g><rect class="dim" x="670" y="75" width="160" height="60" rx="4"/><text class="tt" x="750" y="103" text-anchor="middle">dim_date</text><text class="ts" x="750" y="121" text-anchor="middle">366 jours</text></g>
+      <!-- FAITS -->
+      <g><rect class="fct" x="250" y="340" width="230" height="78" rx="4"/><text class="tt" x="365" y="372" text-anchor="middle">fact_recruitment</text><text class="ts" x="365" y="390" text-anchor="middle">3 000 · grain candidat</text><text class="ts" x="365" y="406" text-anchor="middle">salaire souhaité · expérience</text></g>
+      <g><rect class="fct" x="560" y="340" width="230" height="78" rx="4"/><text class="tt" x="675" y="372" text-anchor="middle">fact_training</text><text class="ts" x="675" y="390" text-anchor="middle">3 000 · grain formation</text><text class="ts" x="675" y="406" text-anchor="middle">coût · durée · résultat</text></g>
+      <text class="ts" x="40" y="455">— lien solide : dimension propre au fait</text>
+      <text class="ts" x="40" y="475" fill="#2F6F8F">— lien pointillé : dimension partagée (date) ou lien entre faits (applicant_id)</text>
+    </svg>
+  </div>
+</div></section>
+
+<!-- 03 DASHBOARD -->
+<section id="dash"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Le rendu : tableau de bord RH</h2></div>
+  <p class="sec-sub">La couche Gold mise en lecture, interactive. Filtre par statut ou programme, survole pour le détail. L'onglet Croisement révèle ce qu'une dimension seule ne montre pas.</p>
+  <div class="kpibar" id="kpibar"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="recrutement">Recrutement</button>
+    <button class="tab" data-tab="formation">Formation</button>
+    <button class="tab" data-tab="croisement">Croisement</button>
+  </div>
+
+  <!-- RECRUTEMENT -->
+  <div class="panel active" data-panel="recrutement">
+    <div class="dash-grid">
+      <div class="pane"><h3>Statut des candidatures</h3><p class="cap">Répartition des 3 000 candidats par étape du processus</p><div id="ch-status"></div></div>
+      <div class="pane"><h3>Taux d'offre par niveau d'études</h3><p class="cap">Part des candidats ayant reçu une offre</p><div id="ch-edu-offer"></div></div>
+      <div class="pane"><h3>Taux d'offre par expérience</h3><p class="cap">Selon les années d'expérience déclarées</p><div id="ch-exp-offer"></div></div>
+      <div class="pane"><h3>Salaire souhaité par tranche</h3><p class="cap">Nombre de candidats par fourchette salariale</p><div id="ch-salary-dist"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-status">Statut</label><select id="sel-status"></select><span class="hint">filtre le salaire moyen souhaité par niveau d'études</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Salaire souhaité moyen par niveau d'études</h3><p class="cap" id="cap-sal-edu">Tous statuts</p><div id="ch-sal-edu"></div></div>
+    </div>
+    <div class="dash-grid" style="margin-top:16px">
+      <div class="pane full"><h3>Candidatures par mois</h3><p class="cap">Nombre de dossiers reçus et offres émises · mai à août 2023</p><div id="ch-monthly-rec"></div></div>
+    </div>
+  </div>
+
+  <!-- FORMATION -->
+  <div class="panel" data-panel="formation">
+    <div class="dash-grid">
+      <div class="pane"><h3>Taux de réussite par programme</h3><p class="cap">Part des formations terminées avec succès (Passed ou Completed)</p><div id="ch-prog-success"></div></div>
+      <div class="pane"><h3>Coût moyen par programme</h3><p class="cap">En dollars · par session de formation</p><div id="ch-prog-cost"></div></div>
+      <div class="pane"><h3>Résultats des formations</h3><p class="cap">Répartition globale des 4 résultats possibles</p><div id="ch-outcome"></div></div>
+      <div class="pane"><h3>Interne vs externe</h3><p class="cap">Taux de réussite selon le type de formation</p><div id="ch-type"></div></div>
+    </div>
+    <div class="insight full" style="margin-top:16px"><div class="big">1 675 886 $</div><div class="lbl">Coût total des formations sur la période. Le coût moyen par session est de 559 $ pour une durée médiane de 3 jours. Technical Skills affiche le taux de réussite le plus faible (43,9 %) malgré un coût similaire aux autres programmes.</div></div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-prog">Programme</label><select id="sel-prog"></select><span class="hint">filtre l'activité mensuelle de formation</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Sessions de formation par mois</h3><p class="cap" id="cap-monthly-train">Tous programmes · août 2022 à août 2023</p><div id="ch-monthly-train"></div></div>
+    </div>
+  </div>
+
+  <!-- CROISEMENT -->
+  <div class="panel" data-panel="croisement">
+    <div class="dash-grid">
+      <div class="pane"><h3>Réussite en formation selon le statut de recrutement</h3><p class="cap">Les candidats « Applied » réussissent-ils mieux que les « Offered » ?</p><div id="ch-cross-status"></div></div>
+      <div class="pane"><h3>Réussite en formation par niveau d'études</h3><p class="cap">Croisement éducation × formation</p><div id="ch-cross-edu"></div></div>
+    </div>
+    <div class="insight full" style="margin-top:16px"><div class="big">53,2 % <span class="arrow">→</span> 48,7 %</div><div class="lbl">Taux de réussite en formation pour les candidats « Applied » (53,2 %) vs « Offered » (48,7 %). Les candidats retenus ne sont pas nécessairement les plus performants en formation — un signal à investiguer en contexte réel.</div></div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-cross">Statut recrutement</label><select id="sel-cross"></select><span class="hint">filtre le taux de réussite par programme de formation</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Réussite par programme selon le statut</h3><p class="cap" id="cap-cross-prog">Tous statuts</p><div id="ch-cross-prog"></div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 04 DOCUMENTATION -->
+<section id="doc" style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Documentation : champs &amp; règles de calcul</h2></div>
+  <p class="sec-sub">Description complète de chaque champ de données : ce qu'il contient, son format, et comment il a été calculé ou transformé. Les formules utilisent les noms de colonnes réels du code.</p>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Tables de données — nettoyées et structurées</h3>
+  <div class="doc-grid">
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>recruitment <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">3 000 lignes — source : recruitment_data.csv</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name">applicant_id</td><td class="col-type">entier</td><td>identifiant unique du candidat · repris tel quel</td></tr>
+        <tr><td class="col-name">application_date</td><td class="col-type">date</td><td>converti en date depuis le texte source</td></tr>
+        <tr><td class="col-name">date_of_birth</td><td class="col-type">date</td><td>converti en date</td></tr>
+        <tr><td class="col-name">gender</td><td class="col-type">liste de valeurs</td><td>Male / Female · typé liste de valeurs</td></tr>
+        <tr><td class="col-name">city / state / country</td><td class="col-type">texte</td><td>localisation du candidat · conservée</td></tr>
+        <tr><td class="col-name">education_level</td><td class="col-type">liste de valeurs</td><td>High School / Bachelor's / Master's / PhD</td></tr>
+        <tr><td class="col-name">years_of_experience</td><td class="col-type">entier (optionnel)</td><td>années d'expérience déclarées</td></tr>
+        <tr><td class="col-name">desired_salary</td><td class="col-type">décimal</td><td>salaire souhaité en dollars</td></tr>
+        <tr><td class="col-name">job_title</td><td class="col-type">texte</td><td>poste visé · 636 titres distincts</td></tr>
+        <tr><td class="col-name">status</td><td class="col-type">liste de valeurs</td><td>étape du recrutement : Applied / In Review / Interviewing / Offered / Rejected</td></tr>
+        <tr><td class="col-name">age</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> date de candidature − date de naissance (en années)</td></tr>
+        <tr><td class="col-name">age_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> tranche d'âge : 18-25 / 26-35 / 36-45 / 46-55 / 55+</td></tr>
+        <tr><td class="col-name">exp_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> tranche d'expérience : 0-2 / 3-5 / 6-10 / 11-20 / 20+ ans</td></tr>
+        <tr><td class="col-name">salary_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> fourchette salariale : &lt;40k / 40-60k / 60-80k / 80k+</td></tr>
+        <tr><td class="col-name">is_offered / is_rejected</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si le statut est Offered / Rejected</td></tr>
+        <tr><td class="col-name">app_month / app_year</td><td class="col-type">texte / entier</td><td><span class="tag-d">calculé</span> mois et année de candidature</td></tr>
+        <tr><td class="col-name">nom, email, téléphone, adresse</td><td class="col-type">—</td><td><span class="tag-f">supprimé</span> données personnelles retirées (conformité RGPD)</td></tr>
+      </table>
+    </div>
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>training <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">3 000 lignes — source : training_and_development_data.csv</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name">employee_id</td><td class="col-type">entier</td><td>identifiant salarié · correspond à applicant_id (même plage 1001–4000)</td></tr>
+        <tr><td class="col-name">training_date</td><td class="col-type">date</td><td>converti en date depuis le texte source</td></tr>
+        <tr><td class="col-name">training_program</td><td class="col-type">liste de valeurs</td><td>5 programmes : Communication Skills / Customer Service / Leadership Development / Project Management / Technical Skills</td></tr>
+        <tr><td class="col-name">training_type</td><td class="col-type">liste de valeurs</td><td>Internal ou External · repris tel quel</td></tr>
+        <tr><td class="col-name">training_outcome</td><td class="col-type">liste de valeurs</td><td>4 résultats : Passed / Completed / Incomplete / Failed</td></tr>
+        <tr><td class="col-name">location / trainer</td><td class="col-type">texte</td><td>lieu et formateur · repris tels quels</td></tr>
+        <tr><td class="col-name">training_duration_days</td><td class="col-type">entier (optionnel)</td><td>durée en jours (1 à 5)</td></tr>
+        <tr><td class="col-name">training_cost</td><td class="col-type">décimal</td><td>coût de la session en dollars</td></tr>
+        <tr><td class="col-name">is_successful</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si résultat = Passed ou Completed</td></tr>
+        <tr><td class="col-name">is_failed</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si résultat = Failed</td></tr>
+        <tr><td class="col-name">cost_per_day</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> coût ÷ durée en jours<span style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-left:6px">training_cost ÷ training_duration_days</span></td></tr>
+        <tr><td class="col-name">train_month / train_year</td><td class="col-type">texte / entier</td><td><span class="tag-d">calculé</span> mois et année de la formation</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Indicateurs clés — comment ils sont calculés</h3>
+  <div class="doc-grid">
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>kpi_recruitment_funnel</h4>
+      <p class="doc-note">Calculé sur tous les candidats. Grain : <code>status × education_level × exp_band</code>.</p>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">nombre de candidats</span><span class="f-eq">=</span><span class="f-formula">nombre de dossiers dans le segment<span class="col">applicant_id</span></span></div>
+        <div class="f-row"><span class="f-kpi">salaire moyen souhaité</span><span class="f-eq">=</span><span class="f-formula">moyenne des salaires souhaités<span class="col">desired_salary</span></span></div>
+        <div class="f-row"><span class="f-kpi">expérience moyenne</span><span class="f-eq">=</span><span class="f-formula">moyenne des années d'expérience<span class="col">years_of_experience</span></span></div>
+      </div>
+    </div>
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>kpi_training_effectiveness</h4>
+      <p class="doc-note">Grain : <code>training_program × training_type</code>.</p>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">taux de réussite</span><span class="f-eq">=</span><span class="f-formula">part des formations réussies × 100<span class="col">is_successful</span></span></div>
+        <div class="f-row"><span class="f-kpi">taux d'échec</span><span class="f-eq">=</span><span class="f-formula">part des formations échouées × 100<span class="col">is_failed</span></span></div>
+        <div class="f-row"><span class="f-kpi">coût moyen</span><span class="f-eq">=</span><span class="f-formula">moyenne du coût par session<span class="col">training_cost</span></span></div>
+        <div class="f-row"><span class="f-kpi">durée moyenne</span><span class="f-eq">=</span><span class="f-formula">moyenne des durées en jours<span class="col">training_duration_days</span></span></div>
+        <div class="f-row"><span class="f-kpi">coût total</span><span class="f-eq">=</span><span class="f-formula">somme de tous les coûts de formation<span class="col">training_cost</span></span></div>
+      </div>
+    </div>
+    <div class="doc-block" style="grid-column:span 2"><h4><span class="badge g">GOLD</span>kpi_recruitment_x_training — le croisement différenciant</h4>
+      <p class="doc-note">Grain : <code>status × training_program</code>. Périmètre : candidats présents dans les deux tables. Permet de comparer la réussite en formation selon le parcours de recrutement.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">nombre</span><span class="f-eq">=</span><span class="f-formula">nombre de candidats dans le groupe<span class="col">employee_id</span></span></div>
+          <div class="f-row"><span class="f-kpi">taux de réussite</span><span class="f-eq">=</span><span class="f-formula">part des formations réussies × 100<span class="col">is_successful</span></span></div>
+          <div class="f-row"><span class="f-kpi">coût moyen</span><span class="f-eq">=</span><span class="f-formula">coût moyen de la session<span class="col">training_cost</span></span></div>
+        </div>
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">taux d'offre global</span><span class="f-eq">=</span><span class="f-formula">candidats « Offered » ÷ total × 100<span class="col">is_offered</span></span></div>
+          <div class="f-row"><span class="f-kpi">taux de réussite global</span><span class="f-eq">=</span><span class="f-formula">formations réussies ÷ total × 100<span class="col">is_successful</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Choix de traitement et anomalies détectées</h3>
+  <div class="doc-grid three">
+    <div class="doc-note">Données personnelles retirées en Silver : nom, prénom, email, téléphone, adresse. Seuls le genre, la localisation (ville/état/pays) et l'identifiant sont conservés.</div>
+    <div class="doc-note">Les identifiants des deux tables (<code>applicant_id</code> et <code>employee_id</code>) couvrent exactement la même plage (1001–4000). La jointure est à 100 % sans ligne manquante.</div>
+    <div class="doc-note">636 titres de poste distincts pour 3 000 candidats : forte diversité typique d'un dataset synthétique. Les KPI par poste ne sont pas exposés dans le dashboard — grain trop fin.</div>
+    <div class="doc-note">Format de date source mixte (ex. « 03-Jun-23 ») : parsé avec <code>dayfirst=True</code> et format automatique, puis converti en <code>datetime64</code> standard.</div>
+    <div class="doc-note"><code>is_successful</code> regroupe deux résultats distincts (Passed et Completed) sous un même indicateur de réussite — choix documenté, à affiner selon la définition métier du client.</div>
+    <div class="doc-note">Données synthétiques : les distributions (taux d'offre ~20 %, taux de réussite ~50 %) sont uniformes entre segments, ce qui est peu réaliste. À préciser dans le storytelling portfolio.</div>
+  </div>
+</div></section>
+
+<footer><div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;width:100%">
+  <div class="stack"><span>Python · pandas</span><span>parquet</span><span>architecture médaillon</span><span>modèle dimensionnel</span><span>indicateurs RH</span><span>→ portable Fabric</span></div>
+  <div class="sig">transformer la donnée en décisions · <b>arbi-data</b></div>
+</div></footer>
+
+<script>
+const D = {"totals":{"n_candidates":3000,"n_trainings":3000,"offer_rate":20.3,"success_rate":50.3,"total_training_cost":1675886,"avg_salary":65079},"status_dist":[{"k":"Applied","n":611},{"k":"Offered","n":610},{"k":"In Review","n":595},{"k":"Rejected","n":594},{"k":"Interviewing","n":590}],"by_education":[{"k":"High School","n":738,"offer_rate":19.1,"avg_salary":64549,"avg_exp":10.0},{"k":"Bachelor's Degree","n":785,"offer_rate":20.0,"avg_salary":65428,"avg_exp":9.9},{"k":"Master's Degree","n":736,"offer_rate":22.3,"avg_salary":65482,"avg_exp":10.0},{"k":"PhD","n":741,"offer_rate":20.0,"avg_salary":64837,"avg_exp":9.9}],"by_experience":[{"k":"0-2 ans","n":423,"offer_rate":20.1,"avg_salary":64307},{"k":"3-5 ans","n":424,"offer_rate":18.9,"avg_salary":64444},{"k":"6-10 ans","n":754,"offer_rate":21.4,"avg_salary":64799},{"k":"11-20 ans","n":1399,"offer_rate":20.3,"avg_salary":65656}],"by_gender":[{"k":"Female","n":967,"offer_rate":20.8,"avg_salary":65318},{"k":"Male","n":1030,"offer_rate":21.1,"avg_salary":65699},{"k":"Other","n":1003,"offer_rate":19.1,"avg_salary":64212}],"by_salary":[{"k":"< 40k","n":397,"offer_rate":20.2},{"k":"40-60k","n":922,"offer_rate":19.7},{"k":"60-80k","n":818,"offer_rate":20.0},{"k":"80k+","n":863,"offer_rate":21.3}],"monthly_applications":[{"lab":"mai-23","n":808,"offered":173},{"lab":"juin-23","n":983,"offered":182},{"lab":"juillet-23","n":1047,"offered":227},{"lab":"août-23","n":162,"offered":28}],"status_options":["Tous statuts","Interviewing","Rejected","In Review","Offered","Applied"],"salary_by_edu_status":{"Tous statuts":[{"k":"High School","avg_salary":64549,"n":738},{"k":"Bachelor's Degree","avg_salary":65428,"n":785},{"k":"Master's Degree","avg_salary":65482,"n":736},{"k":"PhD","avg_salary":64837,"n":741}],"Interviewing":[{"k":"High School","avg_salary":63439,"n":140},{"k":"Bachelor's Degree","avg_salary":66021,"n":172},{"k":"Master's Degree","avg_salary":68270,"n":137},{"k":"PhD","avg_salary":64002,"n":141}],"Rejected":[{"k":"High School","avg_salary":61826,"n":152},{"k":"Bachelor's Degree","avg_salary":66217,"n":159},{"k":"Master's Degree","avg_salary":62761,"n":137},{"k":"PhD","avg_salary":64549,"n":146}],"In Review":[{"k":"High School","avg_salary":64807,"n":158},{"k":"Bachelor's Degree","avg_salary":63489,"n":133},{"k":"Master's Degree","avg_salary":63681,"n":149},{"k":"PhD","avg_salary":63988,"n":155}],"Offered":[{"k":"High School","avg_salary":66411,"n":141},{"k":"Bachelor's Degree","avg_salary":66388,"n":157},{"k":"Master's Degree","avg_salary":66140,"n":164},{"k":"PhD","avg_salary":63972,"n":148}],"Applied":[{"k":"High School","avg_salary":66357,"n":147},{"k":"Bachelor's Degree","avg_salary":64695,"n":164},{"k":"Master's Degree","avg_salary":66495,"n":149},{"k":"PhD","avg_salary":67617,"n":151}]},"by_program":[{"k":"Communication Skills","n":673,"success_rate":53.8,"fail_rate":21.8,"avg_cost":542,"avg_duration":3.0,"total_cost":365023},{"k":"Customer Service","n":565,"success_rate":52.7,"fail_rate":24.1,"avg_cost":567,"avg_duration":3.0,"total_cost":320575},{"k":"Leadership Development","n":574,"success_rate":52.8,"fail_rate":22.1,"avg_cost":564,"avg_duration":3.0,"total_cost":323902},{"k":"Project Management","n":609,"success_rate":47.9,"fail_rate":25.8,"avg_cost":564,"avg_duration":3.0,"total_cost":343313},{"k":"Technical Skills","n":579,"success_rate":43.9,"fail_rate":25.7,"avg_cost":558,"avg_duration":2.9,"total_cost":323073}],"by_type":[{"k":"External","n":1491,"success_rate":48.8,"avg_cost":557},{"k":"Internal","n":1509,"success_rate":51.8,"avg_cost":560}],"outcome_dist":[{"k":"Completed","n":770},{"k":"Failed","n":716},{"k":"Incomplete","n":775},{"k":"Passed","n":739}],"program_options":["Tous programmes","Communication Skills","Customer Service","Leadership Development","Project Management","Technical Skills"],"monthly_training":{"Tous programmes":[{"lab":"août-22","n":199,"success_rate":47.7,"total_cost":107024},{"lab":"septembre-22","n":243,"success_rate":56.4,"total_cost":138839},{"lab":"octobre-22","n":269,"success_rate":48.3,"total_cost":154643},{"lab":"novembre-22","n":250,"success_rate":52.0,"total_cost":137657},{"lab":"décembre-22","n":255,"success_rate":48.6,"total_cost":138786},{"lab":"janvier-23","n":254,"success_rate":56.7,"total_cost":145677},{"lab":"février-23","n":230,"success_rate":51.3,"total_cost":130391},{"lab":"mars-23","n":269,"success_rate":52.0,"total_cost":151519},{"lab":"avril-23","n":258,"success_rate":52.7,"total_cost":140061},{"lab":"mai-23","n":272,"success_rate":47.1,"total_cost":158650},{"lab":"juin-23","n":224,"success_rate":47.8,"total_cost":119017},{"lab":"juillet-23","n":242,"success_rate":43.0,"total_cost":133271},{"lab":"août-23","n":35,"success_rate":45.7,"total_cost":20353}],"Communication Skills":[{"lab":"août-22","n":51,"success_rate":45.1,"total_cost":25711},{"lab":"septembre-22","n":57,"success_rate":59.6,"total_cost":32883},{"lab":"octobre-22","n":48,"success_rate":50.0,"total_cost":28003},{"lab":"novembre-22","n":48,"success_rate":50.0,"total_cost":23862},{"lab":"décembre-22","n":58,"success_rate":55.2,"total_cost":31834},{"lab":"janvier-23","n":56,"success_rate":64.3,"total_cost":30879},{"lab":"février-23","n":55,"success_rate":63.6,"total_cost":29231},{"lab":"mars-23","n":60,"success_rate":58.3,"total_cost":31414},{"lab":"avril-23","n":70,"success_rate":57.1,"total_cost":40245},{"lab":"mai-23","n":51,"success_rate":49.0,"total_cost":26266},{"lab":"juin-23","n":60,"success_rate":50.0,"total_cost":31523},{"lab":"juillet-23","n":51,"success_rate":43.1,"total_cost":28441},{"lab":"août-23","n":8,"success_rate":25.0,"total_cost":4730}],"Customer Service":[{"lab":"août-22","n":45,"success_rate":48.9,"total_cost":23955},{"lab":"septembre-22","n":54,"success_rate":63.0,"total_cost":30588},{"lab":"octobre-22","n":50,"success_rate":56.0,"total_cost":31830},{"lab":"novembre-22","n":45,"success_rate":46.7,"total_cost":23148},{"lab":"décembre-22","n":51,"success_rate":49.0,"total_cost":28421},{"lab":"janvier-23","n":52,"success_rate":61.5,"total_cost":29696},{"lab":"février-23","n":37,"success_rate":45.9,"total_cost":22893},{"lab":"mars-23","n":40,"success_rate":52.5,"total_cost":23246},{"lab":"avril-23","n":42,"success_rate":52.4,"total_cost":21298},{"lab":"mai-23","n":53,"success_rate":50.9,"total_cost":33249},{"lab":"juin-23","n":45,"success_rate":60.0,"total_cost":24783},{"lab":"juillet-23","n":42,"success_rate":40.5,"total_cost":22679},{"lab":"août-23","n":9,"success_rate":55.6,"total_cost":4788}],"Leadership Development":[{"lab":"août-22","n":34,"success_rate":41.2,"total_cost":17648},{"lab":"septembre-22","n":40,"success_rate":57.5,"total_cost":24660},{"lab":"octobre-22","n":56,"success_rate":46.4,"total_cost":31746},{"lab":"novembre-22","n":51,"success_rate":52.9,"total_cost":29883},{"lab":"décembre-22","n":40,"success_rate":57.5,"total_cost":22831},{"lab":"janvier-23","n":52,"success_rate":53.8,"total_cost":30287},{"lab":"février-23","n":46,"success_rate":60.9,"total_cost":25263},{"lab":"mars-23","n":53,"success_rate":62.3,"total_cost":30867},{"lab":"avril-23","n":51,"success_rate":52.9,"total_cost":26143},{"lab":"mai-23","n":57,"success_rate":47.4,"total_cost":31759},{"lab":"juin-23","n":40,"success_rate":42.5,"total_cost":22550},{"lab":"juillet-23","n":52,"success_rate":57.7,"total_cost":29417},{"lab":"août-23","n":2,"success_rate":0.0,"total_cost":848}],"Project Management":[{"lab":"août-22","n":38,"success_rate":50.0,"total_cost":19114},{"lab":"septembre-22","n":49,"success_rate":53.1,"total_cost":26505},{"lab":"octobre-22","n":63,"success_rate":44.4,"total_cost":34011},{"lab":"novembre-22","n":48,"success_rate":66.7,"total_cost":28339},{"lab":"décembre-22","n":49,"success_rate":46.9,"total_cost":26550},{"lab":"janvier-23","n":54,"success_rate":53.7,"total_cost":32552},{"lab":"février-23","n":48,"success_rate":47.9,"total_cost":29093},{"lab":"mars-23","n":53,"success_rate":43.4,"total_cost":30419},{"lab":"avril-23","n":48,"success_rate":43.8,"total_cost":26416},{"lab":"mai-23","n":54,"success_rate":42.6,"total_cost":32685},{"lab":"juin-23","n":45,"success_rate":40.0,"total_cost":23586},{"lab":"juillet-23","n":49,"success_rate":40.8,"total_cost":26662},{"lab":"août-23","n":11,"success_rate":63.6,"total_cost":7379}],"Technical Skills":[{"lab":"août-22","n":31,"success_rate":54.8,"total_cost":20595},{"lab":"septembre-22","n":43,"success_rate":46.5,"total_cost":24202},{"lab":"octobre-22","n":52,"success_rate":46.2,"total_cost":29053},{"lab":"novembre-22","n":58,"success_rate":44.8,"total_cost":32424},{"lab":"décembre-22","n":57,"success_rate":36.8,"total_cost":29150},{"lab":"janvier-23","n":40,"success_rate":47.5,"total_cost":22262},{"lab":"février-23","n":44,"success_rate":34.1,"total_cost":23910},{"lab":"mars-23","n":63,"success_rate":44.4,"total_cost":35572},{"lab":"avril-23","n":47,"success_rate":55.3,"total_cost":25959},{"lab":"mai-23","n":57,"success_rate":45.6,"total_cost":34692},{"lab":"juin-23","n":34,"success_rate":44.1,"total_cost":16575},{"lab":"juillet-23","n":48,"success_rate":31.2,"total_cost":26071},{"lab":"août-23","n":5,"success_rate":40.0,"total_cost":2608}]},"cross_status_success":[{"k":"Applied","n":611,"success_rate":53.2,"avg_cost":561},{"k":"In Review","n":595,"success_rate":48.9,"avg_cost":558},{"k":"Interviewing","n":590,"success_rate":48.6,"avg_cost":567},{"k":"Offered","n":610,"success_rate":48.7,"avg_cost":549},{"k":"Rejected","n":594,"success_rate":52.0,"avg_cost":559}],"cross_edu_success":[{"k":"High School","n":738,"success_rate":48.9},{"k":"Bachelor's Degree","n":785,"success_rate":52.7},{"k":"Master's Degree","n":736,"success_rate":50.5},{"k":"PhD","n":741,"success_rate":48.9}],"cross_prog_status":{"Tous statuts":[{"k":"Communication Skills","success_rate":53.8,"n":673},{"k":"Customer Service","success_rate":52.7,"n":565},{"k":"Leadership Development","success_rate":52.8,"n":574},{"k":"Project Management","success_rate":47.9,"n":609},{"k":"Technical Skills","success_rate":43.9,"n":579}],"Interviewing":[{"k":"Communication Skills","success_rate":56.8,"n":132},{"k":"Customer Service","success_rate":48.0,"n":98},{"k":"Leadership Development","success_rate":50.0,"n":120},{"k":"Project Management","success_rate":51.2,"n":129},{"k":"Technical Skills","success_rate":35.1,"n":111}],"Rejected":[{"k":"Communication Skills","success_rate":51.4,"n":138},{"k":"Customer Service","success_rate":56.1,"n":123},{"k":"Leadership Development","success_rate":60.4,"n":111},{"k":"Project Management","success_rate":45.0,"n":111},{"k":"Technical Skills","success_rate":46.8,"n":111}],"In Review":[{"k":"Communication Skills","success_rate":50.0,"n":142},{"k":"Customer Service","success_rate":53.3,"n":122},{"k":"Leadership Development","success_rate":50.0,"n":98},{"k":"Project Management","success_rate":47.5,"n":118},{"k":"Technical Skills","success_rate":43.5,"n":115}],"Offered":[{"k":"Communication Skills","success_rate":51.6,"n":126},{"k":"Customer Service","success_rate":45.8,"n":120},{"k":"Leadership Development","success_rate":51.7,"n":120},{"k":"Project Management","success_rate":44.2,"n":129},{"k":"Technical Skills","success_rate":50.4,"n":115}],"Applied":[{"k":"Communication Skills","success_rate":59.3,"n":135},{"k":"Customer Service","success_rate":60.8,"n":102},{"k":"Leadership Development","success_rate":52.0,"n":125},{"k":"Project Management","success_rate":51.6,"n":122},{"k":"Technical Skills","success_rate":43.3,"n":127}]}}
+;
+const fr = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g,' ');
+const money = n => n>=1e6?(n/1e6).toFixed(2).replace('.',',')+' M $':n>=1e3?Math.round(n/1e3)+' k $':Math.round(n)+' $';
+const pct = n => (typeof n==='number'?n.toFixed(1):n).replace('.',',')+' %';
+const NS='http://www.w3.org/2000/svg';
+const C={bronze:'#A86A3D',silver:'#6C757F',gold:'#A6841C',ink:'#1B1D21',cast:'#2F6F8F',derive:'#3E7D53',struct:'#B0473B',join:'#6E5AA3',muted:'#6B7079',line:'#D6D1C4'};
+const tip=(()=>{const d=document.createElement('div');d.id='tip';document.body.appendChild(d);return d;})();
+function hov(el,txt){el.addEventListener('mousemove',e=>{tip.textContent=txt;tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.opacity='1';});
+  el.addEventListener('mouseenter',()=>el.style.opacity='0.78');el.addEventListener('mouseleave',()=>{tip.style.opacity='0';el.style.opacity='1';});}
+function E(t,a={},txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+function mount(id,w,h){const c=document.getElementById(id);if(!c)return null;c.innerHTML='';const s=E('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%'});s.style.height='auto';s.style.overflow='visible';c.appendChild(s);return s;}
+function barV(id,data,lab,val,color,{w=520,h=250,rot=false,fmt=fr,vals=true,unit=''}={}){
+  const s=mount(id,w,h);if(!s)return;const L=46,R=12,T=22,B=rot?60:30,pw=w-L-R,ph=h-T-B,base=h-B,n=data.length,max=Math.max(...data.map(d=>d[val]))||1;
+  s.appendChild(E('line',{x1:L,y1:base,x2:w-R,y2:base,class:'axis'}));
+  data.forEach((d,i)=>{const bw=pw/n*0.62,cx=L+(i+0.5)*pw/n,bh=d[val]/max*ph,y=base-bh;
+    const r=E('rect',{x:cx-bw/2,y,width:bw,height:Math.max(bh,0),fill:color,rx:1.5});hov(r,`${d[lab]} : ${fmt(d[val])}${unit}`);s.appendChild(r);
+    if(vals)s.appendChild(E('text',{x:cx,y:y-5,'text-anchor':'middle',class:'vlab'},fmt(d[val])));
+    const t=E('text',{x:cx,y:base+15,'text-anchor':rot?'end':'middle',class:'blab'},d[lab]);if(rot)t.setAttribute('transform',`rotate(-40 ${cx} ${base+15})`);s.appendChild(t);});}
+function barH(id,data,lab,val,color,{w=520,labW=160,fmt=fr,unit='',colorFn=null}={}){
+  const rh=28,T=8,B=8,h=data.length*rh+T+B,L=labW,R=70,s=mount(id,w,h);if(!s)return;const pw=w-L-R,max=Math.max(...data.map(d=>d[val]))||1;
+  data.forEach((d,i)=>{const y=T+i*rh+rh/2,bw=d[val]/max*pw;
+    s.appendChild(E('text',{x:L-8,y:y+4,'text-anchor':'end',class:'glab'},d[lab]));
+    const r=E('rect',{x:L,y:y-9,width:Math.max(bw,1),height:18,fill:colorFn?colorFn(d):color,rx:1.5});hov(r,`${d[lab]} : ${fmt(d[val])}${unit}`);s.appendChild(r);
+    s.appendChild(E('text',{x:L+bw+6,y:y+4,class:'vlab'},fmt(d[val])));});}
+function lineDouble(id,data,lab,v1,v2,c1,c2,{w=1080,h=280,f1=fr,f2=fr,l1='',l2=''}={}){
+  const s=mount(id,w,h);if(!s||!data.length)return;const L=56,R=100,T=20,B=40;
+  const pw=w-L-R,ph=h-T-B,n=data.length;
+  const vals1=data.map(d=>d[v1]||0),vals2=data.map(d=>d[v2]||0);
+  const max=Math.max(...vals1,...vals2)||1;
+  const X=i=>L+(n===1?pw/2:i*pw/(n-1)),Y=v=>T+ph-(v/max)*ph;
+  for(let g=0;g<=2;g++){const v=max*g/2,y=Y(v);
+    s.appendChild(E('line',{x1:L,y1:y,x2:w-R,y2:y,stroke:C.line,'stroke-width':g===0?1:0.6,'stroke-dasharray':g===0?'':'3 3'}));
+    s.appendChild(E('text',{x:L-8,y:y+3,'text-anchor':'end',class:'blab'},f1(v)));}
+  [[vals1,c1,v1,f1,l1],[vals2,c2,v2,f2,l2]].forEach(([vals,col,vk,fmt,lbl])=>{
+    s.appendChild(E('polyline',{points:data.map((d,i)=>`${X(i)},${Y(vals[i])}`).join(' '),fill:'none',stroke:col,'stroke-width':2.4,'stroke-linejoin':'round'}));
+    data.forEach((d,i)=>{const cx=X(i),cy=Y(vals[i]);
+      const c=E('circle',{cx,cy,r:3.5,fill:'#FBFAF7',stroke:col,'stroke-width':2});hov(c,`${d[lab]} : ${fmt(vals[i])} ${lbl}`);s.appendChild(c);
+      if(i%2===0||i===n-1)s.appendChild(E('text',{x:cx,y:h-14,'text-anchor':'middle',class:'blab'},d[lab]));});
+    const ly=T+12+([vals1,c1,v1,f1,l1].indexOf(vals)===0?0:18);
+    s.appendChild(E('rect',{x:w-R+8,y:ly-8,width:10,height:10,fill:col,rx:1}));
+    s.appendChild(E('text',{x:w-R+22,y:ly,class:'blab'},lbl));});}
+function donut(id,data,lab,val,colors,{w=360,h=220,fmt=fr}={}){
+  const s=mount(id,w,h);if(!s)return;const cx=95,cy=h/2,r=72,ir=40;
+  const total=data.reduce((a,d)=>a+d[val],0)||1;let ang=-Math.PI/2;
+  data.forEach((d,i)=>{const frac=d[val]/total,a2=ang+frac*2*Math.PI;
+    const x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const xi=cx+ir*Math.cos(a2),yi=cy+ir*Math.sin(a2),xi2=cx+ir*Math.cos(ang),yi2=cy+ir*Math.sin(ang),lg=frac>0.5?1:0;
+    const p=E('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 ${lg} 1 ${x2} ${y2} L ${xi} ${yi} A ${ir} ${ir} 0 ${lg} 0 ${xi2} ${yi2} Z`,fill:colors[i%colors.length]});
+    hov(p,`${d[lab]} : ${fmt(d[val])} (${Math.round(frac*100)}%)`);s.appendChild(p);ang=a2;});
+  data.forEach((d,i)=>{const ly=22+i*22;
+    s.appendChild(E('rect',{x:200,y:ly-9,width:10,height:10,fill:colors[i%colors.length],rx:1}));
+    s.appendChild(E('text',{x:215,y:ly,class:'glab'},d[lab]));
+    s.appendChild(E('text',{x:w-4,y:ly,'text-anchor':'end',class:'vlab'},Math.round(d[val]/total*100)+'%'));});}
+const succColor=d=>{const t=d.success_rate/100;return `rgb(${176+((63-176)*(t))|0},${71+((125-71)*(t))|0},${59+((83-59)*(t))|0})`;};
+const fillSel=(id,opts)=>{document.getElementById(id).innerHTML=opts.map(o=>`<option>${o}</option>`).join('');};
+
+function renderStatic(){
+  const t=D.totals;
+  document.getElementById('kpibar').innerHTML=[
+    [fr(t.n_candidates),'candidats'],
+    [fr(t.n_trainings),'sessions de formation'],
+    [t.offer_rate.toFixed(1).replace('.',',')+' %','taux d\'offre'],
+    [t.success_rate.toFixed(1).replace('.',',')+' %','taux de réussite formation'],
+    [money(t.total_training_cost),'coût total formations'],
+    [money(t.avg_salary),'salaire moyen souhaité']
+  ].map(k=>`<div class="k"><div class="kv">${k[0]}</div><div class="kl">${k[1]}</div></div>`).join('');
+  donut('ch-status',D.status_dist,'k','n',[C.cast,C.gold,C.bronze,C.derive,C.struct]);
+  barH('ch-edu-offer',D.by_education,'k','offer_rate',C.gold,{fmt:d=>d.toFixed(1).replace('.',',')+' %',unit:'',labW:145});
+  barH('ch-exp-offer',D.by_experience,'k','offer_rate',C.bronze,{fmt:d=>d.toFixed(1).replace('.',',')+' %',labW:80});
+  barV('ch-salary-dist',D.by_salary,'k','n',C.cast,{fmt:fr,unit:' candidats'});
+  barH('ch-prog-success',D.by_program,'k','success_rate',C.derive,{fmt:d=>d.toFixed(1).replace('.',',')+' %',labW:175,colorFn:succColor});
+  barH('ch-prog-cost',D.by_program,'k','avg_cost',C.gold,{fmt:money,labW:175});
+  donut('ch-outcome',D.outcome_dist,'k','n',[C.derive,C.cast,C.bronze,C.struct]);
+  barV('ch-type',D.by_type,'k','success_rate',C.silver,{fmt:d=>d.toFixed(1).replace('.',',')+' %',unit:' %'});
+  barH('ch-cross-status',D.cross_status_success,'k','success_rate',C.derive,{fmt:d=>d.toFixed(1).replace('.',',')+' %',labW:110,colorFn:succColor});
+  barH('ch-cross-edu',D.cross_edu_success,'k','success_rate',C.cast,{fmt:d=>d.toFixed(1).replace('.',',')+' %',labW:145,colorFn:succColor});
+  lineDouble('ch-monthly-rec',D.monthly_applications,'lab','n','offered',C.cast,C.gold,{f1:fr,f2:fr,l1:'Candidatures',l2:'Offres'});
+}
+function renderSalEdu(status){
+  barH('ch-sal-edu',D.salary_by_edu_status[status],'k','avg_salary',C.gold,{fmt:money,labW:145,w:1080});
+  document.getElementById('cap-sal-edu').textContent=status;
+}
+function renderTrain(prog){
+  lineDouble('ch-monthly-train',D.monthly_training[prog],'lab','n','total_cost',C.cast,C.gold,{f1:fr,f2:money,l1:'Sessions',l2:'Coût total'});
+  document.getElementById('cap-monthly-train').textContent=prog+' · août 2022 à août 2023';
+}
+function renderCrossProg(status){
+  barH('ch-cross-prog',D.cross_prog_status[status],'k','success_rate',C.derive,{fmt:d=>d.toFixed(1).replace('.',',')+' %',labW:175,w:1080,colorFn:succColor});
+  document.getElementById('cap-cross-prog').textContent=status;
+}
+renderStatic();
+fillSel('sel-status',D.status_options); renderSalEdu(D.status_options[0]);
+fillSel('sel-prog',D.program_options); renderTrain(D.program_options[0]);
+fillSel('sel-cross',D.status_options); renderCrossProg(D.status_options[0]);
+document.getElementById('sel-status').addEventListener('change',e=>renderSalEdu(e.target.value));
+document.getElementById('sel-prog').addEventListener('change',e=>renderTrain(e.target.value));
+document.getElementById('sel-cross').addEventListener('change',e=>renderCrossProg(e.target.value));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.panel[data-panel="${b.dataset.tab}"]`).classList.add('active');
+}));
+</script>
+</body>
+</html>

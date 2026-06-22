@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>freMTPL2 · Pipeline assurance · arbi-data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F1;--paper2:#FBFAF7;--ink:#1B1D21;--muted:#6B7079;
+    --line:#E2DED3;--line2:#D6D1C4;
+    --bronze:#A86A3D;--silver:#6C757F;--gold:#A6841C;
+    --op-cast:#2F6F8F;--op-cast-bg:#E4EEF3;--op-derive:#3E7D53;--op-derive-bg:#E6F0E9;
+    --op-rename:#B5751E;--op-rename-bg:#F6ECDA;--op-struct:#B0473B;--op-struct-bg:#F6E4E1;
+    --op-join:#6E5AA3;--op-join-bg:#ECE7F4;
+    --mono:'JetBrains Mono',ui-monospace,monospace;--disp:'Space Grotesk',sans-serif;--body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;background-position:-1px -1px;}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  header{padding:64px 0 40px;border-bottom:2px solid var(--ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .eyebrow b{color:var(--bronze);font-weight:700}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-.02em;margin:18px 0 14px}
+  h1 .pipe{display:inline-block;background:linear-gradient(90deg,var(--bronze),var(--silver),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:18px;color:#3a3d42;max-width:62ch}
+  .metrics{display:flex;flex-wrap:wrap;gap:0;margin-top:34px;border:1px solid var(--line2);background:var(--paper2)}
+  .metric{flex:1 1 150px;padding:18px 20px;border-right:1px solid var(--line2)}
+  .metric:last-child{border-right:none}
+  .metric .v{font-family:var(--mono);font-weight:700;font-size:24px;letter-spacing:-.02em}
+  .metric .l{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .metric.ok .v{color:var(--op-derive)}
+  section{padding:54px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .sec-title{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.01em}
+  .sec-sub{color:var(--muted);font-size:15px;margin:0 0 28px;max-width:72ch}
+  .legend{display:flex;flex-wrap:wrap;gap:10px}
+  .chip-key{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:2px;border-left:3px solid;display:inline-flex;gap:7px;align-items:center}
+  .k-cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .k-derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .k-struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .k-join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+  .flow{display:grid;grid-template-columns:1fr 1.6fr 1.5fr;gap:18px;align-items:start}
+  .lane-head{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.02em}
+  .lane-head .tag{font-family:var(--mono);font-weight:500;font-size:11px;opacity:.85;margin-left:auto}
+  .lane.bronze .lane-head{background:var(--bronze)}.lane.silver .lane-head{background:var(--silver)}.lane.gold .lane-head{background:var(--gold)}
+  .lane-body{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+  .card{background:var(--paper2);border:1px solid var(--line2);border-radius:3px;border-left-width:4px;padding:13px 14px}
+  .lane.bronze .card{border-left-color:var(--bronze)}.lane.silver .card{border-left-color:var(--silver)}.lane.gold .card{border-left-color:var(--gold)}
+  .card.fact{border-left-color:var(--ink);background:#fff}
+  .card .tname{font-family:var(--mono);font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .dims{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+  .card .role{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:600}
+  .ops{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+  .op{font-family:var(--mono);font-size:11.5px;line-height:1.35;padding:5px 9px;border-radius:2px;border-left:3px solid;display:block}
+  .op .col{font-weight:700}.op .to{opacity:.55;padding:0 4px}
+  .op.cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .op.derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .op.struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .op.join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+  .grp{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px;font-weight:700}
+  .grp:first-child{margin-top:0}
+  .measures{font-family:var(--mono);font-size:10.5px;color:#3a3d42;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2)}
+  .measures b{color:var(--ink)}
+  .starwrap{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:8px}
+  svg{display:block;width:100%;height:auto}
+  /* dashboard */
+  .tabs{display:flex;flex-wrap:wrap;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;text-align:center}
+  .tab:last-child{border-right:none}.tab:hover{background:#fff;color:var(--ink)}.tab.active{background:var(--ink);color:var(--paper)}
+  .tab:focus-visible{outline:2px solid var(--op-cast);outline-offset:-2px}
+  .panel{display:none}.panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1 / -1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .pane svg{overflow:visible}
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}.insight.gold .lbl{color:#5a4a08}
+  .insight.gold b{color:#2a2206}
+  .kpibar{display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:16px 16px;border-right:1px solid var(--line2)}.kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:21px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .ctrl{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
+  .ctrl label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+  .ctrl select{font-family:var(--mono);font-size:13px;padding:8px 12px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:2px;cursor:pointer;min-width:200px}
+  .ctrl select:hover{border-color:var(--ink)}.ctrl select:focus-visible{outline:2px solid var(--op-cast);outline-offset:1px}
+  .hint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .gloss{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 24px}
+  .gloss .g{font-size:12.5px;color:#3a3d42;border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:11px 13px;line-height:1.45}
+  .gloss .g b{color:var(--ink);font-family:var(--disp);font-weight:600;display:block;margin-bottom:2px;font-size:13px}
+  .gloss .formula{display:block;margin-top:9px;font-family:var(--mono);font-size:12px;background:#fff;border:1px solid var(--line2);border-radius:2px;padding:7px 9px;color:var(--ink);letter-spacing:-.01em}
+  .gloss .src{display:block;margin-top:6px;font-size:10.5px;color:var(--muted);font-family:var(--mono)}
+  .gloss code{color:var(--op-cast);font-weight:700;font-family:var(--mono)}
+  @media(max-width:960px){.gloss{grid-template-columns:1fr}}
+  #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:3px;opacity:0;transition:opacity .1s;z-index:99;white-space:nowrap;transform:translate(-50%,-130%)}
+  .axis{stroke:var(--line2);stroke-width:1}
+  .blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}
+  .glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media (max-width:960px){.flow{grid-template-columns:1fr;gap:30px}.dash-grid{grid-template-columns:1fr}
+    .kpibar{grid-template-columns:repeat(2,1fr)}.kpibar .k:nth-child(2n){border-right:none}.tab{flex-basis:33%}}
+  @media (prefers-reduced-motion:no-preference){.card{transition:transform .15s ease,box-shadow .15s ease}.card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}}
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="eyebrow"><b>arbi-data</b> <span>/</span> data lineage <span>/</span> assurance auto</div>
+  <h1>Responsabilité Civile Auto : <span class="pipe">pipeline assurance</span></h1>
+  <p class="lede">Portefeuille français d'assurance auto. Des contrats d'assurance et des sinistres bruts aux indicateurs clés : taux de sinistres, coût moyen, coût du risque par contrat. Chaîne de traitement prototypée en pandas, portable sur Fabric.</p>
+  <div class="metrics">
+    <div class="metric"><div class="v">678 013</div><div class="l">contrats d'assurance</div></div>
+    <div class="metric"><div class="v">26 639</div><div class="l">sinistres déclarés</div></div>
+    <div class="metric"><div class="v">358 360</div><div class="l">années de couverture</div></div>
+    <div class="metric"><div class="v">10,07 %</div><div class="l">taux de sinistres / an</div></div>
+    <div class="metric ok"><div class="v">2 tables</div><div class="l">jointes sur IDpol</div></div>
+  </div>
+</div></header>
+
+<section style="padding-top:40px;padding-bottom:0"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">00</span><h2 class="sec-title">Grammaire des transformations</h2></div>
+  <p class="sec-sub">Chaque chip code une opération réelle du pipeline. La couleur indique sa nature ; le texte monospace nomme la colonne et l'effet.</p>
+  <div class="legend">
+    <span class="chip-key k-cast">typage : float → int / numeric</span>
+    <span class="chip-key k-derive">colonne dérivée : bande / calcul</span>
+    <span class="chip-key k-struct">structure : plafonnage / flag</span>
+    <span class="chip-key k-join">jointure : clé de substitution</span>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Le flux, couche par couche</h2></div>
+  <p class="sec-sub">Deux tables sources liées (un contrat, plusieurs sinistres). La couche Silver nettoie et met en forme les données ; la couche Gold construit le modèle d'analyse et les indicateurs métier.</p>
+  <div class="flow">
+    <div class="lane bronze">
+      <div class="lane-head">Bronze<span class="tag">raw</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">freMTPL2freq<span class="dims">678 013 × 12</span></div><div class="role">contrats d'assurance</div></div>
+        <div class="card"><div class="tname">freMTPL2sev<span class="dims">26 639 × 2</span></div><div class="role">sinistres · montant</div></div>
+      </div>
+    </div>
+    <div class="lane silver">
+      <div class="lane-head">Silver<span class="tag">cleaned · conformed</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">policies<span class="dims">678 013 × 19</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">IDpol</span><span class="to">→</span>int</span>
+            <span class="op struct"><span class="col">Exposure</span><span class="to">clip ≤</span>1 an · 1 224 plafonnées</span>
+            <span class="op derive"><span class="col">+ drivage_band · vehage_band</span></span>
+            <span class="op derive"><span class="col">+ bonusmalus_band</span></span>
+            <span class="op derive"><span class="col">+ area_rank</span><span class="to">A→F =</span>1→6</span>
+            <span class="op derive"><span class="col">+ density_log</span></span>
+            <span class="op struct"><span class="col">+ suspect_block</span><span class="to">IDpol ≤</span>24500</span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">claims<span class="dims">26 639 × 5</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">IDpol · ClaimAmount</span><span class="to">→</span>int · float</span>
+            <span class="op derive"><span class="col">+ claim_sk</span><span class="to">=</span>clé sinistre</span>
+            <span class="op struct"><span class="col">+ is_orphan</span><span class="to">−</span>195 sans contrat</span>
+            <span class="op struct"><span class="col">+ is_large_loss</span><span class="to">></span>100k €</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane gold">
+      <div class="lane-head">Gold<span class="tag">star + marts</span></div>
+      <div class="lane-body">
+        <div class="grp">Axes d'analyse</div>
+        <div class="card"><div class="tname">dim_region<span class="dims">21 × 2</span></div></div>
+        <div class="card"><div class="tname">dim_vehicle_brand<span class="dims">11 × 2</span></div></div>
+        <div class="card"><div class="tname">dim_area<span class="dims">6 × 3</span></div><div class="role">A→F · ordinal</div></div>
+        <div class="grp">Tables de mesures</div>
+        <div class="card fact"><div class="tname">fact_policies<span class="dims">678 013 × 18</span></div>
+          <div class="role">1 ligne = 1 contrat</div>
+          <div class="measures">FK <b>région · constructeur · zone</b><br>mesures <b>durée de couverture · nombre de sinistres</b></div></div>
+        <div class="card fact"><div class="tname">fact_claims<span class="dims">26 639 × 9</span></div>
+          <div class="role">1 ligne = 1 sinistre</div>
+          <div class="measures">FK <b>IDpol → contrat · region_sk · brand_sk</b> · mesure <b>montant du sinistre</b></div></div>
+        <div class="grp">Indicateurs métier</div>
+        <div class="card"><div class="tname">kpi_by_region<span class="dims">21 × 9</span></div></div>
+        <div class="card"><div class="tname">kpi_by_brand<span class="dims">11 × 9</span></div></div>
+        <div class="card"><div class="tname">kpi_by_drivage<span class="dims">7 × 8</span></div></div>
+        <div class="card"><div class="tname">kpi_by_bonusmalus<span class="dims">5 × 8</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Le modèle d'analyse (Gold)</h2></div>
+  <p class="sec-sub">Deux tables de mesures (contrats et sinistres) partagent les mêmes axes d'analyse (région, véhicule). Les sinistres se rattachent aux contrats via l'identifiant IDpol : un contrat peut avoir plusieurs sinistres.</p>
+  <div class="starwrap">
+    <svg viewBox="0 0 1000 520" role="img" aria-label="Schéma en étoile assurance">
+      <defs><style>
+        .dim{fill:#FBFAF7;stroke:var(--gold);stroke-width:2}.fct{fill:#fff;stroke:var(--ink);stroke-width:2}
+        .tt{font-family:var(--mono);font-weight:700;font-size:14px;fill:var(--ink)}.ts{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+        .lk{stroke:var(--line2);stroke-width:1.5}.lk.c{stroke:var(--op-cast);stroke-width:1.5;stroke-dasharray:4 3}
+      
+  /* ---------- DOCUMENTATION ---------- */
+  .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .doc-grid.three{grid-template-columns:repeat(3,1fr)}
+  .doc-block{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px}
+  .doc-block h4{font-family:var(--disp);font-weight:600;font-size:14.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .doc-block h4 .badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:700;letter-spacing:.08em}
+  .doc-block h4 .badge.s{background:var(--silver)}.doc-block h4 .badge.g{background:var(--gold);color:#1a0e00}
+  .doc-block h4 .badge.f{background:var(--ink)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:12px}
+  .doc-table th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line2);padding:5px 8px;text-align:left;white-space:nowrap}
+  .doc-table td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top;line-height:1.4}
+  .doc-table tr:last-child td{border-bottom:none}
+  .doc-table .col-name{font-family:var(--mono);font-weight:700;font-size:11.5px;color:var(--op-cast);white-space:nowrap}
+  .doc-table .col-type{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .doc-table .col-pk{color:var(--gold);font-weight:700}
+  .doc-table .col-fk{color:var(--op-join)}
+  .doc-table .col-sk{color:var(--bronze)}
+  .doc-table .tag-d{background:var(--op-derive-bg);color:var(--op-derive);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .doc-table .tag-f{background:var(--op-struct-bg);color:var(--op-struct);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .doc-table .tag-j{background:var(--op-join-bg);color:var(--op-join);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .formula-box{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:10px 14px;font-family:var(--mono);font-size:12px;margin-top:10px}
+  .formula-box .f-row{display:flex;gap:12px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}
+  .formula-box .f-row:last-child{border-bottom:none}
+  .formula-box .f-kpi{font-weight:700;color:var(--ink);min-width:160px}
+  .formula-box .f-eq{color:var(--muted);padding:0 4px}
+  .formula-box .f-formula{color:var(--op-cast)}
+  .formula-box .col{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:#fff;border:1px solid var(--line2);border-radius:2px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+  .doc-note{font-size:12.5px;color:var(--muted);background:var(--paper2);border-left:3px solid var(--line2);padding:10px 14px;margin:6px 0;border-radius:0 3px 3px 0}
+  .doc-note code{font-family:var(--mono);font-size:11.5px;color:var(--op-cast)}
+  @media(max-width:960px){.doc-grid,.doc-grid.three{grid-template-columns:1fr}}
+
+</style></defs>
+      <line class="lk" x1="170" y1="130" x2="330" y2="350"/>
+      <line class="lk" x1="500" y1="130" x2="380" y2="350"/>
+      <line class="lk" x1="830" y1="130" x2="430" y2="350"/>
+      <line class="lk c" x1="170" y1="145" x2="650" y2="350"/>
+      <line class="lk c" x1="500" y1="145" x2="700" y2="350"/>
+      <line class="lk" x1="450" y1="389" x2="600" y2="389" stroke-width="2.5" stroke="#1B1D21"/>
+      <text class="ts" x="525" y="380" text-anchor="middle">1 → N</text>
+      <g><rect class="dim" x="90" y="80" width="160" height="60" rx="4"/><text class="tt" x="170" y="108" text-anchor="middle">dim_region</text><text class="ts" x="170" y="126" text-anchor="middle">21</text></g>
+      <g><rect class="dim" x="420" y="80" width="160" height="60" rx="4"/><text class="tt" x="500" y="108" text-anchor="middle">dim_vehicle_brand</text><text class="ts" x="500" y="126" text-anchor="middle">11</text></g>
+      <g><rect class="dim" x="750" y="80" width="160" height="60" rx="4"/><text class="tt" x="830" y="108" text-anchor="middle">dim_area</text><text class="ts" x="830" y="126" text-anchor="middle">6 · A→F</text></g>
+      <g><rect class="fct" x="280" y="350" width="190" height="78" rx="4"/><text class="tt" x="375" y="382" text-anchor="middle">fact_policies</text><text class="ts" x="375" y="400" text-anchor="middle">678 013 · contrats</text><text class="ts" x="375" y="416" text-anchor="middle">durée de couverture · nombre de sinistres</text></g>
+      <g><rect class="fct" x="600" y="350" width="190" height="78" rx="4"/><text class="tt" x="695" y="382" text-anchor="middle">fact_claims</text><text class="ts" x="695" y="400" text-anchor="middle">26 639 · sinistres</text><text class="ts" x="695" y="416" text-anchor="middle">montant du sinistre</text></g>
+      <text class="ts" x="90" y="478">- lien plein : axe propre à une table</text>
+      <text class="ts" x="90" y="498" fill="#2F6F8F">- lien pointillé : axe partagé (région, véhicule)</text>
+    </svg>
+  </div>
+</div></section>
+
+<!-- DASHBOARD -->
+<section id="dash"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Le rendu : le tableau de bord</h2></div>
+  <p class="sec-sub">Le résultat final, interactif : filtre par région, survole un graphique pour le détail. Les termes clés, en clair :</p><div class="gloss"><div class="g"><b>Contrat d'assurance</b>le contrat qui couvre un véhicule. Une personne peut en avoir plusieurs.</div><div class="g"><b>Sinistre</b>un accident ou dommage déclaré qui donne lieu à indemnisation.</div><div class="g"><b>Années de couverture</b>le temps réellement assuré, en fraction d'année (6 mois = 0,5). On ramène tout à cette base pour comparer équitablement.<span class="src">colonne <code>exposure</code></span></div><div class="g"><b>Taux de sinistres</b>combien de sinistres surviennent pour 100 contrats couverts pendant un an.<span class="formula">Σ <code>claim_nb</code> / Σ <code>exposure</code> × 100</span><span class="src"><code>claim_nb</code> = sinistres du contrat · <code>exposure</code> = années de couverture</span></div><div class="g"><b>Coût moyen</b>le montant moyen versé pour un sinistre.<span class="formula">Σ <code>montant du sinistre</code> / nombre de sinistres</span><span class="src"><code>montant du sinistre</code> = montant d'un sinistre</span></div><div class="g"><b>Coût du risque</b>ce que le risque coûte à l'assureur, par contrat et par an. Socle du tarif, avant frais et marge.<span class="formula">Σ <code>montant du sinistre</code> / Σ <code>exposure</code></span><span class="src">soit : taux de sinistres × coût moyen</span></div></div>
+  <div class="kpibar" id="kpibar"></div>
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="portefeuille">Vue d'ensemble</button>
+    <button class="tab" data-tab="vehicule">Véhicule</button>
+    <button class="tab" data-tab="conducteur">Conducteur</button>
+    <button class="tab" data-tab="sinistres">Sinistres</button>
+  </div>
+
+  <div class="panel active" data-panel="portefeuille">
+    <div class="dash-grid">
+      <div class="pane full"><h3>Taux de sinistres par région</h3><p class="cap">Pour 100 contrats couverts pendant un an</p><div id="ch-reg-freq"></div></div>
+      <div class="pane"><h3>Coût du risque par région</h3><p class="cap">Coût moyen du risque, par contrat et par an</p><div id="ch-reg-pp"></div></div>
+      <div class="pane"><h3>Coût moyen par région</h3><p class="cap">Montant moyen d'un sinistre (€)</p><div id="ch-reg-sev"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-reg">Région</label><select id="sel-reg"></select><span class="hint">croise marque et âge du conducteur</span></div>
+    <div class="dash-grid">
+      <div class="pane"><h3>Taux de sinistres par marque</h3><p class="cap" id="cap-rb">Toutes régions</p><div id="ch-reg-brand"></div></div>
+      <div class="pane"><h3>Taux de sinistres par âge</h3><p class="cap" id="cap-ra">Toutes régions</p><div id="ch-reg-age"></div></div>
+    </div>
+  </div>
+
+  <div class="panel" data-panel="vehicule">
+    <div class="dash-grid">
+      <div class="pane"><h3>Taux de sinistres par marque</h3><p class="cap">Constructeurs anonymisés B1 à B14</p><div id="ch-brand-freq"></div></div>
+      <div class="pane"><h3>Coût du risque par marque</h3><p class="cap">€ par contrat et par an</p><div id="ch-brand-pp"></div></div>
+      <div class="pane"><h3>Carburant</h3><p class="cap">Taux de sinistres : essence vs diesel</p><div id="ch-gas"></div></div>
+      <div class="pane"><h3>Âge du véhicule</h3><p class="cap">Taux de sinistres par tranche</p><div id="ch-vehage"></div></div>
+    </div>
+  </div>
+
+  <div class="panel" data-panel="conducteur">
+    <div class="dash-grid">
+      <div class="pane"><h3>Taux de sinistres par âge</h3><p class="cap">Pour 100 contrats couverts pendant un an</p><div id="ch-age-freq"></div></div>
+      <div class="pane"><h3>Coût du risque par âge</h3><p class="cap">€ par contrat et par an</p><div id="ch-age-pp"></div></div>
+      <div class="insight full"><div class="big">×&nbsp;14</div><div class="lbl">Le coût du risque passe de 107 € à 1 459 € par an entre les meilleurs et les pires profils. Le bonus-malus (réduction ou majoration selon l'historique d'accidents) trie le risque exactement comme attendu, de façon régulière sur les cinq tranches.</div></div>
+      <div class="pane full"><h3>Taux de sinistres par bonus-malus</h3><p class="cap">Le cœur du calcul de la prime auto</p><div id="ch-bm"></div></div>
+    </div>
+  </div>
+
+  <div class="panel" data-panel="sinistres">
+    <div class="dash-grid">
+      <div class="pane full"><h3>Distribution des montants de sinistre</h3><p class="cap">Quelques sinistres très élevés étirent la distribution vers la droite</p><div id="ch-claimdist"></div></div>
+      <div class="pane"><h3>Taux de sinistres par zone</h3><p class="cap">Zone A (rural) à F (urbain très dense)</p><div id="ch-area"></div></div>
+      <div class="insight gold"><div class="big">2 266 €</div><div class="lbl">Coût moyen d'un sinistre, mais la médiane n'est que 1 172 € : une poignée d'accidents graves (jusqu'à 4 M€) tire la moyenne vers le haut. <b>42 sinistres dépassent 100 k€</b>.</div></div>
+    </div>
+  </div>
+</div></section>
+
+
+<section id="doc" style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Documentation : champs &amp; règles de calcul</h2></div>
+  <p class="sec-sub">Description complète de chaque champ de données : ce qu'il contient, son format, et comment il a été calculé ou transformé. Les formules utilisent les noms de colonnes réels du code.</p>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Tables de données — nettoyées et structurées</h3>
+
+  <div class="doc-grid">
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>policies <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">678 013 lignes — source : freMTPL2freq</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">IDpol</td><td class="col-type">entier</td><td>identifiant unique du contrat · converti depuis décimal en entier</td></tr>
+        <tr><td class="col-name">ClaimNb</td><td class="col-type">entier</td><td>nombre de sinistres déclarés pour ce contrat · repris tel quel depuis la source</td></tr>
+        <tr><td class="col-name">Exposure</td><td class="col-type">décimal</td><td>durée réelle de couverture, en fraction d'année · <span class="tag-f">plafonné</span> à 1 an maximum (1 224 contrats dépassaient cette valeur dans la source)</td></tr>
+        <tr><td class="col-name">VehPower</td><td class="col-type">entier</td><td>niveau de puissance du véhicule (valeur croissante) · repris tel quel</td></tr>
+        <tr><td class="col-name">VehAge</td><td class="col-type">entier</td><td>âge du véhicule en années entières · repris tel quel</td></tr>
+        <tr><td class="col-name">DrivAge</td><td class="col-type">entier</td><td>âge du conducteur principal en années · repris tel quel</td></tr>
+        <tr><td class="col-name">BonusMalus</td><td class="col-type">entier</td><td>historique de conduite : 50 = bonus maximum (bon conducteur), au-dessus de 100 = malus · repris tel quel</td></tr>
+        <tr><td class="col-name">VehBrand</td><td class="col-type">texte</td><td>marque du véhicule, anonymisée (B1 à B14) · aucun décodage officiel disponible</td></tr>
+        <tr><td class="col-name">VehGas</td><td class="col-type">texte</td><td>type de carburant : essence ou diesel · repris tel quel</td></tr>
+        <tr><td class="col-name">Area</td><td class="col-type">texte</td><td>zone de densité de population : A = zone rurale, F = centre urbain dense · repris tel quel</td></tr>
+        <tr><td class="col-name">Density</td><td class="col-type">entier</td><td>nombre d'habitants par km² au lieu de résidence du conducteur · repris tel quel</td></tr>
+        <tr><td class="col-name">Region</td><td class="col-type">texte</td><td>région administrative française (découpage avant la réforme de 2016) · repris tel quel</td></tr>
+        <tr><td class="col-name">exposure_capped</td><td class="col-type">oui / non</td><td><span class="tag-f">marqueur</span> vrai si la durée de couverture source dépassait 1 an (cas anormal)</td></tr>
+        <tr><td class="col-name">drivage_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> tranche d'âge du conducteur (7 groupes de 18-25 à 76 ans et plus)</td></tr>
+        <tr><td class="col-name">vehage_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> tranche d'âge du véhicule (5 groupes de moins d'1 an à 16 ans et plus)</td></tr>
+        <tr><td class="col-name">bonusmalus_band</td><td class="col-type">liste de valeurs</td><td><span class="tag-d">calculé</span> tranche de coefficient bonus-malus (5 groupes, du meilleur bonus au malus fort)</td></tr>
+        <tr><td class="col-name">area_rank</td><td class="col-type">entier</td><td><span class="tag-d">calculé</span> zone de densité convertie en nombre (1 = rural, 6 = urbain dense)</td></tr>
+        <tr><td class="col-name">density_log</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> logarithme de la densité (pour lisser les valeurs extrêmes)</td></tr>
+        <tr><td class="col-name">suspect_block</td><td class="col-type">oui / non</td><td><span class="tag-f">marqueur</span> contrats dont l'identifiant est inférieur à 24 500 — bloc présentant une anomalie connue dans la source</td></tr>
+      </table>
+    </div>
+
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>claims <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">26 639 lignes — source : freMTPL2sev</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">claim_sk</td><td class="col-type">entier</td><td>identifiant unique du sinistre · créé lors du traitement (absent dans la source)</td></tr>
+        <tr><td class="col-name col-fk">IDpol</td><td class="col-type">entier</td><td>lien vers le tableau des contrats · converti en entier</td></tr>
+        <tr><td class="col-name">ClaimAmount</td><td class="col-type">décimal</td><td>montant versé pour ce sinistre, en euros · converti en nombre</td></tr>
+        <tr><td class="col-name">is_orphan</td><td class="col-type">oui / non</td><td><span class="tag-f">marqueur</span> vrai si le contrat associé est introuvable dans les données (195 sinistres concernés)</td></tr>
+        <tr><td class="col-name">is_large_loss</td><td class="col-type">oui / non</td><td><span class="tag-f">marqueur</span> vrai si le montant du sinistre dépasse 100 000 € — sinistres exceptionnels (42 cas)</td></tr>
+      </table>
+
+      <h4 style="margin-top:20px"><span class="badge g">GOLD</span>Tableaux de référence</h4>
+      <table class="doc-table"><tr><th>Tableau</th><th>Clé interne</th><th>Nb de lignes</th><th>Informations clés</th></tr>
+        <tr><td class="col-name">dim_region</td><td class="col-type col-sk">clé interne région</td><td>21</td><td>nom de la région</td></tr>
+        <tr><td class="col-name">dim_vehicle_brand</td><td class="col-type col-sk">clé interne constructeur</td><td>11</td><td>code constructeur (B1 à B14)</td></tr>
+        <tr><td class="col-name">dim_area</td><td class="col-type col-sk">clé interne zone</td><td>6</td><td>zone (A–F) · rang numérique (1–6)</td></tr>
+      </table>
+
+      <h4 style="margin-top:20px"><span class="badge f">GOLD</span>Tableaux de transactions</h4>
+      <table class="doc-table"><tr><th>Tableau</th><th>Nb de lignes</th><th>Liens vers</th><th>Valeurs mesurées</th></tr>
+        <tr><td class="col-name">fact_policies</td><td>678 013</td><td>région · constructeur · zone</td><td>durée de couverture · nombre de sinistres</td></tr>
+        <tr><td class="col-name">fact_claims</td><td>26 639</td><td>contrat · région · constructeur</td><td>montant du sinistre</td></tr>
+      </table>
+      <div class="doc-note" style="margin-top:10px">Un contrat peut avoir plusieurs sinistres associés. Le tableau des sinistres est relié au tableau des contrats via l'identifiant de contrat.</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Indicateurs clés — comment ils sont calculés</h3>
+
+  <div class="doc-grid">
+    <div class="doc-block" style="grid-column:span 2"><h4><span class="badge g">GOLD</span>kpi_by_region · kpi_by_brand · kpi_by_drivage · kpi_by_bonusmalus</h4>
+      <p class="doc-note">Calculé sur les sinistres dont le contrat est identifiable (sinistres orphelins exclus). La durée de couverture et le nombre de sinistres portent sur l'ensemble des contrats du segment analysé.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">nombre de contrats</span><span class="f-eq">=</span><span class="f-formula">nombre de contrats dans le segment<span class="col">IDpol</span></span></div>
+          <div class="f-row"><span class="f-kpi">années de couverture</span><span class="f-eq">=</span><span class="f-formula">somme des durées de couverture (en années)<span class="col">exposure</span></span></div>
+          <div class="f-row"><span class="f-kpi">nombre de sinistres déclarés</span><span class="f-eq">=</span><span class="f-formula">somme des sinistres déclarés sur les contrats<span class="col">claim_nb</span></span></div>
+          <div class="f-row"><span class="f-kpi">charge totale des sinistres</span><span class="f-eq">=</span><span class="f-formula">somme de tous les montants versés<span class="col">claim_amount</span></span></div>
+        </div>
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">coût moyen d'un sinistre</span><span class="f-eq">=</span><span class="f-formula">somme des montants versés ÷ nombre de sinistres<span class="col">claim_amount</span></span></div>
+          <div class="f-row"><span class="f-kpi">taux de sinistres (pour 100 contrats/an)</span><span class="f-eq">=</span><span class="f-formula">sinistres déclarés ÷ années de couverture × 100<span class="col">claim_nb</span> ÷ <span class="col">exposure</span> × 100</span></div>
+          <div class="f-row"><span class="f-kpi">coût du risque par contrat et par an</span><span class="f-eq">=</span><span class="f-formula">charge totale des sinistres ÷ années de couverture<span class="col">claim_amount</span> ÷ <span class="col">exposure</span></span></div>
+          <div class="f-row"><span class="f-kpi">relation clé</span><span class="f-eq">:</span><span class="f-formula">coût du risque = taux de sinistres × coût moyen d'un sinistre</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Choix de traitement et anomalies détectées</h3>
+  <div class="doc-grid three">
+    <div class="doc-note">La durée de couverture a été plafonnée à 1 an : 1 224 contrats dépassaient cette valeur dans la source (jusqu'à 2,01 ans), ce qui est anormal. Un marqueur <code>exposure_capped</code> identifie ces contrats.</div>
+    <div class="doc-note">9 139 contrats dont l'identifiant est inférieur à 24 500 déclarent tous un sinistre, mais seuls 288 ont un montant correspondant dans le tableau des sinistres — anomalie connue de la source. Un marqueur <code>suspect_block</code> les identifie.</div>
+    <div class="doc-note">195 sinistres ne correspondent à aucun contrat identifiable dans la source. Ils sont marqués (<code>is_orphan</code>) et exclus du calcul des indicateurs.</div>
+    <div class="doc-note">42 sinistres dépassent 100 000 € (maximum observé : 4 075 401 €). Ces sinistres exceptionnels sont marqués (<code>is_large_loss</code>) et expliquent pourquoi la moyenne (2 266 €) est bien plus haute que la valeur du milieu de distribution (1 172 €).</div>
+    <div class="doc-note">Les marques de véhicules ont été anonymisées (B1 à B14) par l'organisme qui a publié les données. Aucune correspondance officielle avec les vrais noms de constructeurs n'est disponible. B1, B2 et B12 représentent chacun environ 160 000 contrats.</div>
+    <div class="doc-note">Les variables numériques (âge, bonus-malus, âge du véhicule) sont conservées à la fois dans leur valeur exacte et regroupées en tranches (suffixe <code>_band</code>), afin de permettre l'analyse par groupe sans perdre le détail.</div>
+  </div>
+</div></section>
+
+<footer><div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;width:100%">
+  <div class="stack"><span>Python · pandas</span><span>parquet</span><span>architecture médaillon</span><span>star schema</span><span>indicateurs métier</span><span>→ portable Fabric</span></div>
+  <div class="sig">transformer la donnée en décisions · <b>arbi-data</b></div>
+</div></footer>
+
+<script>
+const D = {"totals":{"policies":678013,"exposure":358360,"claims":26444,"frequency":10.07,"severity":2266,"pure_premium":167.2},"by_region":[{"k":"Corse","freq":13.99,"pp":263.1,"sev":3520.0,"n":4516},{"k":"Champagne-Ardenne","freq":13.29,"pp":399.6,"sev":6250.0,"n":3026},{"k":"Ile-de-France","freq":13.17,"pp":151.1,"sev":1761.0,"n":69791},{"k":"Picardie","freq":12.29,"pp":192.5,"sev":2190.0,"n":7994},{"k":"Rhone-Alpes","freq":11.1,"pp":226.7,"sev":2428.0,"n":84752},{"k":"Alsace","freq":11.0,"pp":100.5,"sev":1320.0,"n":2200},{"k":"Provence-Alpes-Cotes-D'Azur","freq":10.93,"pp":192.2,"sev":2301.0,"n":79315},{"k":"Limousin","freq":10.81,"pp":117.0,"sev":1423.0,"n":4567},{"k":"Languedoc-Roussillon","freq":10.52,"pp":138.1,"sev":1902.0,"n":35805},{"k":"Bourgogne","freq":10.17,"pp":126.7,"sev":1844.0,"n":10492},{"k":"Franche-Comte","freq":10.11,"pp":135.8,"sev":2014.0,"n":1326},{"k":"Midi-Pyrenees","freq":9.81,"pp":76.9,"sev":1462.0,"n":17141},{"k":"Bretagne","freq":9.74,"pp":140.6,"sev":2085.0,"n":42122},{"k":"Haute-Normandie","freq":9.54,"pp":103.1,"sev":1489.0,"n":8784},{"k":"Basse-Normandie","freq":9.52,"pp":139.8,"sev":2057.0,"n":10893},{"k":"Aquitaine","freq":9.42,"pp":133.8,"sev":1816.0,"n":31329},{"k":"Pays-de-la-Loire","freq":9.17,"pp":117.2,"sev":1631.0,"n":38751},{"k":"Nord-Pas-de-Calais","freq":9.12,"pp":136.2,"sev":1890.0,"n":40275},{"k":"Centre","freq":8.96,"pp":185.7,"sev":2946.0,"n":160601},{"k":"Poitou-Charentes","freq":8.67,"pp":116.9,"sev":1631.0,"n":19046},{"k":"Auvergne","freq":8.14,"pp":79.2,"sev":1305.0,"n":5287}],"by_brand":[{"k":"B12","freq":13.67,"pp":135.0,"sev":2083.0,"n":166024},{"k":"B11","freq":10.47,"pp":323.8,"sev":3357.0,"n":13585},{"k":"B5","freq":10.11,"pp":145.2,"sev":1746.0,"n":34753},{"k":"B3","freq":9.86,"pp":181.9,"sev":2140.0,"n":53395},{"k":"B13","freq":9.59,"pp":171.6,"sev":2155.0,"n":12178},{"k":"B4","freq":9.53,"pp":184.9,"sev":2317.0,"n":25179},{"k":"B6","freq":9.33,"pp":124.9,"sev":1564.0,"n":28548},{"k":"B1","freq":9.1,"pp":151.7,"sev":2097.0,"n":162736},{"k":"B10","freq":9.04,"pp":177.4,"sev":2200.0,"n":17707},{"k":"B2","freq":9.03,"pp":198.3,"sev":2763.0,"n":159861},{"k":"B14","freq":7.31,"pp":97.7,"sev":1693.0,"n":4047}],"by_drivage":[{"k":"18-25","freq":17.51,"pp":758.4,"sev":5122.0,"n":38895},{"k":"26-35","freq":9.62,"pp":153.2,"sev":2053.0,"n":149183},{"k":"36-45","freq":9.58,"pp":138.3,"sev":1919.0,"n":170352},{"k":"46-55","freq":10.37,"pp":138.1,"sev":1861.0,"n":161899},{"k":"56-65","freq":9.17,"pp":121.1,"sev":1890.0,"n":90691},{"k":"66-75","freq":9.34,"pp":133.4,"sev":2319.0,"n":48049},{"k":"76+","freq":9.82,"pp":161.4,"sev":2559.0,"n":18944}],"by_bonusmalus":[{"k":"50-60 (bonus fort)","freq":8.28,"pp":107.3,"sev":1932.0,"n":478602},{"k":"61-80","freq":13.31,"pp":230.7,"sev":2069.0,"n":118755},{"k":"81-100 (neutre)","freq":17.79,"pp":552.0,"sev":3850.0,"n":72862},{"k":"101-125","freq":36.84,"pp":630.3,"sev":1844.0,"n":6987},{"k":"126+ (malus fort)","freq":43.96,"pp":1459.2,"sev":3340.0,"n":807}],"by_gas":[{"k":"Regular","freq":10.36,"pp":172.1,"sev":2487.0,"n":345877},{"k":"Diesel","freq":9.76,"pp":161.8,"sev":2052.0,"n":332136}],"by_vehage":[{"k":"0-1 an","freq":16.46,"pp":151.4,"sev":2133.0,"n":129023},{"k":"2-5 ans","freq":9.35,"pp":151.1,"sev":2027.0,"n":191614},{"k":"6-10 ans","freq":9.95,"pp":159.7,"sev":1973.0,"n":171594},{"k":"11-15 ans","freq":8.53,"pp":228.4,"sev":3135.0,"n":134063},{"k":"16 ans +","freq":6.48,"pp":113.7,"sev":2069.0,"n":51719}],"by_area":[{"k":"A","freq":8.17,"pp":124.9,"sev":2301.0,"n":103957},{"k":"B","freq":8.84,"pp":206.4,"sev":3370.0,"n":75459},{"k":"C","freq":9.46,"pp":140.0,"sev":2060.0,"n":191880},{"k":"D","freq":10.93,"pp":187.9,"sev":2243.0,"n":151596},{"k":"E","freq":12.24,"pp":204.1,"sev":2126.0,"n":137167},{"k":"F","freq":13.92,"pp":145.2,"sev":1524.0,"n":17954}],"claim_dist":[{"k":"< 500","n":4661},{"k":"500–1k","n":3580},{"k":"1k–2k","n":14360},{"k":"2k–5k","n":2620},{"k":"5k–10k","n":745},{"k":"10k–50k","n":390},{"k":"50k +","n":88}],"region_options":["Toutes régions","Corse","Champagne-Ardenne","Ile-de-France","Picardie","Rhone-Alpes","Alsace","Provence-Alpes-Cotes-D'Azur","Limousin","Languedoc-Roussillon","Bourgogne","Franche-Comte","Midi-Pyrenees","Bretagne","Haute-Normandie","Basse-Normandie","Aquitaine","Pays-de-la-Loire","Nord-Pas-de-Calais","Centre","Poitou-Charentes","Auvergne"],"region_brand_freq":{"Toutes régions":[{"k":"B1","freq":9.1},{"k":"B10","freq":9.04},{"k":"B11","freq":10.47},{"k":"B12","freq":13.67},{"k":"B13","freq":9.59},{"k":"B14","freq":7.31},{"k":"B2","freq":9.03},{"k":"B3","freq":9.86},{"k":"B4","freq":9.53},{"k":"B5","freq":10.11},{"k":"B6","freq":9.33}],"Corse":[{"k":"B1","freq":20.1},{"k":"B10","freq":0.0},{"k":"B11","freq":21.59},{"k":"B12","freq":13.8},{"k":"B13","freq":4.49},{"k":"B14","freq":0.0},{"k":"B2","freq":12.86},{"k":"B3","freq":10.42},{"k":"B4","freq":6.94},{"k":"B5","freq":16.58},{"k":"B6","freq":23.72}],"Champagne-Ardenne":[{"k":"B1","freq":6.72},{"k":"B10","freq":11.42},{"k":"B11","freq":30.21},{"k":"B12","freq":13.48},{"k":"B13","freq":22.46},{"k":"B14","freq":0.0},{"k":"B2","freq":5.82},{"k":"B3","freq":29.53},{"k":"B4","freq":8.12},{"k":"B5","freq":20.97},{"k":"B6","freq":4.61}],"Ile-de-France":[{"k":"B1","freq":10.6},{"k":"B10","freq":11.44},{"k":"B11","freq":11.96},{"k":"B12","freq":15.47},{"k":"B13","freq":13.12},{"k":"B14","freq":12.01},{"k":"B2","freq":10.38},{"k":"B3","freq":12.28},{"k":"B4","freq":11.02},{"k":"B5","freq":14.32},{"k":"B6","freq":12.5}],"Picardie":[{"k":"B1","freq":9.57},{"k":"B10","freq":6.77},{"k":"B11","freq":16.98},{"k":"B12","freq":13.9},{"k":"B13","freq":14.67},{"k":"B14","freq":22.34},{"k":"B2","freq":11.19},{"k":"B3","freq":12.34},{"k":"B4","freq":12.45},{"k":"B5","freq":13.94},{"k":"B6","freq":11.4}],"Rhone-Alpes":[{"k":"B1","freq":10.48},{"k":"B10","freq":12.05},{"k":"B11","freq":12.62},{"k":"B12","freq":13.8},{"k":"B13","freq":10.42},{"k":"B14","freq":6.49},{"k":"B2","freq":10.39},{"k":"B3","freq":11.52},{"k":"B4","freq":9.84},{"k":"B5","freq":10.67},{"k":"B6","freq":10.28}],"Alsace":[{"k":"B1","freq":10.18},{"k":"B10","freq":12.88},{"k":"B11","freq":19.23},{"k":"B12","freq":18.89},{"k":"B13","freq":10.05},{"k":"B14","freq":0.0},{"k":"B2","freq":6.99},{"k":"B3","freq":7.2},{"k":"B4","freq":8.53},{"k":"B5","freq":6.25},{"k":"B6","freq":9.81}],"Provence-Alpes-Cotes-D'Azur":[{"k":"B1","freq":9.44},{"k":"B10","freq":9.83},{"k":"B11","freq":13.07},{"k":"B12","freq":13.96},{"k":"B13","freq":10.71},{"k":"B14","freq":7.6},{"k":"B2","freq":8.75},{"k":"B3","freq":10.56},{"k":"B4","freq":11.08},{"k":"B5","freq":9.49},{"k":"B6","freq":9.39}],"Limousin":[{"k":"B1","freq":8.71},{"k":"B10","freq":12.13},{"k":"B11","freq":14.35},{"k":"B12","freq":13.37},{"k":"B13","freq":18.67},{"k":"B14","freq":12.02},{"k":"B2","freq":10.3},{"k":"B3","freq":11.37},{"k":"B4","freq":12.76},{"k":"B5","freq":6.09},{"k":"B6","freq":7.85}],"Languedoc-Roussillon":[{"k":"B1","freq":10.17},{"k":"B10","freq":5.88},{"k":"B11","freq":7.82},{"k":"B12","freq":14.72},{"k":"B13","freq":6.79},{"k":"B14","freq":6.2},{"k":"B2","freq":7.78},{"k":"B3","freq":7.6},{"k":"B4","freq":8.79},{"k":"B5","freq":7.36},{"k":"B6","freq":8.63}],"Bourgogne":[{"k":"B1","freq":9.42},{"k":"B10","freq":5.24},{"k":"B11","freq":4.44},{"k":"B12","freq":13.11},{"k":"B13","freq":8.43},{"k":"B14","freq":11.26},{"k":"B2","freq":8.23},{"k":"B3","freq":9.05},{"k":"B4","freq":11.15},{"k":"B5","freq":11.45},{"k":"B6","freq":13.22}],"Franche-Comte":[{"k":"B1","freq":7.67},{"k":"B10","freq":0.0},{"k":"B11","freq":0.0},{"k":"B12","freq":14.86},{"k":"B13","freq":9.68},{"k":"B14","freq":0.0},{"k":"B2","freq":7.45},{"k":"B3","freq":5.03},{"k":"B4","freq":30.92},{"k":"B5","freq":5.5},{"k":"B6","freq":10.41}],"Midi-Pyrenees":[{"k":"B1","freq":6.32},{"k":"B10","freq":4.16},{"k":"B11","freq":5.96},{"k":"B12","freq":13.3},{"k":"B13","freq":6.65},{"k":"B14","freq":2.08},{"k":"B2","freq":7.6},{"k":"B3","freq":7.1},{"k":"B4","freq":4.0},{"k":"B5","freq":6.6},{"k":"B6","freq":10.59}],"Bretagne":[{"k":"B1","freq":9.26},{"k":"B10","freq":9.22},{"k":"B11","freq":7.82},{"k":"B12","freq":12.01},{"k":"B13","freq":10.73},{"k":"B14","freq":4.54},{"k":"B2","freq":9.95},{"k":"B3","freq":9.33},{"k":"B4","freq":9.53},{"k":"B5","freq":10.71},{"k":"B6","freq":9.56}],"Haute-Normandie":[{"k":"B1","freq":8.64},{"k":"B10","freq":9.4},{"k":"B11","freq":6.7},{"k":"B12","freq":12.37},{"k":"B13","freq":7.89},{"k":"B14","freq":0.0},{"k":"B2","freq":8.35},{"k":"B3","freq":10.78},{"k":"B4","freq":5.98},{"k":"B5","freq":10.99},{"k":"B6","freq":8.3}],"Basse-Normandie":[{"k":"B1","freq":10.2},{"k":"B10","freq":5.03},{"k":"B11","freq":6.84},{"k":"B12","freq":10.18},{"k":"B13","freq":10.05},{"k":"B14","freq":2.65},{"k":"B2","freq":8.39},{"k":"B3","freq":9.68},{"k":"B4","freq":8.17},{"k":"B5","freq":13.41},{"k":"B6","freq":10.44}],"Aquitaine":[{"k":"B1","freq":8.41},{"k":"B10","freq":7.39},{"k":"B11","freq":9.85},{"k":"B12","freq":12.63},{"k":"B13","freq":7.96},{"k":"B14","freq":4.41},{"k":"B2","freq":7.72},{"k":"B3","freq":8.57},{"k":"B4","freq":9.13},{"k":"B5","freq":9.49},{"k":"B6","freq":7.6}],"Pays-de-la-Loire":[{"k":"B1","freq":7.85},{"k":"B10","freq":9.19},{"k":"B11","freq":10.3},{"k":"B12","freq":14.38},{"k":"B13","freq":7.96},{"k":"B14","freq":9.17},{"k":"B2","freq":8.12},{"k":"B3","freq":9.95},{"k":"B4","freq":10.31},{"k":"B5","freq":9.65},{"k":"B6","freq":8.51}],"Nord-Pas-de-Calais":[{"k":"B1","freq":7.72},{"k":"B10","freq":7.75},{"k":"B11","freq":7.37},{"k":"B12","freq":12.49},{"k":"B13","freq":8.45},{"k":"B14","freq":10.23},{"k":"B2","freq":7.98},{"k":"B3","freq":9.36},{"k":"B4","freq":7.16},{"k":"B5","freq":8.83},{"k":"B6","freq":8.29}],"Centre":[{"k":"B1","freq":8.8},{"k":"B10","freq":8.24},{"k":"B11","freq":10.07},{"k":"B12","freq":9.41},{"k":"B13","freq":8.84},{"k":"B14","freq":7.15},{"k":"B2","freq":8.92},{"k":"B3","freq":9.14},{"k":"B4","freq":9.56},{"k":"B5","freq":9.96},{"k":"B6","freq":8.43}],"Poitou-Charentes":[{"k":"B1","freq":7.7},{"k":"B10","freq":7.92},{"k":"B11","freq":12.37},{"k":"B12","freq":13.12},{"k":"B13","freq":6.71},{"k":"B14","freq":5.9},{"k":"B2","freq":8.54},{"k":"B3","freq":7.35},{"k":"B4","freq":7.62},{"k":"B5","freq":9.08},{"k":"B6","freq":7.83}],"Auvergne":[{"k":"B1","freq":5.11},{"k":"B10","freq":15.59},{"k":"B11","freq":8.43},{"k":"B12","freq":9.2},{"k":"B13","freq":5.46},{"k":"B14","freq":0.0},{"k":"B2","freq":8.66},{"k":"B3","freq":4.6},{"k":"B4","freq":10.45},{"k":"B5","freq":5.93},{"k":"B6","freq":9.12}]},"region_age_freq":{"Toutes régions":[{"k":"18-25","freq":17.51},{"k":"26-35","freq":9.62},{"k":"36-45","freq":9.58},{"k":"46-55","freq":10.37},{"k":"56-65","freq":9.17},{"k":"66-75","freq":9.34},{"k":"76+","freq":9.82}],"Corse":[{"k":"18-25","freq":34.2},{"k":"26-35","freq":13.16},{"k":"36-45","freq":11.8},{"k":"46-55","freq":16.7},{"k":"56-65","freq":9.26},{"k":"66-75","freq":13.44},{"k":"76+","freq":0.0}],"Champagne-Ardenne":[{"k":"18-25","freq":18.38},{"k":"26-35","freq":17.01},{"k":"36-45","freq":13.49},{"k":"46-55","freq":13.18},{"k":"56-65","freq":8.14},{"k":"66-75","freq":9.55},{"k":"76+","freq":12.45}],"Ile-de-France":[{"k":"18-25","freq":23.68},{"k":"26-35","freq":14.55},{"k":"36-45","freq":12.67},{"k":"46-55","freq":12.2},{"k":"56-65","freq":11.4},{"k":"66-75","freq":13.26},{"k":"76+","freq":9.03}],"Picardie":[{"k":"18-25","freq":21.38},{"k":"26-35","freq":12.32},{"k":"36-45","freq":13.55},{"k":"46-55","freq":11.62},{"k":"56-65","freq":6.88},{"k":"66-75","freq":8.86},{"k":"76+","freq":7.73}],"Rhone-Alpes":[{"k":"18-25","freq":21.3},{"k":"26-35","freq":10.49},{"k":"36-45","freq":10.39},{"k":"46-55","freq":11.42},{"k":"56-65","freq":10.35},{"k":"66-75","freq":9.15},{"k":"76+","freq":13.07}],"Alsace":[{"k":"18-25","freq":29.65},{"k":"26-35","freq":16.01},{"k":"36-45","freq":8.78},{"k":"46-55","freq":13.64},{"k":"56-65","freq":4.9},{"k":"66-75","freq":7.34},{"k":"76+","freq":1.7}],"Provence-Alpes-Cotes-D'Azur":[{"k":"18-25","freq":18.72},{"k":"26-35","freq":10.5},{"k":"36-45","freq":11.16},{"k":"46-55","freq":11.3},{"k":"56-65","freq":9.76},{"k":"66-75","freq":10.66},{"k":"76+","freq":7.98}],"Limousin":[{"k":"18-25","freq":20.18},{"k":"26-35","freq":12.13},{"k":"36-45","freq":9.78},{"k":"46-55","freq":11.17},{"k":"56-65","freq":9.66},{"k":"66-75","freq":7.83},{"k":"76+","freq":10.88}],"Languedoc-Roussillon":[{"k":"18-25","freq":16.86},{"k":"26-35","freq":10.53},{"k":"36-45","freq":10.13},{"k":"46-55","freq":11.78},{"k":"56-65","freq":9.17},{"k":"66-75","freq":7.64},{"k":"76+","freq":9.29}],"Bourgogne":[{"k":"18-25","freq":22.05},{"k":"26-35","freq":10.01},{"k":"36-45","freq":9.71},{"k":"46-55","freq":10.37},{"k":"56-65","freq":8.7},{"k":"66-75","freq":6.32},{"k":"76+","freq":8.29}],"Franche-Comte":[{"k":"18-25","freq":15.25},{"k":"26-35","freq":5.5},{"k":"36-45","freq":11.65},{"k":"46-55","freq":10.79},{"k":"56-65","freq":11.87},{"k":"66-75","freq":13.26},{"k":"76+","freq":0.0}],"Midi-Pyrenees":[{"k":"18-25","freq":17.7},{"k":"26-35","freq":9.95},{"k":"36-45","freq":10.91},{"k":"46-55","freq":8.48},{"k":"56-65","freq":8.95},{"k":"66-75","freq":9.47},{"k":"76+","freq":5.93}],"Bretagne":[{"k":"18-25","freq":15.86},{"k":"26-35","freq":8.78},{"k":"36-45","freq":8.99},{"k":"46-55","freq":9.92},{"k":"56-65","freq":9.76},{"k":"66-75","freq":10.3},{"k":"76+","freq":8.97}],"Haute-Normandie":[{"k":"18-25","freq":16.34},{"k":"26-35","freq":11.83},{"k":"36-45","freq":8.75},{"k":"46-55","freq":8.96},{"k":"56-65","freq":6.35},{"k":"66-75","freq":9.34},{"k":"76+","freq":9.01}],"Basse-Normandie":[{"k":"18-25","freq":15.4},{"k":"26-35","freq":6.78},{"k":"36-45","freq":8.82},{"k":"46-55","freq":10.95},{"k":"56-65","freq":8.53},{"k":"66-75","freq":9.41},{"k":"76+","freq":11.17}],"Aquitaine":[{"k":"18-25","freq":16.6},{"k":"26-35","freq":9.73},{"k":"36-45","freq":9.19},{"k":"46-55","freq":9.44},{"k":"56-65","freq":8.62},{"k":"66-75","freq":7.97},{"k":"76+","freq":7.72}],"Pays-de-la-Loire":[{"k":"18-25","freq":17.04},{"k":"26-35","freq":7.86},{"k":"36-45","freq":8.4},{"k":"46-55","freq":10.35},{"k":"56-65","freq":7.89},{"k":"66-75","freq":8.99},{"k":"76+","freq":8.81}],"Nord-Pas-de-Calais":[{"k":"18-25","freq":16.74},{"k":"26-35","freq":9.62},{"k":"36-45","freq":9.31},{"k":"46-55","freq":8.82},{"k":"56-65","freq":6.68},{"k":"66-75","freq":7.36},{"k":"76+","freq":7.69}],"Centre":[{"k":"18-25","freq":14.81},{"k":"26-35","freq":7.54},{"k":"36-45","freq":7.84},{"k":"46-55","freq":9.47},{"k":"56-65","freq":8.59},{"k":"66-75","freq":9.21},{"k":"76+","freq":10.92}],"Poitou-Charentes":[{"k":"18-25","freq":15.89},{"k":"26-35","freq":7.5},{"k":"36-45","freq":8.94},{"k":"46-55","freq":8.46},{"k":"56-65","freq":9.08},{"k":"66-75","freq":7.02},{"k":"76+","freq":7.6}],"Auvergne":[{"k":"18-25","freq":17.7},{"k":"26-35","freq":6.84},{"k":"36-45","freq":7.16},{"k":"46-55","freq":9.19},{"k":"56-65","freq":8.23},{"k":"66-75","freq":4.8},{"k":"76+","freq":7.46}]}};
+const fr = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g,'\u00a0');
+const dec = (n,d=2)=> Number(n).toFixed(d).replace('.',',');
+const eur = n => n>=1e6 ? dec(n/1e6,1)+'\u00a0M€' : fr(n)+'\u00a0€';
+const NS='http://www.w3.org/2000/svg';
+const C={bronze:'#A86A3D',silver:'#6C757F',gold:'#A6841C',ink:'#1B1D21',cast:'#2F6F8F',derive:'#3E7D53',struct:'#B0473B',join:'#6E5AA3',muted:'#6B7079',line:'#D6D1C4'};
+const tip=(()=>{const d=document.createElement('div');d.id='tip';document.body.appendChild(d);return d;})();
+function hov(el,txt){el.addEventListener('mousemove',e=>{tip.textContent=txt;tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.opacity='1';});
+  el.addEventListener('mouseenter',()=>el.style.opacity='0.78');el.addEventListener('mouseleave',()=>{tip.style.opacity='0';el.style.opacity='1';});}
+function Ee(t,a={},txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+function mount(id,w,h){const c=document.getElementById(id);if(!c)return null;c.innerHTML='';const s=Ee('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%'});s.style.height='auto';s.style.overflow='visible';c.appendChild(s);return s;}
+function barV(id,data,lab,val,color,{w=520,h=250,rot=false,fmt=fr,vals=true,unit='',colorFn=null}={}){
+  const s=mount(id,w,h);if(!s)return;const L=46,R=12,T=22,B=rot?60:30,pw=w-L-R,ph=h-T-B,base=h-B,n=data.length,max=Math.max(...data.map(d=>d[val]))||1;
+  s.appendChild(Ee('line',{x1:L,y1:base,x2:w-R,y2:base,class:'axis'}));
+  data.forEach((d,i)=>{const bw=pw/n*0.62,cx=L+(i+0.5)*pw/n,bh=d[val]/max*ph,y=base-bh;
+    const r=Ee('rect',{x:cx-bw/2,y,width:bw,height:Math.max(bh,0),fill:colorFn?colorFn(d):color,rx:1.5});hov(r,`${d[lab]} · ${fmt(d[val])}${unit}`);s.appendChild(r);
+    if(vals)s.appendChild(Ee('text',{x:cx,y:y-5,'text-anchor':'middle',class:'vlab'},fmt(d[val])));
+    const t=Ee('text',{x:cx,y:base+15,'text-anchor':rot?'end':'middle',class:'blab'},d[lab]);if(rot)t.setAttribute('transform',`rotate(-40 ${cx} ${base+15})`);s.appendChild(t);});}
+function barH(id,data,lab,val,color,{w=520,labW=128,fmt=fr,colorFn=null,unit=''}={}){
+  const rh=28,T=8,B=8,h=data.length*rh+T+B,L=labW,R=66,s=mount(id,w,h);if(!s)return;const pw=w-L-R,max=Math.max(...data.map(d=>d[val]))||1;
+  data.forEach((d,i)=>{const y=T+i*rh+rh/2,bw=d[val]/max*pw;
+    s.appendChild(Ee('text',{x:L-8,y:y+4,'text-anchor':'end',class:'glab'},d[lab]));
+    const r=Ee('rect',{x:L,y:y-9,width:Math.max(bw,1),height:18,fill:colorFn?colorFn(d):color,rx:1.5});hov(r,`${d[lab]} · ${fmt(d[val])}${unit}`);s.appendChild(r);
+    s.appendChild(Ee('text',{x:L+bw+6,y:y+4,class:'vlab'},fmt(d[val])));});}
+const freqColor=d=>{const t=Math.min(d.freq/44,1);return `rgb(${176+((220-176)*(1-t))|0},${71+((150-71)*(1-t))|0},${59+((130-59)*(1-t))|0})`;};
+const fillSel=(id,opts)=>{document.getElementById(id).innerHTML=opts.map(o=>`<option>${o}</option>`).join('');};
+
+function renderStatic(){
+  const t=D.totals;
+  document.getElementById('kpibar').innerHTML=[
+    [fr(t.policies),'contrats'],[fr(t.exposure),'années de couverture'],[fr(t.claims),'sinistres déclarés'],
+    [dec(t.frequency)+'\u00a0%','taux de sinistres / an'],[eur(t.severity),'coût moyen / sinistre'],[eur(t.pure_premium),'coût du risque / contrat']
+  ].map(k=>`<div class="k"><div class="kv">${k[0]}</div><div class="kl">${k[1]}</div></div>`).join('');
+  barH('ch-reg-freq',D.by_region,'k','freq',C.struct,{w:1080,labW:150,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  barH('ch-reg-pp',[...D.by_region].sort((a,b)=>b.pp-a.pp),'k','pp',C.gold,{labW:150,fmt:eur});
+  barH('ch-reg-sev',[...D.by_region].sort((a,b)=>b.sev-a.sev),'k','sev',C.cast,{labW:150,fmt:eur});
+  barH('ch-brand-freq',D.by_brand,'k','freq',C.struct,{labW:60,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  barH('ch-brand-pp',[...D.by_brand].sort((a,b)=>b.pp-a.pp),'k','pp',C.gold,{labW:60,fmt:eur});
+  barV('ch-gas',D.by_gas,'k','freq',C.bronze,{fmt:d=>dec(d),unit:' sinistres/100 contrats'});
+  barV('ch-vehage',D.by_vehage,'k','freq',C.silver,{rot:true,fmt:d=>dec(d),unit:' sinistres/100 contrats'});
+  barH('ch-age-freq',D.by_drivage,'k','freq',C.struct,{labW:60,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  barH('ch-age-pp',D.by_drivage,'k','pp',C.gold,{labW:60,fmt:eur});
+  barH('ch-bm',D.by_bonusmalus,'k','freq',C.struct,{w:1080,labW:170,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  barV('ch-claimdist',D.claim_dist,'k','n',C.cast,{w:1080,h:280,unit:' sinistres'});
+  barV('ch-area',D.by_area,'k','freq',C.bronze,{fmt:d=>dec(d),unit:' sinistres/100 contrats'});
+}
+function renderRegion(rg){
+  barH('ch-reg-brand',D.region_brand_freq[rg],'k','freq',C.struct,{labW:60,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  barH('ch-reg-age',D.region_age_freq[rg],'k','freq',C.struct,{labW:60,fmt:d=>dec(d),unit:' sinistres/100 contrats',colorFn:freqColor});
+  document.getElementById('cap-rb').textContent=rg; document.getElementById('cap-ra').textContent=rg;
+}
+renderStatic();
+fillSel('sel-reg',D.region_options); renderRegion(D.region_options[0]);
+document.getElementById('sel-reg').addEventListener('change',e=>renderRegion(e.target.value));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.panel[data-panel="${b.dataset.tab}"]`).classList.add('active');
+}));
+</script>
+</body>
+</html>

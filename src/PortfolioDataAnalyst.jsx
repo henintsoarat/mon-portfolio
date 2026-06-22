@@ -180,7 +180,7 @@ const T = {
           problem: "Chaque semaine, vos équipes consolident à la main des données venues de plusieurs fichiers et applications. Le travail est sérieux, mais le résultat reste fragile : selon la source ouverte, les chiffres présentés en réunion ne concordent pas toujours. Vous passez alors plus de temps à vérifier les données qu'à les exploiter, les décisions se prennent en retard, et la confiance dans le reporting s'érode. À mesure que l'activité grandit, ce bricolage devient un point de blocage.",
           what: "Un tableau de bord unique, fiable et lisible, construit autour des décisions que vous avez réellement à prendre, pas une collection de graphiques. Chaque indicateur est défini avec vous, relié à une action concrète et accessible selon le profil de chacun. Les sources sont connectées et fiabilisées une fois pour toutes : fini la ressaisie. Vos équipes partagent enfin une même version des chiffres et décident plus vite, sur une base solide.",
           deliverables: ["Atelier de cadrage métier", "Connexion et fiabilisation des sources", "Modélisation des données", "Développement du tableau de bord Power BI", "Gestion des accès (RLS)", "Documentation & formation"],
-          price: "À partir de 4 500 € TTC",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -203,7 +203,7 @@ const T = {
           problem: "Votre environnement Power BI s'est construit au fil des demandes : un rapport ajouté ici, quelques indicateurs là, plusieurs personnes qui ont modifié les modèles au fil du temps. Aujourd'hui, les rapports rament, certains chiffres sont contestés en réunion, et la moindre évolution demande plus d'efforts que prévu. Personne n'a de vision claire de ce qui tourne sous le capot, et la dette technique ralentit tout le monde sans qu'on sache par où commencer.",
           what: "Un diagnostic complet et lisible de votre parc : performances, modèle de données, qualité des indicateurs, sécurité des accès. Surtout, vous repartez avec un plan d'action priorisé : une matrice impact/effort qui dit quoi corriger, dans quel ordre et pourquoi, accompagnée de quick wins applicables tout de suite. Vous reprenez le contrôle de votre environnement au lieu de le subir, et vos évolutions futures redeviennent simples.",
           deliverables: ["Analyse des performances", "Revue du modèle de données", "Contrôle des KPI et indicateurs", "Audit sécurité & accès", "Plan d'action priorisé"],
-          price: "À partir de 3 000 € TTC",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -226,7 +226,7 @@ const T = {
           problem: "Votre organisation s'appuie depuis des années sur Cognos, Excel ou d'autres outils historiques. Ils ont fait le travail, mais aujourd'hui ils coûtent cher à maintenir, les compétences pour les faire vivre se raréfient, et chaque évolution se transforme en chantier. Vous savez qu'il faut moderniser, mais migrer des centaines de rapports sans interrompre l'activité fait hésiter, et le statu quo s'installe.",
           what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, menée par lots pour ne jamais rompre le service. On démarre par un inventaire, une cartographie de l'existant et un lot pilote validé : la démarche est éprouvée avant d'être généralisée. À l'arrivée, vous gagnez un socle moderne, plus rapide à faire évoluer, et vos équipes montent en compétence au passage. Cette méthode, je l'ai appliquée sur la migration de plus de 750 rapports Cognos vers Power BI Report Builder.",
           deliverables: ["Inventaire & cartographie de l'existant", "Définition de l'architecture cible", "Migration d'un lot pilote", "Plan de migration détaillé", "Documentation technique & fonctionnelle", "Transfert de compétences"],
-          price: "À partir de 6 000 € TTC",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -236,7 +236,7 @@ const T = {
                 included: ["Inventaire des rapports existants", "Cartographie de l'environnement BI", "Définition de l'architecture cible", "Migration d'un lot pilote", "Validation métier", "Documentation de migration", "Accompagnement des équipes", "Audit de l'existant", "Plan de migration détaillé", "Refonte des règles métier lorsque nécessaire pour assurer la cohérence de la cible"],
               },
               {
-                title: "Le forfait de départ à 6 000 € TTC comprend",
+                title: "Le forfait de départ comprend",
                 negative: false,
                 included: ["Audit de l'existant", "Cartographie de l'environnement BI", "Définition de l'architecture cible", "Migration d'un lot pilote", "Élaboration du plan de migration"],
               },
@@ -457,7 +457,7 @@ const T = {
           problem: "Every week your teams manually consolidate data from multiple files. Figures differ depending on the source, decisions are delayed.",
           what: "A single, reliable, readable dashboard: each metric defined with you and tied to a concrete business decision.",
           deliverables: ["Business scoping workshop", "Source connection & validation", "Data modelling", "Power BI dashboard development", "Access control (RLS)", "Documentation & training"],
-          price: "From €4,500 excl. VAT",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -480,7 +480,7 @@ const T = {
           problem: "Reports are getting slower, some figures are disputed and every change takes more effort than expected.",
           what: "A full diagnosis of your Power BI environment with a prioritised action plan.",
           deliverables: ["Performance analysis", "Data model review", "KPI & indicator audit", "Security & access audit", "Prioritised action plan"],
-          price: "From €3,000 excl. VAT",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -503,7 +503,7 @@ const T = {
           problem: "Your organisation relies on Cognos, Excel or legacy tools that are now slowing down every change.",
           what: "A progressive, controlled migration to Power BI and Microsoft Fabric, backed by hands-on experience migrating Cognos reports to Power BI Report Builder with zero service disruption.",
           deliverables: ["Inventory & mapping of existing reports", "Target architecture definition", "Pilot batch migration", "Detailed migration plan", "Technical & functional documentation", "Knowledge transfer"],
-          price: "From €6,000 excl. VAT",
+          price: "TJM 400 €",
           commitment: null,
           back: {
             sections: [
@@ -513,7 +513,7 @@ const T = {
                 included: ["Inventory of existing reports", "BI environment mapping", "Target architecture definition", "Pilot batch migration", "Business validation", "Migration documentation", "Team support", "Existing system audit", "Detailed migration plan", "Business rule rework where needed to ensure target consistency"],
               },
               {
-                title: "The €6,000 incl. VAT starting package includes",
+                title: "The starting package includes",
                 negative: false,
                 included: ["Existing system audit", "BI environment mapping", "Target architecture definition", "Pilot batch migration", "Migration plan development"],
               },
@@ -1426,30 +1426,25 @@ export default function PortfolioDataAnalyst() {
               <span className="text-3xl">📊</span>
               <h2 className="text-3xl font-bold">{lang === 'en' ? 'Data Piloting & Reporting' : 'Pilotage & Reporting Data'}</h2>
             </div>
-            <div className="space-y-6">
-              {(lang === 'fr' ? [
-                { emoji: "📉", title: "Pilotage d'activité Assurance", desc: "Création de dashboards opérationnels pour le suivi des délais, KPI métiers et performances des équipes expertise.", tags: ["Power BI", "DAX", "Microsoft Fabric"] },
-                { emoji: "⚙️", title: "Automatisation de flux de données", desc: "Automatisation des traitements et reportings via Python et n8n afin de réduire les tâches manuelles répétitives.", tags: ["Python", "n8n", "REST API"] },
-                { emoji: "🗄️", title: "Modélisation & Reporting", desc: "Conception de modèles de données orientés métier pour améliorer la qualité des analyses et la prise de décision.", tags: ["SQL", "Cognos Analytics", "DataViz"] },
-              ] : [
-                { emoji: "📉", title: "Insurance Activity Piloting", desc: "Operational dashboards for tracking deadlines, business KPIs, and expertise team performance.", tags: ["Power BI", "DAX", "Microsoft Fabric"] },
-                { emoji: "⚙️", title: "Data Flow Automation", desc: "Automated data processing and reporting with Python and n8n to reduce repetitive manual tasks.", tags: ["Python", "n8n", "REST API"] },
-                { emoji: "🗄️", title: "Modelling & Reporting", desc: "Business-oriented data models to improve analysis quality and support decision-making.", tags: ["SQL", "Cognos Analytics", "DataViz"] },
-              ]).map(({ emoji, title, desc, tags }) => (
-                <div key={title} className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
-                  <div className="flex items-start gap-4">
-                    <span className="text-3xl">{emoji}</span>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold mb-2">{title}</h3>
-                      <p className="text-[#A1A1AA] text-sm leading-relaxed mb-3">{desc}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {tags.map(t => (
-                          <span key={t} className="px-2 py-0.5 text-xs rounded-full bg-slate-800 border border-slate-700 text-[#A1A1AA]">{t}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {[
+                { emoji: "🛡️", labelFr: "Assurances",  labelEn: "Insurance",   file: "/projects/assurances.html" },
+                { emoji: "🛒", labelFr: "Retail",       labelEn: "Retail",      file: "/projects/retail.html" },
+                { emoji: "👥", labelFr: "RH",           labelEn: "HR",          file: "/projects/RH.html" },
+              ].map(({ emoji, labelFr, labelEn, file }) => (
+                <button
+                  key={file}
+                  onClick={() => window.open(file, '_blank')}
+                  className="flex flex-col items-center justify-center gap-3 bg-[#0D1117] border border-[#27272A] hover:border-[#00F0FF]/50 hover:bg-[#00F0FF]/5 rounded-lg p-8 transition-all duration-200 group cursor-pointer"
+                >
+                  <span className="text-4xl">{emoji}</span>
+                  <span className="text-base font-bold text-white group-hover:text-[#00F0FF] transition-colors">
+                    {lang === 'en' ? labelEn : labelFr}
+                  </span>
+                  <span className="text-xs font-mono text-[#A1A1AA] group-hover:text-[#00F0FF]/60 transition-colors uppercase tracking-widest">
+                    {lang === 'en' ? 'View projects →' : 'Voir les projets →'}
+                  </span>
+                </button>
               ))}
             </div>
           </div>
