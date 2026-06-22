@@ -319,7 +319,7 @@ const TOPIC_SUGGESTIONS = [
   "DataViz : pourquoi un bon dashboard commence avant Power BI",
 ];
 
-const API_BASE = "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 export default function App({ onClose }) {
   const [tab, setTab] = useState("compose");

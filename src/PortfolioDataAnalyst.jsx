@@ -179,7 +179,6 @@ const T = {
           title: "Tableau de bord décisionnel Power BI",
           problem: "Chaque semaine, vos équipes consolident à la main des données venues de plusieurs fichiers et applications. Le travail est sérieux, mais le résultat reste fragile : selon la source ouverte, les chiffres présentés en réunion ne concordent pas toujours. Vous passez alors plus de temps à vérifier les données qu'à les exploiter, les décisions se prennent en retard, et la confiance dans le reporting s'érode. À mesure que l'activité grandit, ce bricolage devient un point de blocage.",
           what: "Un tableau de bord unique, fiable et lisible, construit autour des décisions que vous avez réellement à prendre, pas une collection de graphiques. Chaque indicateur est défini avec vous, relié à une action concrète et accessible selon le profil de chacun. Les sources sont connectées et fiabilisées une fois pour toutes : fini la ressaisie. Vos équipes partagent enfin une même version des chiffres et décident plus vite, sur une base solide.",
-          deliverables: ["Atelier de cadrage métier", "Connexion et fiabilisation des sources", "Modélisation des données", "Développement du tableau de bord Power BI", "Gestion des accès (RLS)", "Documentation & formation"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -202,7 +201,6 @@ const T = {
           title: "Audit & optimisation Power BI",
           problem: "Votre environnement Power BI s'est construit au fil des demandes : un rapport ajouté ici, quelques indicateurs là, plusieurs personnes qui ont modifié les modèles au fil du temps. Aujourd'hui, les rapports rament, certains chiffres sont contestés en réunion, et la moindre évolution demande plus d'efforts que prévu. Personne n'a de vision claire de ce qui tourne sous le capot, et la dette technique ralentit tout le monde sans qu'on sache par où commencer.",
           what: "Un diagnostic complet et lisible de votre parc : performances, modèle de données, qualité des indicateurs, sécurité des accès. Surtout, vous repartez avec un plan d'action priorisé : une matrice impact/effort qui dit quoi corriger, dans quel ordre et pourquoi, accompagnée de quick wins applicables tout de suite. Vous reprenez le contrôle de votre environnement au lieu de le subir, et vos évolutions futures redeviennent simples.",
-          deliverables: ["Analyse des performances", "Revue du modèle de données", "Contrôle des KPI et indicateurs", "Audit sécurité & accès", "Plan d'action priorisé"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -225,7 +223,6 @@ const T = {
           title: "Migration Cognos vers Power BI & Microsoft Fabric",
           problem: "Votre organisation s'appuie depuis des années sur Cognos, Excel ou d'autres outils historiques. Ils ont fait le travail, mais aujourd'hui ils coûtent cher à maintenir, les compétences pour les faire vivre se raréfient, et chaque évolution se transforme en chantier. Vous savez qu'il faut moderniser, mais migrer des centaines de rapports sans interrompre l'activité fait hésiter, et le statu quo s'installe.",
           what: "Une migration progressive et sécurisée vers Power BI et Microsoft Fabric, menée par lots pour ne jamais rompre le service. On démarre par un inventaire, une cartographie de l'existant et un lot pilote validé : la démarche est éprouvée avant d'être généralisée. À l'arrivée, vous gagnez un socle moderne, plus rapide à faire évoluer, et vos équipes montent en compétence au passage. Cette méthode, je l'ai appliquée sur la migration de plus de 750 rapports Cognos vers Power BI Report Builder.",
-          deliverables: ["Inventaire & cartographie de l'existant", "Définition de l'architecture cible", "Migration d'un lot pilote", "Plan de migration détaillé", "Documentation technique & fonctionnelle", "Transfert de compétences"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -253,7 +250,6 @@ const T = {
           title: "Partenaire data longue durée",
           problem: "Vous avez investi dans des tableaux de bord et des outils de reporting, mais les besoins métier, eux, continuent d'évoluer. De nouveaux indicateurs apparaissent, les questions affluent, et tout repose sur des interventions ponctuelles qu'il faut relancer à chaque fois. Résultat : vos outils vieillissent plus vite qu'ils ne s'améliorent, et vous dépendez de prestataires qu'il faut à chaque fois remettre dans le contexte.",
           what: "Un partenaire data unique, disponible dans la durée, qui connaît vos enjeux et votre organisation. Il fait évoluer vos tableaux de bord, crée de nouveaux KPI, automatise les tâches chronophages et accompagne vos équipes, sans que vous ayez à mobiliser plusieurs prestataires. Un budget mensuel lissé, des priorités revues ensemble, une expertise transverse sur toute votre chaîne data. Vos outils progressent au rythme de votre activité, au lieu de prendre du retard.",
-          deliverables: ["Évolutions & améliorations des tableaux de bord", "Création de nouveaux KPI", "Automatisation des flux (Python, Fabric)", "Ateliers métiers", "Accompagnement des équipes", "Conseil & support continu"],
           price: "4 000 € TTC / mois",
           commitment: "Engagement minimum 3 mois",
           back: {
@@ -456,7 +452,6 @@ const T = {
           title: "Decision-making Power BI Dashboard",
           problem: "Every week your teams manually consolidate data from multiple files. Figures differ depending on the source, decisions are delayed.",
           what: "A single, reliable, readable dashboard: each metric defined with you and tied to a concrete business decision.",
-          deliverables: ["Business scoping workshop", "Source connection & validation", "Data modelling", "Power BI dashboard development", "Access control (RLS)", "Documentation & training"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -479,7 +474,6 @@ const T = {
           title: "Power BI Audit & Optimisation",
           problem: "Reports are getting slower, some figures are disputed and every change takes more effort than expected.",
           what: "A full diagnosis of your Power BI environment with a prioritised action plan.",
-          deliverables: ["Performance analysis", "Data model review", "KPI & indicator audit", "Security & access audit", "Prioritised action plan"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -502,7 +496,6 @@ const T = {
           title: "Cognos to Power BI & Microsoft Fabric Migration",
           problem: "Your organisation relies on Cognos, Excel or legacy tools that are now slowing down every change.",
           what: "A progressive, controlled migration to Power BI and Microsoft Fabric, backed by hands-on experience migrating Cognos reports to Power BI Report Builder with zero service disruption.",
-          deliverables: ["Inventory & mapping of existing reports", "Target architecture definition", "Pilot batch migration", "Detailed migration plan", "Technical & functional documentation", "Knowledge transfer"],
           price: "TJM 400 €",
           commitment: null,
           back: {
@@ -530,7 +523,6 @@ const T = {
           title: "Long-term Data Partner",
           problem: "Your dashboards exist but are ageing: needs keep evolving and everything relies on one-off interventions you have to chase each time.",
           what: "A single data partner covering dashboards, data flows and automation: no need to juggle multiple providers.",
-          deliverables: ["Dashboard updates & improvements", "New KPIs on demand", "Data flow automation (Python, Fabric)", "Business workshops", "Team support & upskilling", "Ongoing advice & support"],
           price: "€4,000 excl. VAT / month",
           commitment: "3-month minimum engagement",
           back: {
@@ -643,7 +635,7 @@ function ProjectCard({ project, lang, onAction }) {
     <div className="core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-8 flex flex-col h-full">
       <div className="mb-6">
         <div className="w-8 h-8 rounded bg-[#00F0FF]/10 border border-[#00F0FF]/20 flex items-center justify-center">
-          <span className="w-2 h-2 rounded-full bg-[#00F0FF] animate-core-cyan" />
+          <span className="w-2 h-2 rounded-full bg-[#00F0FF] core-alert" />
         </div>
       </div>
       <h3 className="text-xl font-bold mb-4 tracking-tight text-white">{title}</h3>
@@ -730,7 +722,6 @@ function ContactForm({ tc }) {
       setStatus({ type: "success", msg: tc.successMsg });
       setForm({ from_name: "", from_email: "", company: "", subject: "", message: "" });
     } catch (err) {
-      console.error("EmailJS error:", err);
       setStatus({ type: "error", msg: `❌ Erreur (${err?.status || ""} ${err?.text || JSON.stringify(err)}). ${tc.errGeneric}` });
     } finally {
       setLoading(false);
@@ -835,8 +826,6 @@ export default function PortfolioDataAnalyst() {
 
   const typedText = useTypewriter(t.typewriter, lang);
 
-
-
   const [flippedCard, setFlippedCard] = useState(null);
   const flippedCardRef = useRef(null);
   const cardRefs = useRef([]);
@@ -862,17 +851,6 @@ export default function PortfolioDataAnalyst() {
     return () => window.removeEventListener('resize', equalizeCardHeights);
   }, []);
 
-
-
-  const applySettledClass = (idx) => {
-    // Manipulation DOM directe : pas de re-render React → le contexte preserve-3d reste intact
-    cardRefs.current.forEach((el, i) => {
-      if (!el) return;
-      if (i === idx) el.classList.add('pricing-card-in-verso');
-      else el.classList.remove('pricing-card-in-verso');
-    });
-  };
-
   const triggerFlip = (val) => {
     if (val === flippedCardRef.current) {
       isAnimating.current = false;
@@ -881,7 +859,6 @@ export default function PortfolioDataAnalyst() {
     }
     isAnimating.current = true;
     flippedCardRef.current = val;
-    if (val === null) applySettledClass(null); // retire la classe settled dès le début de l'unflip
     setFlippedCard(val);
   };
   const handleCardEnter = (i) => {
@@ -913,8 +890,6 @@ export default function PortfolioDataAnalyst() {
       const next = pendingFlip.current;
       pendingFlip.current = undefined;
       triggerFlip(next);
-    } else {
-      applySettledClass(flippedCardRef.current); // ajoute la classe settled sans re-render
     }
   };
   const [showCalculator, setShowCalculator] = useState(false);
@@ -1038,7 +1013,7 @@ export default function PortfolioDataAnalyst() {
 
               {/* Protocol label */}
               <div className="inline-flex items-center gap-3 mb-8 px-3 py-2 border border-[#27272A] rounded-lg bg-[#0D1117]/60">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] core-alert" />
                 <span className="text-sm font-mono text-[#A1A1AA] uppercase tracking-widest">
                   {t.hero.consultantIn}
                 </span>
@@ -1055,11 +1030,7 @@ export default function PortfolioDataAnalyst() {
               </p>
 
               <div className="flex flex-wrap gap-4 mt-10">
-                <a href="#projects"
-                  className="core-btn px-6 py-4 rounded-lg bg-[#00F0FF] text-black font-bold text-sm hover:bg-white transition duration-200 cursor-pointer tracking-wide">
-                  {t.hero.viewProjects}
-                </a>
-                <button type="button" onClick={openLinkedIn}
+<button type="button" onClick={openLinkedIn}
                   className="relative z-50 inline-flex items-center gap-2 px-6 py-4 rounded-lg border border-[#27272A] hover:border-[#00F0FF]/40 hover:bg-[#0D1117] transition duration-200 cursor-pointer font-mono text-sm">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ color: '#00F0FF' }}><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                   LinkedIn
@@ -1075,7 +1046,7 @@ export default function PortfolioDataAnalyst() {
             {/* Stats panel */}
             <div className="relative">
               <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 border border-[#27272A] rounded-lg font-mono text-[10px]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] animate-core-cyan" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00F0FF] core-alert" />
                 <span className="text-[#A1A1AA] text-xs uppercase tracking-widest">{t.hero.expBadge}</span>
               </div>
               <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-8" style={{ boxShadow: '0 0 40px rgba(0,240,255,0.04)' }}>

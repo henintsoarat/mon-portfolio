@@ -14,17 +14,17 @@ export default function LifeCalculator() {
       return null;
     }
 
-    const yearsLived = (Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24)) / 365.25);
+    const oneDay = 1000 * 60 * 60 * 24;
+    const yearsLived = Math.floor((today.getTime() - birth.getTime()) / oneDay) / 365.25;
 
     if (Number(lifeExpectancy) <= yearsLived) return null;
 
-    const oneDay = 1000 * 60 * 60 * 24;
     const daysLived = Math.floor((today.getTime() - birth.getTime()) / oneDay);
     const totalDaysExpected = Math.floor(Number(lifeExpectancy) * 365.25);
     const remainingDays = Math.max(0, totalDaysExpected - daysLived);
     const progress = Math.min(100, Math.max(0, (daysLived / totalDaysExpected) * 100));
 
-    const deathYear = new Date(birthDate).getFullYear() + Number(lifeExpectancy);
+    const deathYear = birth.getFullYear() + Number(lifeExpectancy);
 
     return {
       daysLived,
