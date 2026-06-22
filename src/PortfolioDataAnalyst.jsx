@@ -1100,7 +1100,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Qui suis-je */}
-      <section id="about" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+      <section id="about" className="max-w-7xl mx-auto px-6 pt-4 pb-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
           <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.about.title}</h2>
         </div>
@@ -1186,7 +1186,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Parcours / Experience */}
-      <section id="experience" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+      <section id="experience" className="max-w-7xl mx-auto px-6 pt-4 pb-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
           <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.experience.title}</h2>
         </div>
@@ -1252,7 +1252,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Compétences */}
-      <section id="competences" className="max-w-7xl mx-auto px-6 py-10 scroll-mt-24">
+      <section id="competences" className="max-w-7xl mx-auto px-6 pt-4 pb-10 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
           <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.skills.title}</h2>
         </div>
@@ -1262,7 +1262,7 @@ export default function PortfolioDataAnalyst() {
       </section>
 
       {/* Projets */}
-      <section id="projects" className="max-w-7xl mx-auto px-6 py-20 scroll-mt-24">
+      <section id="projects" className="max-w-7xl mx-auto px-6 pt-4 pb-20 scroll-mt-24">
         <div className="flex items-center gap-3 mb-10 reveal">
           <h2 className="text-4xl font-bold" style={{ fontFamily: 'Arial, sans-serif' }}>{t.projects.title}</h2>
         </div>
