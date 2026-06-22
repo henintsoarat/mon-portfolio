@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail &amp; Marketing · Pipeline · arbi-data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F1; --paper2:#FBFAF7; --ink:#1B1D21; --muted:#6B7079;
+    --line:#E2DED3; --line2:#D6D1C4;
+    --bronze:#A86A3D; --bronze-bg:#F3E7DC;
+    --silver:#6C757F; --silver-bg:#E9ECEF;
+    --gold:#A6841C; --gold-bg:#F4ECCF;
+    /* opérations */
+    --op-cast:#2F6F8F; --op-cast-bg:#E4EEF3;
+    --op-derive:#3E7D53; --op-derive-bg:#E6F0E9;
+    --op-rename:#B5751E; --op-rename-bg:#F6ECDA;
+    --op-struct:#B0473B; --op-struct-bg:#F6E4E1;
+    --op-join:#6E5AA3; --op-join-bg:#ECE7F4;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --disp:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;background-position:-1px -1px;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  a{color:inherit}
+
+  /* ---------- HEADER ---------- */
+  header{padding:64px 0 40px;border-bottom:2px solid var(--ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .eyebrow b{color:var(--bronze);font-weight:700}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-.02em;margin:18px 0 14px}
+  h1 .pipe{display:inline-block;background:linear-gradient(90deg,var(--bronze),var(--silver),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:18px;color:#3a3d42;max-width:60ch}
+  .metrics{display:flex;flex-wrap:wrap;gap:0;margin-top:34px;border:1px solid var(--line2);background:var(--paper2)}
+  .metric{flex:1 1 160px;padding:18px 20px;border-right:1px solid var(--line2)}
+  .metric:last-child{border-right:none}
+  .metric .v{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:-.02em}
+  .metric .l{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .metric.ok .v{color:var(--op-derive)}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:54px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .sec-title{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.01em}
+  .sec-sub{color:var(--muted);font-size:15px;margin:0 0 28px;max-width:70ch}
+
+  /* ---------- LEGEND ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:10px}
+  .chip-key{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:2px;border-left:3px solid;display:inline-flex;gap:7px;align-items:center}
+  .k-cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .k-derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .k-rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .k-struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .k-join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+
+  /* ---------- FLOW : 3 LANES ---------- */
+  .flow{display:grid;grid-template-columns:1fr 1.5fr 1.35fr;gap:18px;align-items:start}
+  .lane{position:relative}
+  .lane-head{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.02em;position:sticky;top:0;z-index:5}
+  .lane-head .tag{font-family:var(--mono);font-weight:500;font-size:11px;opacity:.85;margin-left:auto}
+  .lane.bronze .lane-head{background:var(--bronze)}
+  .lane.silver .lane-head{background:var(--silver)}
+  .lane.gold .lane-head{background:var(--gold)}
+  .lane-body{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+
+  .card{background:var(--paper2);border:1px solid var(--line2);border-radius:3px;border-left-width:4px;padding:13px 14px}
+  .lane.bronze .card{border-left-color:var(--bronze)}
+  .lane.silver .card{border-left-color:var(--silver)}
+  .lane.gold .card{border-left-color:var(--gold)}
+  .card.fact{border-left-color:var(--ink);background:#fff}
+  .card .tname{font-family:var(--mono);font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .dims{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+  .card .role{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:600}
+
+  /* transformation chips */
+  .ops{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+  .op{font-family:var(--mono);font-size:11.5px;line-height:1.35;padding:5px 9px;border-radius:2px;border-left:3px solid;display:block}
+  .op .col{font-weight:700}
+  .op .to{opacity:.55;padding:0 4px}
+  .op.cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .op.derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .op.rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .op.struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .op.join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+  .grp{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px;font-weight:700}
+  .grp:first-child{margin-top:0}
+
+  .measures{font-family:var(--mono);font-size:10.5px;color:#3a3d42;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2)}
+  .measures b{color:var(--ink)}
+
+  /* ---------- STAR SCHEMA ---------- */
+  .starwrap{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:8px}
+  svg{display:block;width:100%;height:auto}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- DASHBOARD ---------- */
+  .tabs{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;letter-spacing:.01em;transition:background .12s,color .12s;text-align:center}
+  .tab:last-child{border-right:none}
+  .tab:hover{background:#fff;color:var(--ink)}
+  .tab.active{background:var(--ink);color:var(--paper)}
+  .tab:focus-visible{outline:2px solid var(--op-cast);outline-offset:-2px}
+  .panel{display:none}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1 / -1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px;font-family:var(--body)}
+  .pane svg{overflow:visible}
+
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .big .up{color:#7BBF8E}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4;font-family:var(--body)}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}
+  .insight.gold .lbl{color:#5a4a08}
+
+  .kpibar{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:16px 18px;border-right:1px solid var(--line2)}
+  .kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:23px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:12px;color:var(--muted);margin-top:3px}
+
+  /* chart primitives */
+  .axis{stroke:var(--line2);stroke-width:1}
+  .blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}
+  .glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+
+  @media (max-width:960px){
+    .flow{grid-template-columns:1fr;gap:30px}
+    .lane-head{position:static}
+    .dash-grid{grid-template-columns:1fr}
+    .kpibar{grid-template-columns:repeat(2,1fr)}
+    .kpibar .k:nth-child(2n){border-right:none}
+    .tab{flex-basis:33%}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .card{transition:transform .15s ease,box-shadow .15s ease}
+    .card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}
+  }
+
+  .ctrl{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
+  .ctrl label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+  .ctrl select{font-family:var(--mono);font-size:13px;padding:8px 12px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:2px;cursor:pointer;min-width:180px}
+  .ctrl select:hover{border-color:var(--ink)}.ctrl select:focus-visible{outline:2px solid var(--op-cast);outline-offset:1px}
+  .hint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .tabs{display:flex;flex-wrap:wrap;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;text-align:center}
+  .tab:last-child{border-right:none}.tab:hover{background:#fff;color:var(--ink)}.tab.active{background:var(--ink);color:var(--paper)}
+  .panel{display:none}.panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1/-1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px}
+  .pane svg{overflow:visible}
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:32px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}.insight.gold .lbl{color:#5a4a08}
+  .kpibar{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:14px 16px;border-right:1px solid var(--line2)}.kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:19px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .kpibar2{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar2 .k{padding:14px 16px;border-right:1px solid var(--line2)}.kpibar2 .k:last-child{border-right:none}
+  .kpibar2 .kv{font-family:var(--mono);font-weight:700;font-size:19px;letter-spacing:-.02em}
+  .kpibar2 .kl{font-size:11.5px;color:var(--muted);margin-top:3px}
+  #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:3px;opacity:0;transition:opacity .1s;z-index:99;white-space:nowrap;transform:translate(-50%,-130%)}
+  .axis{stroke:var(--line2);stroke-width:1}.blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}.glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+  /* doc */
+  .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .doc-grid.three{grid-template-columns:repeat(3,1fr)}
+  .doc-block{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px}
+  .doc-block h4{font-family:var(--disp);font-weight:600;font-size:14.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .doc-block h4 .badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:700;letter-spacing:.08em}
+  .doc-block h4 .badge.s{background:var(--silver)}.doc-block h4 .badge.g{background:var(--gold);color:#1a0e00}
+  .doc-table{width:100%;border-collapse:collapse;font-size:12px}
+  .doc-table th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line2);padding:5px 8px;text-align:left}
+  .doc-table td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top;line-height:1.4}
+  .doc-table tr:last-child td{border-bottom:none}
+  .doc-table .col-name{font-family:var(--mono);font-weight:700;font-size:11.5px;color:var(--op-cast);white-space:nowrap}
+  .doc-table .col-type{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .tag-d{background:var(--op-derive-bg);color:var(--op-derive);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px}
+  .tag-f{background:var(--op-struct-bg);color:var(--op-struct);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px}
+  .formula-box{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:10px 14px;font-family:var(--mono);font-size:12px;margin-top:10px}
+  .formula-box .f-row{display:flex;gap:12px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}
+  .formula-box .f-row:last-child{border-bottom:none}
+  .formula-box .f-kpi{font-weight:700;color:var(--ink);min-width:180px}
+  .formula-box .f-eq{color:var(--muted);padding:0 4px}
+  .formula-box .f-formula{color:var(--op-cast)}
+  .formula-box .col{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:#fff;border:1px solid var(--line2);border-radius:2px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+  .doc-note{font-size:12.5px;color:var(--muted);background:var(--paper2);border-left:3px solid var(--line2);padding:10px 14px;margin:6px 0;border-radius:0 3px 3px 0}
+  .doc-note code{font-family:var(--mono);font-size:11.5px;color:var(--op-cast)}
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  @media(max-width:960px){.flow{grid-template-columns:1fr;gap:30px}.dash-grid{grid-template-columns:1fr}
+    .kpibar,.kpibar2{grid-template-columns:repeat(2,1fr)}.tab{flex-basis:33%}
+    .doc-grid,.doc-grid.three{grid-template-columns:1fr}}
+  @media(prefers-reduced-motion:no-preference){.card{transition:transform .15s ease,box-shadow .15s ease}.card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}}
+
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="eyebrow"><b>arbi-data</b> <span>/</span> data lineage <span>/</span> retail &amp; marketing</div>
+  <h1>Retail &amp; Marketing : <span class="pipe">pipeline ventes &amp; campagnes</span></h1>
+  <p class="lede">Du ticket de caisse au ROAS des campagnes. Six tables sources — clients, produits, commandes, articles, campagnes, attributions — transformées en modèle dimensionnel et en indicateurs retail &amp; marketing opérationnels. Données synthétiques calibrées sur des KPIs réels.</p>
+  <div class="metrics">
+    <div class="metric"><div class="v">6 tables</div><div class="l">sources reliées</div></div>
+    <div class="metric"><div class="v">67 285</div><div class="l">lignes sources totales</div></div>
+    <div class="metric"><div class="v">21,7 M €</div><div class="l">chiffre d'affaires 2023-2024</div></div>
+    <div class="metric"><div class="v">60</div><div class="l">campagnes marketing</div></div>
+    <div class="metric ok"><div class="v">0</div><div class="l">lien manquant entre tables</div></div>
+  </div>
+</div></header>
+
+<!-- 00 LÉGENDE -->
+<section style="padding-top:40px;padding-bottom:0"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">00</span><h2 class="sec-title">Grammaire des transformations</h2></div>
+  <p class="sec-sub">Chaque chip code une opération réelle du pipeline. La couleur indique sa nature.</p>
+  <div class="legend">
+    <span class="chip-key k-cast">typage : texte → date / nombre / catégorie</span>
+    <span class="chip-key k-derive">colonne calculée : marge / tranche / KPI</span>
+    <span class="chip-key k-struct">nettoyage : plafonnage / flag qualité</span>
+    <span class="chip-key k-join">jointure : enrichissement inter-tables</span>
+  </div>
+</div></section>
+
+<!-- 01 FLUX -->
+<section><div class="wrap">
+  <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Le flux, couche par couche</h2></div>
+  <p class="sec-sub">Six tables sources liées par clés (client, produit, commande, campagne). Silver type et conforme. Gold construit la constellation dimensionnelle et les indicateurs ventes + marketing.</p>
+  <div class="flow">
+    <div class="lane bronze">
+      <div class="lane-head">Bronze<span class="tag">raw · généré</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">customers<span class="dims">5 000 × 9</span></div><div class="role">clients · démographie · segment</div></div>
+        <div class="card"><div class="tname">products<span class="dims">500 × 8</span></div><div class="role">produits · prix · catégorie</div></div>
+        <div class="card"><div class="tname">orders<span class="dims">20 000 × 6</span></div><div class="role">commandes · statut · canal</div></div>
+        <div class="card"><div class="tname">order_items<span class="dims">39 810 × 9</span></div><div class="role">lignes d'articles · prix · remise</div></div>
+        <div class="card"><div class="tname">campaigns<span class="dims">60 × 17</span></div><div class="role">campagnes marketing · KPIs</div></div>
+        <div class="card"><div class="tname">attributions<span class="dims">5 124 × 4</span></div><div class="role">lien campagne → commande</div></div>
+      </div>
+    </div>
+    <div class="lane silver">
+      <div class="lane-head">Silver<span class="tag">cleaned · conformed</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">customers<span class="dims">5 000 × 10</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">enrollment_date</span><span class="to">→</span>date</span>
+            <span class="op cast"><span class="col">age_band · gender · segment</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op derive"><span class="col">+ loyalty_band</span><span class="to">=</span>Bronze / Silver / Gold / Platinum</span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">products<span class="dims">500 × 9</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">category · brand_tier</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op derive"><span class="col">+ margin_pct</span><span class="to">=</span>margin_rate × 100</span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">orders<span class="dims">20 000 × 11</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">order_date</span><span class="to">→</span>date</span>
+            <span class="op derive"><span class="col">+ year · month · year_month</span></span>
+            <span class="op derive"><span class="col">+ is_completed · is_cancelled</span></span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">order_items<span class="dims">39 810 × 17</span></div>
+          <div class="ops">
+            <span class="op join"><span class="col">+ order_date · year_month · is_completed</span><span class="to">⨝</span>orders</span>
+            <span class="op join"><span class="col">+ category · subcategory</span><span class="to">⨝</span>products</span>
+            <span class="op derive"><span class="col">+ has_discount · discount_pct</span></span>
+          </div>
+        </div>
+        <div class="card"><div class="tname">campaigns<span class="dims">60 × 19</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">start_date · end_date</span><span class="to">→</span>date</span>
+            <span class="op derive"><span class="col">+ duration_days</span></span>
+            <span class="op derive"><span class="col">+ cac</span><span class="to">=</span>budget ÷ conversions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane gold">
+      <div class="lane-head">Gold<span class="tag">star + marts</span></div>
+      <div class="lane-body">
+        <div class="grp">Tableaux de référence</div>
+        <div class="card"><div class="tname">dim_customer<span class="dims">5 000 × 11</span></div></div>
+        <div class="card"><div class="tname">dim_product<span class="dims">500 × 10</span></div></div>
+        <div class="card"><div class="tname">dim_date<span class="dims">730 × 10</span></div><div class="role">calendrier 2023-2024</div></div>
+        <div class="card"><div class="tname">dim_campaign<span class="dims">60 × 20</span></div></div>
+        <div class="grp">Tableaux de transactions</div>
+        <div class="card fact"><div class="tname">fact_sales<span class="dims">39 810 × 20</span></div>
+          <div class="role">grain : ligne d'article</div>
+          <div class="measures">Liens <b>customer_sk · product_sk · date_key</b><br>Mesures <b>line_total · line_margin · quantity</b></div></div>
+        <div class="card fact"><div class="tname">fact_campaigns<span class="dims">60 × 23</span></div>
+          <div class="role">grain : campagne</div>
+          <div class="measures">Liens <b>campaign_sk</b><br>Mesures <b>budget · roas · conversions · attributed_revenue</b></div></div>
+        <div class="grp">Indicateurs clés</div>
+        <div class="card"><div class="tname">kpi_sales_by_category_month<span class="dims">120 × 9</span></div></div>
+        <div class="card"><div class="tname">kpi_channel_efficiency<span class="dims">7 × 12</span></div></div>
+        <div class="card"><div class="tname">kpi_marketing_performance<span class="dims">60 × 19</span></div></div>
+        <div class="card"><div class="tname">kpi_rfm<span class="dims">4 822 × 9</span></div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 ÉTOILE -->
+<section style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Le modèle dimensionnel (Gold)</h2></div>
+  <p class="sec-sub">Une constellation : deux faits (ventes et campagnes) partagent les dimensions client et date. Le lien commande ↔ campagne via la table d'attributions est le pont marketing-ventes.</p>
+  <div class="starwrap">
+    <svg viewBox="0 0 1060 520" role="img" aria-label="Modèle en étoile Retail Marketing">
+      <defs><style>
+        .dim{fill:#FBFAF7;stroke:var(--gold);stroke-width:2}.fct{fill:#fff;stroke:var(--ink);stroke-width:2}
+        .tt{font-family:var(--mono);font-weight:700;font-size:13px;fill:var(--ink)}.ts{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+        .lk{stroke:var(--line2);stroke-width:1.5}.lk.c{stroke:var(--op-cast);stroke-width:1.5;stroke-dasharray:4 3}
+      </style></defs>
+      <line class="lk" x1="110" y1="130" x2="300" y2="345"/>
+      <line class="lk" x1="295" y1="130" x2="350" y2="345"/>
+      <line class="lk" x1="485" y1="130" x2="390" y2="345"/>
+      <line class="lk c" x1="675" y1="130" x2="430" y2="345"/>
+      <line class="lk" x1="860" y1="130" x2="640" y2="345"/>
+      <line class="lk c" x1="675" y1="145" x2="660" y2="345"/>
+      <line stroke="#1B1D21" stroke-width="1.8" stroke-dasharray="6 3" x1="480" y1="380" x2="590" y2="380"/>
+      <text class="ts" x="535" y="374" text-anchor="middle">attributions</text>
+      <g><rect class="dim" x="30" y="75" width="160" height="58" rx="4"/><text class="tt" x="110" y="102" text-anchor="middle">dim_customer</text><text class="ts" x="110" y="120" text-anchor="middle">5 000 clients</text></g>
+      <g><rect class="dim" x="215" y="75" width="160" height="58" rx="4"/><text class="tt" x="295" y="102" text-anchor="middle">dim_product</text><text class="ts" x="295" y="120" text-anchor="middle">500 produits</text></g>
+      <g><rect class="dim" x="405" y="75" width="160" height="58" rx="4"/><text class="tt" x="485" y="102" text-anchor="middle">dim_date</text><text class="ts" x="485" y="120" text-anchor="middle">730 jours</text></g>
+      <g><rect class="dim" x="595" y="75" width="160" height="58" rx="4"/><text class="tt" x="675" y="102" text-anchor="middle">dim_campaign</text><text class="ts" x="675" y="120" text-anchor="middle">60 campagnes</text></g>
+      <g><rect class="dim" x="780" y="75" width="160" height="58" rx="4"/><text class="tt" x="860" y="102" text-anchor="middle">fact_campaigns</text><text class="ts" x="860" y="120" text-anchor="middle">60 · grain campagne</text></g>
+      <g><rect class="fct" x="250" y="345" width="230" height="78" rx="4"/><text class="tt" x="365" y="376" text-anchor="middle">fact_sales</text><text class="ts" x="365" y="394" text-anchor="middle">39 810 · grain article</text><text class="ts" x="365" y="410" text-anchor="middle">line_total · margin · qty</text></g>
+      <g><rect class="fct" x="590" y="345" width="230" height="78" rx="4"/><text class="tt" x="705" y="376" text-anchor="middle">fact_campaigns</text><text class="ts" x="705" y="394" text-anchor="middle">60 · grain campagne</text><text class="ts" x="705" y="410" text-anchor="middle">budget · roas · conversions</text></g>
+      <text class="ts" x="30" y="455">— lien solide : dimension propre</text>
+      <text class="ts" x="30" y="475" fill="#2F6F8F">— lien pointillé : dimension partagée (date · campagne) ou lien inter-faits (attributions)</text>
+    </svg>
+  </div>
+</div></section>
+
+<!-- 03 DASHBOARD -->
+<section id="dash"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Le rendu : tableau de bord Retail &amp; Marketing</h2></div>
+  <p class="sec-sub">La couche Gold mise en lecture. Filtre par catégorie ou région, survole pour le détail. L'onglet Marketing met en regard budget et performance campagne par campagne.</p>
+
+  <div class="kpibar" id="kpibar"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="ventes">Ventes</button>
+    <button class="tab" data-tab="marketing">Marketing</button>
+    <button class="tab" data-tab="clients">Clients</button>
+  </div>
+
+  <!-- VENTES -->
+  <div class="panel active" data-panel="ventes">
+    <div class="dash-grid">
+      <div class="pane"><h3>Chiffre d'affaires par catégorie</h3><p class="cap">Produits livrés · 2023-2024</p><div id="ch-cat-rev"></div></div>
+      <div class="pane"><h3>Taux de marge par catégorie</h3><p class="cap">Marge brute en % du chiffre d'affaires</p><div id="ch-cat-margin"></div></div>
+      <div class="pane"><h3>Chiffre d'affaires par région</h3><p class="cap">Île-de-France en tête</p><div id="ch-reg-rev"></div></div>
+      <div class="pane"><h3>Commandes par canal de vente</h3><p class="cap">Web · Mobile · Magasin · Téléphone</p><div id="ch-channel-orders"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-cat">Catégorie</label><select id="sel-cat"></select><span class="hint">filtre le chiffre d'affaires et la marge mensuels</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Évolution mensuelle · chiffre d'affaires et marge</h3><p class="cap" id="cap-monthly">Toutes catégories · 2023-2024</p><div id="ch-monthly"></div></div>
+    </div>
+    <div class="dash-grid" style="margin-top:16px">
+      <div class="pane full"><h3>Répartition des remises accordées</h3><p class="cap">Part du volume de ventes par taux de remise</p><div id="ch-discount"></div></div>
+    </div>
+  </div>
+
+  <!-- MARKETING -->
+  <div class="panel" data-panel="marketing">
+    <div class="kpibar2" id="kpibar2"></div>
+    <div class="dash-grid">
+      <div class="pane"><h3>ROAS par canal</h3><p class="cap">Retour sur dépenses publicitaires moyen</p><div id="ch-ch-roas"></div></div>
+      <div class="pane"><h3>Coût d'acquisition par canal</h3><p class="cap">Coût moyen par client converti (€)</p><div id="ch-ch-cac"></div></div>
+      <div class="pane"><h3>Taux de clic par canal</h3><p class="cap">Part des personnes touchées qui cliquent (%)</p><div id="ch-ch-ctr"></div></div>
+      <div class="pane"><h3>Taux de conversion par canal</h3><p class="cap">Part des clics aboutissant à un achat (%)</p><div id="ch-ch-conv"></div></div>
+    </div>
+    <div class="insight full" style="margin-top:16px"><div class="big">Email <span class="arrow">→</span> 22 % CTR</div><div class="lbl">L'email affiche le taux de clic le plus élevé (22 %) — mais le Display et le Search génèrent plus de volume de conversions grâce à leur portée. Le ROAS moyen de 1,16 signifie qu'un euro de budget rapporte 1,16 € de chiffre d'affaires déclaré.</div></div>
+    <div class="dash-grid" style="margin-top:16px">
+      <div class="pane full"><h3>Évolution budget et revenus marketing par mois</h3><p class="cap">Budget dépensé (€) et chiffre d'affaires attribué aux campagnes</p><div id="ch-mkt-monthly"></div></div>
+    </div>
+    <div class="dash-grid" style="margin-top:16px">
+      <div class="pane full"><h3>Top 8 campagnes par ROAS</h3><p class="cap">Retour sur investissement le plus élevé</p><div id="ch-top-camp"></div></div>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="panel" data-panel="clients">
+    <div class="dash-grid">
+      <div class="pane"><h3>Segments RFM · nombre de clients</h3><p class="cap">4 822 clients actifs segmentés par récence, fréquence, montant</p><div id="ch-rfm"></div></div>
+      <div class="pane"><h3>Valeur cumulée par segment RFM</h3><p class="cap">Chiffre d'affaires total du segment sur la période</p><div id="ch-rfm-mon"></div></div>
+      <div class="pane"><h3>Fidélité par segment CRM</h3><p class="cap">Score de fidélité moyen (0-100)</p><div id="ch-loyalty"></div></div>
+      <div class="pane"><h3>Répartition des clients</h3><p class="cap">Par segment CRM source</p><div id="ch-seg-donut"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-reg">Région</label><select id="sel-reg"></select><span class="hint">filtre les segments clients par région</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Répartition des segments par région</h3><p class="cap" id="cap-seg-reg">Toutes régions</p><div id="ch-seg-region"></div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- 04 DOCUMENTATION -->
+<section id="doc" style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Documentation : champs &amp; règles de calcul</h2></div>
+  <p class="sec-sub">Description de chaque champ de données, son format et comment il a été calculé. Les formules utilisent les noms de colonnes réels du code.</p>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Tables de données — nettoyées et structurées</h3>
+  <div class="doc-grid three">
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>orders</h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description</th></tr>
+        <tr><td class="col-name">order_id</td><td class="col-type">texte</td><td>identifiant unique de la commande</td></tr>
+        <tr><td class="col-name">customer_id</td><td class="col-type">texte</td><td>lien vers le tableau clients</td></tr>
+        <tr><td class="col-name">order_date</td><td class="col-type">date</td><td>converti depuis texte source</td></tr>
+        <tr><td class="col-name">channel</td><td class="col-type">liste de valeurs</td><td>canal de vente : Web / Mobile / Magasin / Téléphone</td></tr>
+        <tr><td class="col-name">status</td><td class="col-type">liste de valeurs</td><td>Livré / En cours / Annulé / Retourné</td></tr>
+        <tr><td class="col-name">order_total</td><td class="col-type">décimal</td><td>montant total de la commande (€)</td></tr>
+        <tr><td class="col-name">is_completed</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si statut = Livré</td></tr>
+        <tr><td class="col-name">year_month</td><td class="col-type">texte</td><td><span class="tag-d">calculé</span> format AAAA-MM</td></tr>
+      </table>
+    </div>
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>order_items</h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description</th></tr>
+        <tr><td class="col-name">order_id / line_id</td><td class="col-type">texte / entier</td><td>identifiant commande + numéro de ligne</td></tr>
+        <tr><td class="col-name">product_id</td><td class="col-type">texte</td><td>lien vers le tableau produits</td></tr>
+        <tr><td class="col-name">quantity</td><td class="col-type">entier</td><td>nombre d'articles commandés</td></tr>
+        <tr><td class="col-name">unit_price</td><td class="col-type">décimal</td><td>prix unitaire au moment de la commande (€)</td></tr>
+        <tr><td class="col-name">discount</td><td class="col-type">décimal</td><td>taux de remise appliqué (0 à 0,25)</td></tr>
+        <tr><td class="col-name">line_total</td><td class="col-type">décimal</td><td>prix × quantité × (1 − remise) (€)</td></tr>
+        <tr><td class="col-name">line_cost</td><td class="col-type">décimal</td><td>coût d'achat × quantité (€)</td></tr>
+        <tr><td class="col-name">line_margin</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> line_total − line_cost (€)</td></tr>
+        <tr><td class="col-name">has_discount</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si remise &gt; 0</td></tr>
+      </table>
+    </div>
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>campaigns</h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description</th></tr>
+        <tr><td class="col-name">campaign_id</td><td class="col-type">texte</td><td>identifiant unique de la campagne</td></tr>
+        <tr><td class="col-name">channel</td><td class="col-type">liste de valeurs</td><td>Email / SMS / Social Media / Display / Search / Influenceur / Catalogue</td></tr>
+        <tr><td class="col-name">budget</td><td class="col-type">décimal</td><td>budget alloué à la campagne (€)</td></tr>
+        <tr><td class="col-name">reach</td><td class="col-type">entier</td><td>nombre de personnes touchées</td></tr>
+        <tr><td class="col-name">clicks</td><td class="col-type">entier</td><td>nombre de clics enregistrés</td></tr>
+        <tr><td class="col-name">ctr</td><td class="col-type">décimal</td><td>taux de clic = clics ÷ reach</td></tr>
+        <tr><td class="col-name">conversions</td><td class="col-type">entier</td><td>nombre d'achats générés</td></tr>
+        <tr><td class="col-name">revenue_generated</td><td class="col-type">décimal</td><td>chiffre d'affaires attribué à la campagne (€)</td></tr>
+        <tr><td class="col-name">roas</td><td class="col-type">décimal</td><td>revenue_generated ÷ budget</td></tr>
+        <tr><td class="col-name">cac</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> budget ÷ conversions (€ par client)</td></tr>
+        <tr><td class="col-name">duration_days</td><td class="col-type">entier</td><td><span class="tag-d">calculé</span> end_date − start_date</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Indicateurs clés — comment ils sont calculés</h3>
+  <div class="doc-grid">
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>Indicateurs ventes</h4>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">chiffre d'affaires</span><span class="f-eq">=</span><span class="f-formula">somme des lignes livrées<span class="col">line_total</span></span></div>
+        <div class="f-row"><span class="f-kpi">marge brute</span><span class="f-eq">=</span><span class="f-formula">somme des marges ligne<span class="col">line_margin</span></span></div>
+        <div class="f-row"><span class="f-kpi">taux de marge</span><span class="f-eq">=</span><span class="f-formula">marge ÷ chiffre d'affaires × 100<span class="col">line_margin</span> ÷ <span class="col">line_total</span></span></div>
+        <div class="f-row"><span class="f-kpi">panier moyen</span><span class="f-eq">=</span><span class="f-formula">CA ÷ nombre de commandes distinctes<span class="col">order_id</span></span></div>
+      </div>
+    </div>
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>Indicateurs marketing</h4>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">ROAS</span><span class="f-eq">=</span><span class="f-formula">revenus générés ÷ budget dépensé<span class="col">revenue_generated</span> ÷ <span class="col">budget</span></span></div>
+        <div class="f-row"><span class="f-kpi">taux de clic (CTR)</span><span class="f-eq">=</span><span class="f-formula">clics ÷ personnes touchées × 100<span class="col">clicks</span> ÷ <span class="col">reach</span></span></div>
+        <div class="f-row"><span class="f-kpi">taux de conversion</span><span class="f-eq">=</span><span class="f-formula">conversions ÷ clics × 100<span class="col">conversions</span> ÷ <span class="col">clicks</span></span></div>
+        <div class="f-row"><span class="f-kpi">coût d'acquisition (CAC)</span><span class="f-eq">=</span><span class="f-formula">budget ÷ conversions<span class="col">budget</span> ÷ <span class="col">conversions</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Choix de conception et limites à connaître</h3>
+  <div class="doc-grid three">
+    <div class="doc-note">Données entièrement synthétiques générées en Python. Les distributions (saisonnalité, taux de marge par catégorie, CTR par canal) sont calibrées sur des ordres de grandeur réels mais ne reflètent aucune entreprise réelle.</div>
+    <div class="doc-note">La table <code>attributions</code> couvre 25,6 % des commandes — les 74,4 % restantes n'ont pas de campagne identifiée (trafic direct, organique, récurrence). L'attribution est en modèle last-touch simplifié.</div>
+    <div class="doc-note">Le ROAS moyen de 1,16 signifie que chaque euro de budget génère 1,16 € de chiffre d'affaires déclaré. Un ROAS &lt; 2 est généralement insuffisant pour couvrir les frais fixes — à contextualiser selon le secteur.</div>
+    <div class="doc-note">La marge brute de 27,3 % est la moyenne pondérée de toutes les catégories. Beauté &amp; Santé (~60 %) et Mode (~55 %) tirent la moyenne vers le haut ; l'Électronique (~20 %) la tire vers le bas.</div>
+    <div class="doc-note">La segmentation RFM porte sur 4 822 clients ayant au moins une commande livrée. Les 178 clients restants (5 000 − 4 822) n'ont aucune commande livrée sur la période.</div>
+    <div class="doc-note">Aucune donnée personnelle sensible n'est présente dans ce dataset synthétique (les noms, emails et adresses n'ont pas été générés).</div>
+  </div>
+</div></section>
+
+<footer><div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;width:100%">
+  <div class="stack"><span>Python · pandas · numpy</span><span>parquet</span><span>architecture médaillon</span><span>modèle dimensionnel</span><span>retail &amp; marketing</span><span>→ portable Fabric</span></div>
+  <div class="sig">transformer la donnée en décisions · <b>arbi-data</b></div>
+</div></footer>
+
+<script>
+const D={"totals":{"revenue":21690571,"margin":5930666,"margin_rate":27.3,"n_orders":17027,"n_customers":4822,"avg_basket":1274.0,"budget_marketing":2689221,"roas_moyen":1.16,"taux_attribution":25.6},"monthly":[{"lab":"janvier-23","revenue":982459,"margin":256911,"n_orders":733},{"lab":"février-23","revenue":836496,"margin":228059,"n_orders":642},{"lab":"mars-23","revenue":920106,"margin":257973,"n_orders":762},{"lab":"avril-23","revenue":844575,"margin":237432,"n_orders":707},{"lab":"mai-23","revenue":858697,"margin":242462,"n_orders":694},{"lab":"juin-23","revenue":897539,"margin":253817,"n_orders":720},{"lab":"juillet-23","revenue":864877,"margin":239023,"n_orders":700},{"lab":"août-23","revenue":876769,"margin":249737,"n_orders":736},{"lab":"septembre-23","revenue":899752,"margin":245353,"n_orders":707},{"lab":"octobre-23","revenue":943516,"margin":246802,"n_orders":726},{"lab":"novembre-23","revenue":853106,"margin":240074,"n_orders":689},{"lab":"décembre-23","revenue":945976,"margin":258152,"n_orders":718},{"lab":"janvier-24","revenue":964699,"margin":263642,"n_orders":737},{"lab":"février-24","revenue":846517,"margin":236624,"n_orders":669},{"lab":"mars-24","revenue":903815,"margin":243440,"n_orders":696},{"lab":"avril-24","revenue":880721,"margin":240424,"n_orders":691},{"lab":"mai-24","revenue":916406,"margin":246332,"n_orders":722},{"lab":"juin-24","revenue":926813,"margin":242117,"n_orders":714},{"lab":"juillet-24","revenue":955513,"margin":255702,"n_orders":733},{"lab":"août-24","revenue":936182,"margin":249193,"n_orders":710},{"lab":"septembre-24","revenue":922557,"margin":246034,"n_orders":703},{"lab":"octobre-24","revenue":971412,"margin":269498,"n_orders":726},{"lab":"novembre-24","revenue":811389,"margin":230048,"n_orders":695},{"lab":"décembre-24","revenue":930680,"margin":251821,"n_orders":697}],"by_category":[{"k":"Électronique","revenue":10945118,"margin":1622977,"margin_rate":14.8},{"k":"Maison & Déco","revenue":4953703,"margin":1756874,"margin_rate":35.5},{"k":"Sports & Loisirs","revenue":3035346,"margin":1069236,"margin_rate":35.2},{"k":"Mode & Vêtements","revenue":1674237,"margin":868766,"margin_rate":51.9},{"k":"Beauté & Santé","revenue":1082166,"margin":612813,"margin_rate":56.6}],"by_region":[{"k":"Île-de-France","revenue":6671583,"n_orders":5253},{"k":"Auvergne-Rhône-Alpes","revenue":3218419,"n_orders":2571},{"k":"Provence-Alpes-Côte d'Azur","revenue":2588746,"n_orders":2061},{"k":"Nouvelle-Aquitaine","revenue":2295388,"n_orders":1769},{"k":"Occitanie","revenue":1922064,"n_orders":1500},{"k":"Hauts-de-France","revenue":1844272,"n_orders":1412},{"k":"Grand Est","revenue":1746957,"n_orders":1353},{"k":"Bretagne","revenue":1403142,"n_orders":1108}],"by_channel":[{"k":"Web","revenue":9111319,"n_orders":7177},{"k":"Mobile","revenue":7059777,"n_orders":5556},{"k":"Magasin","revenue":4391018,"n_orders":3405},{"k":"Téléphone","revenue":1128457,"n_orders":889}],"cat_options":["Toutes catégories","Électronique","Maison & Déco","Sports & Loisirs","Mode & Vêtements","Beauté & Santé"],"monthly_by_cat":{"Toutes catégories":[{"lab":"janvier-23","revenue":982459,"margin":256911},{"lab":"février-23","revenue":836496,"margin":228059},{"lab":"mars-23","revenue":920106,"margin":257973},{"lab":"avril-23","revenue":844575,"margin":237432},{"lab":"mai-23","revenue":858697,"margin":242462},{"lab":"juin-23","revenue":897539,"margin":253817},{"lab":"juillet-23","revenue":864877,"margin":239023},{"lab":"août-23","revenue":876769,"margin":249737},{"lab":"septembre-23","revenue":899752,"margin":245353},{"lab":"octobre-23","revenue":943516,"margin":246802},{"lab":"novembre-23","revenue":853106,"margin":240074},{"lab":"décembre-23","revenue":945976,"margin":258152},{"lab":"janvier-24","revenue":964699,"margin":263642},{"lab":"février-24","revenue":846517,"margin":236624},{"lab":"mars-24","revenue":903815,"margin":243440},{"lab":"avril-24","revenue":880721,"margin":240424},{"lab":"mai-24","revenue":916406,"margin":246332},{"lab":"juin-24","revenue":926813,"margin":242117},{"lab":"juillet-24","revenue":955513,"margin":255702},{"lab":"août-24","revenue":936182,"margin":249193},{"lab":"septembre-24","revenue":922557,"margin":246034},{"lab":"octobre-24","revenue":971412,"margin":269498},{"lab":"novembre-24","revenue":811389,"margin":230048},{"lab":"décembre-24","revenue":930680,"margin":251821}],"Électronique":[{"lab":"janvier-23","revenue":520732,"margin":73183},{"lab":"février-23","revenue":417136,"margin":60524},{"lab":"mars-23","revenue":436260,"margin":62635},{"lab":"avril-23","revenue":411615,"margin":62065},{"lab":"mai-23","revenue":421509,"margin":67278},{"lab":"juin-23","revenue":424494,"margin":63498},{"lab":"juillet-23","revenue":417712,"margin":65505},{"lab":"août-23","revenue":424129,"margin":66893},{"lab":"septembre-23","revenue":455160,"margin":66758},{"lab":"octobre-23","revenue":498281,"margin":66972},{"lab":"novembre-23","revenue":402447,"margin":57465},{"lab":"décembre-23","revenue":503565,"margin":76216},{"lab":"janvier-24","revenue":504769,"margin":79865},{"lab":"février-24","revenue":403135,"margin":58903},{"lab":"mars-24","revenue":475527,"margin":70017},{"lab":"avril-24","revenue":451508,"margin":69260},{"lab":"mai-24","revenue":459480,"margin":65705},{"lab":"juin-24","revenue":507607,"margin":75260},{"lab":"juillet-24","revenue":503104,"margin":72637},{"lab":"août-24","revenue":492504,"margin":69396},{"lab":"septembre-24","revenue":480554,"margin":68689},{"lab":"octobre-24","revenue":478904,"margin":75262},{"lab":"novembre-24","revenue":382072,"margin":59518},{"lab":"décembre-24","revenue":472914,"margin":69472}],"Maison & Déco":[{"lab":"janvier-23","revenue":209675,"margin":73967},{"lab":"février-23","revenue":201318,"margin":72094},{"lab":"mars-23","revenue":223075,"margin":79744},{"lab":"avril-23","revenue":186173,"margin":67260},{"lab":"mai-23","revenue":190184,"margin":68310},{"lab":"juin-23","revenue":220892,"margin":79356},{"lab":"juillet-23","revenue":217220,"margin":73361},{"lab":"août-23","revenue":210527,"margin":75488},{"lab":"septembre-23","revenue":183720,"margin":63839},{"lab":"octobre-23","revenue":193217,"margin":69858},{"lab":"novembre-23","revenue":204055,"margin":72667},{"lab":"décembre-23","revenue":194394,"margin":70290},{"lab":"janvier-24","revenue":212192,"margin":74095},{"lab":"février-24","revenue":221247,"margin":79576},{"lab":"mars-24","revenue":201342,"margin":73320},{"lab":"avril-24","revenue":211434,"margin":74368},{"lab":"mai-24","revenue":204968,"margin":70768},{"lab":"juin-24","revenue":201379,"margin":70008},{"lab":"juillet-24","revenue":201865,"margin":72965},{"lab":"août-24","revenue":197898,"margin":71338},{"lab":"septembre-24","revenue":208234,"margin":73543},{"lab":"octobre-24","revenue":243258,"margin":85386},{"lab":"novembre-24","revenue":198107,"margin":67633},{"lab":"décembre-24","revenue":217328,"margin":77638}],"Sports & Loisirs":[{"lab":"janvier-23","revenue":137740,"margin":48098},{"lab":"février-23","revenue":116959,"margin":41344},{"lab":"mars-23","revenue":127441,"margin":44368},{"lab":"avril-23","revenue":131263,"margin":46329},{"lab":"mai-23","revenue":138623,"margin":48387},{"lab":"juin-23","revenue":136605,"margin":48454},{"lab":"juillet-23","revenue":118412,"margin":40489},{"lab":"août-23","revenue":129686,"margin":46382},{"lab":"septembre-23","revenue":141982,"margin":50913},{"lab":"octobre-23","revenue":139824,"margin":49830},{"lab":"novembre-23","revenue":124617,"margin":44240},{"lab":"décembre-23","revenue":125243,"margin":45200},{"lab":"janvier-24","revenue":124929,"margin":44028},{"lab":"février-24","revenue":113519,"margin":39844},{"lab":"mars-24","revenue":114794,"margin":40190},{"lab":"avril-24","revenue":113330,"margin":40133},{"lab":"mai-24","revenue":138109,"margin":49229},{"lab":"juin-24","revenue":106651,"margin":37395},{"lab":"juillet-24","revenue":131852,"margin":46222},{"lab":"août-24","revenue":126388,"margin":43836},{"lab":"septembre-24","revenue":114955,"margin":40453},{"lab":"octobre-24","revenue":133667,"margin":46778},{"lab":"novembre-24","revenue":116437,"margin":40936},{"lab":"décembre-24","revenue":132320,"margin":46156}],"Mode & Vêtements":[{"lab":"janvier-23","revenue":64734,"margin":33418},{"lab":"février-23","revenue":63159,"margin":32627},{"lab":"mars-23","revenue":76081,"margin":39066},{"lab":"avril-23","revenue":74738,"margin":38799},{"lab":"mai-23","revenue":65162,"margin":34069},{"lab":"juin-23","revenue":64344,"margin":33538},{"lab":"juillet-23","revenue":72575,"margin":37418},{"lab":"août-23","revenue":65821,"margin":34331},{"lab":"septembre-23","revenue":75381,"margin":39199},{"lab":"octobre-23","revenue":70823,"margin":36573},{"lab":"novembre-23","revenue":73020,"margin":38058},{"lab":"décembre-23","revenue":75294,"margin":39243},{"lab":"janvier-24","revenue":72842,"margin":37796},{"lab":"février-24","revenue":66092,"margin":34356},{"lab":"mars-24","revenue":71260,"margin":36770},{"lab":"avril-24","revenue":57888,"margin":30431},{"lab":"mai-24","revenue":67998,"margin":34737},{"lab":"juin-24","revenue":70505,"margin":36224},{"lab":"juillet-24","revenue":71627,"margin":37216},{"lab":"août-24","revenue":73048,"margin":38245},{"lab":"septembre-24","revenue":73558,"margin":38080},{"lab":"octobre-24","revenue":70187,"margin":36350},{"lab":"novembre-24","revenue":71354,"margin":37136},{"lab":"décembre-24","revenue":66748,"margin":35085}],"Beauté & Santé":[{"lab":"janvier-23","revenue":49578,"margin":28246},{"lab":"février-23","revenue":37925,"margin":21470},{"lab":"mars-23","revenue":57249,"margin":32159},{"lab":"avril-23","revenue":40786,"margin":22978},{"lab":"mai-23","revenue":43220,"margin":24418},{"lab":"juin-23","revenue":51204,"margin":28970},{"lab":"juillet-23","revenue":38958,"margin":22248},{"lab":"août-23","revenue":46605,"margin":26643},{"lab":"septembre-23","revenue":43510,"margin":24643},{"lab":"octobre-23","revenue":41371,"margin":23569},{"lab":"novembre-23","revenue":48966,"margin":27644},{"lab":"décembre-23","revenue":47480,"margin":27203},{"lab":"janvier-24","revenue":49967,"margin":27857},{"lab":"février-24","revenue":42525,"margin":23945},{"lab":"mars-24","revenue":40893,"margin":23142},{"lab":"avril-24","revenue":46560,"margin":26231},{"lab":"mai-24","revenue":45849,"margin":25892},{"lab":"juin-24","revenue":40671,"margin":23229},{"lab":"juillet-24","revenue":47065,"margin":26662},{"lab":"août-24","revenue":46343,"margin":26379},{"lab":"septembre-24","revenue":45256,"margin":25269},{"lab":"octobre-24","revenue":45396,"margin":25722},{"lab":"novembre-24","revenue":43419,"margin":24824},{"lab":"décembre-24","revenue":41371,"margin":23469}]},"discount_dist":[{"k":"0%","n":16977,"revenue":11592352},{"k":"5%","n":5136,"revenue":3300994},{"k":"10%","n":4882,"revenue":2990006},{"k":"15%","n":3378,"revenue":1995484},{"k":"20%","n":2053,"revenue":1090571},{"k":"25%","n":1378,"revenue":721163}],"channel_perf":[{"k":"Catalogue","budget":296611,"roas":0.09,"ctr":1.89,"conv_rate":3.25,"cac":1273,"n":5},{"k":"Display","budget":519008,"roas":0.03,"ctr":0.8,"conv_rate":4.57,"cac":2949,"n":9},{"k":"Email","budget":484497,"roas":2.02,"ctr":23.15,"conv_rate":3.94,"cac":102,"n":11},{"k":"Influenceur","budget":211702,"roas":1.76,"ctr":5.14,"conv_rate":6.01,"cac":152,"n":6},{"k":"SMS","budget":428325,"roas":1.87,"ctr":18.87,"conv_rate":4.23,"cac":62,"n":9},{"k":"Search","budget":517584,"roas":1.15,"ctr":6.64,"conv_rate":4.57,"cac":143,"n":14},{"k":"Social Media","budget":231494,"roas":0.56,"ctr":3.85,"conv_rate":4.74,"cac":252,"n":6}],"top_campaigns":[{"k":"Camp-EMA-202303","channel":"Email","roas":9.11,"budget":6016,"conv":720},{"k":"Camp-EMA-202409","channel":"Email","roas":5.24,"budget":12594,"conv":380},{"k":"Camp-INF-202409","channel":"Influenceur","roas":3.88,"budget":4321,"conv":243},{"k":"Camp-SMS-202407","channel":"SMS","roas":3.71,"budget":18212,"conv":1195},{"k":"Camp-SEA-202409","channel":"Search","roas":3.66,"budget":2189,"conv":45},{"k":"Camp-SMS-202311","channel":"SMS","roas":3.62,"budget":72042,"conv":1932},{"k":"Camp-SEA-202304","channel":"Search","roas":3.25,"budget":29147,"conv":653},{"k":"Camp-INF-202304","channel":"Influenceur","roas":3.11,"budget":12543,"conv":419}],"bot_campaigns":[{"k":"Camp-DIS-202311","channel":"Display","roas":0.01,"budget":65130,"conv":5},{"k":"Camp-DIS-202305","channel":"Display","roas":0.01,"budget":62972,"conv":10},{"k":"Camp-DIS-202312","channel":"Display","roas":0.01,"budget":68913,"conv":9},{"k":"Camp-DIS-202303","channel":"Display","roas":0.01,"budget":60409,"conv":5},{"k":"Camp-DIS-202404","channel":"Display","roas":0.01,"budget":51950,"conv":9}],"monthly_marketing":[{"lab":"janvier-23","budget":158322,"revenue":93555},{"lab":"février-23","budget":16551,"revenue":17227},{"lab":"mars-23","budget":122258,"revenue":60267},{"lab":"avril-23","budget":372677,"revenue":270227},{"lab":"mai-23","budget":180162,"revenue":43433},{"lab":"juin-23","budget":97007,"revenue":162918},{"lab":"juillet-23","budget":57640,"revenue":32897},{"lab":"août-23","budget":67608,"revenue":46350},{"lab":"septembre-23","budget":33372,"revenue":15030},{"lab":"novembre-23","budget":137172,"revenue":261472},{"lab":"décembre-23","budget":197249,"revenue":8963},{"lab":"janvier-24","budget":107440,"revenue":49560},{"lab":"février-24","budget":113738,"revenue":45997},{"lab":"mars-24","budget":22531,"revenue":847},{"lab":"avril-24","budget":111141,"revenue":46434},{"lab":"mai-24","budget":76126,"revenue":15576},{"lab":"juin-24","budget":37391,"revenue":7950},{"lab":"juillet-24","budget":83809,"revenue":78911},{"lab":"août-24","budget":46584,"revenue":53714},{"lab":"septembre-24","budget":354875,"revenue":297994},{"lab":"octobre-24","budget":295568,"revenue":307583}],"rfm":[{"seg":"Champions","n":857,"monetary":7418642},{"seg":"Loyaux","n":1365,"monetary":7648752},{"seg":"Potentiels","n":1343,"monetary":4573623},{"seg":"À risque","n":716,"monetary":1501796},{"seg":"Dormants","n":541,"monetary":547757}],"by_segment":[{"k":"Dormants","n":992,"loyalty":49.8},{"k":"Nouveaux","n":992,"loyalty":48.3},{"k":"Réguliers","n":1976,"loyalty":50.6},{"k":"VIP","n":539,"loyalty":47.9},{"k":"À risque","n":501,"loyalty":49.3}],"region_options":["Toutes régions","Île-de-France","Auvergne-Rhône-Alpes","Provence-Alpes-Côte d'Azur","Nouvelle-Aquitaine","Occitanie","Hauts-de-France","Grand Est","Bretagne"],"seg_by_region":{"Toutes régions":[{"k":"Dormants","n":992},{"k":"Nouveaux","n":992},{"k":"Réguliers","n":1976},{"k":"VIP","n":539},{"k":"À risque","n":501}],"Île-de-France":[{"k":"Dormants","n":309},{"k":"Nouveaux","n":299},{"k":"Réguliers","n":621},{"k":"VIP","n":167},{"k":"À risque","n":151}],"Auvergne-Rhône-Alpes":[{"k":"Dormants","n":138},{"k":"Nouveaux","n":153},{"k":"Réguliers","n":300},{"k":"VIP","n":73},{"k":"À risque","n":80}],"Provence-Alpes-Côte d'Azur":[{"k":"Dormants","n":122},{"k":"Nouveaux","n":136},{"k":"Réguliers","n":239},{"k":"VIP","n":63},{"k":"À risque","n":49}],"Nouvelle-Aquitaine":[{"k":"Dormants","n":101},{"k":"Nouveaux","n":93},{"k":"Réguliers","n":206},{"k":"VIP","n":58},{"k":"À risque","n":62}],"Occitanie":[{"k":"Dormants","n":91},{"k":"Nouveaux","n":95},{"k":"Réguliers","n":152},{"k":"VIP","n":59},{"k":"À risque","n":51}],"Hauts-de-France":[{"k":"Dormants","n":85},{"k":"Nouveaux","n":81},{"k":"Réguliers","n":162},{"k":"VIP","n":45},{"k":"À risque","n":47}],"Grand Est":[{"k":"Dormants","n":89},{"k":"Nouveaux","n":75},{"k":"Réguliers","n":159},{"k":"VIP","n":41},{"k":"À risque","n":33}],"Bretagne":[{"k":"Dormants","n":57},{"k":"Nouveaux","n":60},{"k":"Réguliers","n":137},{"k":"VIP","n":33},{"k":"À risque","n":28}]}};
+const fr=n=>Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g,'\u00a0');
+const money=n=>n>=1e6?(n/1e6).toFixed(1).replace('.',',')+'\u00a0M\u00a0€':n>=1e3?Math.round(n/1e3)+'\u00a0k\u00a0€':Math.round(n)+'\u00a0€';
+const pct=n=>n.toFixed(1).replace('.',',')+' %';
+const NS='http://www.w3.org/2000/svg';
+const C={bronze:'#A86A3D',silver:'#6C757F',gold:'#A6841C',ink:'#1B1D21',cast:'#2F6F8F',derive:'#3E7D53',struct:'#B0473B',join:'#6E5AA3',muted:'#6B7079',line:'#D6D1C4'};
+const tip=(()=>{const d=document.createElement('div');d.id='tip';document.body.appendChild(d);return d;})();
+function hov(el,txt){el.addEventListener('mousemove',e=>{tip.textContent=txt;tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.opacity='1';});
+  el.addEventListener('mouseenter',()=>el.style.opacity='0.78');el.addEventListener('mouseleave',()=>{tip.style.opacity='0';el.style.opacity='1';});}
+function E(t,a={},txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+function mount(id,w,h){const c=document.getElementById(id);if(!c)return null;c.innerHTML='';const s=E('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%'});s.style.height='auto';s.style.overflow='visible';c.appendChild(s);return s;}
+function barV(id,data,lab,val,color,{w=520,h=250,rot=false,fmt=fr,vals=true,unit=''}={}){
+  const s=mount(id,w,h);if(!s)return;const L=46,R=12,T=22,B=rot?60:30,pw=w-L-R,ph=h-T-B,base=h-B,n=data.length,max=Math.max(...data.map(d=>d[val]))||1;
+  s.appendChild(E('line',{x1:L,y1:base,x2:w-R,y2:base,class:'axis'}));
+  data.forEach((d,i)=>{const bw=pw/n*0.62,cx=L+(i+0.5)*pw/n,bh=d[val]/max*ph,y=base-bh;
+    const r=E('rect',{x:cx-bw/2,y,width:bw,height:Math.max(bh,0),fill:color,rx:1.5});hov(r,`${d[lab]} : ${fmt(d[val])}${unit}`);s.appendChild(r);
+    if(vals)s.appendChild(E('text',{x:cx,y:y-5,'text-anchor':'middle',class:'vlab'},fmt(d[val])));
+    const t=E('text',{x:cx,y:base+15,'text-anchor':rot?'end':'middle',class:'blab'},d[lab]);if(rot)t.setAttribute('transform',`rotate(-40 ${cx} ${base+15})`);s.appendChild(t);});}
+function barH(id,data,lab,val,color,{w=520,labW=160,fmt=fr,unit='',colorFn=null}={}){
+  const rh=28,T=8,B=8,h=data.length*rh+T+B,L=labW,R=80,s=mount(id,w,h);if(!s)return;const pw=w-L-R,max=Math.max(...data.map(d=>d[val]))||1;
+  data.forEach((d,i)=>{const y=T+i*rh+rh/2,bw=d[val]/max*pw;
+    s.appendChild(E('text',{x:L-8,y:y+4,'text-anchor':'end',class:'glab'},d[lab]));
+    const r=E('rect',{x:L,y:y-9,width:Math.max(bw,1),height:18,fill:colorFn?colorFn(d):color,rx:1.5});hov(r,`${d[lab]} : ${fmt(d[val])}${unit}`);s.appendChild(r);
+    s.appendChild(E('text',{x:L+bw+6,y:y+4,class:'vlab'},fmt(d[val])));}); }
+function lineDouble(id,data,lab,v1,v2,c1,c2,{w=1080,h=280,f1=fr,f2=fr,l1='',l2=''}={}){
+  const s=mount(id,w,h);if(!s||!data.length)return;const L=60,R=120,T=20,B=44;
+  const pw=w-L-R,ph=h-T-B,n=data.length;
+  const vals1=data.map(d=>d[v1]||0),vals2=data.map(d=>d[v2]||0);
+  const max=Math.max(...vals1,...vals2)||1;
+  const X=i=>L+(n===1?pw/2:i*pw/(n-1)),Y=v=>T+ph-(v/max)*ph;
+  for(let g=0;g<=2;g++){const v=max*g/2,y=Y(v);
+    s.appendChild(E('line',{x1:L,y1:y,x2:w-R,y2:y,stroke:C.line,'stroke-width':g===0?1:0.6,'stroke-dasharray':g===0?'':'3 3'}));
+    s.appendChild(E('text',{x:L-8,y:y+3,'text-anchor':'end',class:'blab'},f1(v)));}
+  [[vals1,c1,l1,f1],[vals2,c2,l2,f2]].forEach(([vals,col,lbl,fmt],li)=>{
+    s.appendChild(E('polyline',{points:data.map((d,i)=>`${X(i)},${Y(vals[i])}`).join(' '),fill:'none',stroke:col,'stroke-width':2.4,'stroke-linejoin':'round'}));
+    data.forEach((d,i)=>{const cx=X(i),cy=Y(vals[i]);
+      const c=E('circle',{cx,cy,r:3.5,fill:'#FBFAF7',stroke:col,'stroke-width':2});hov(c,`${d[lab]} : ${fmt(vals[i])} ${lbl}`);s.appendChild(c);
+      if(i%3===0||i===n-1)s.appendChild(E('text',{x:cx,y:h-14,'text-anchor':'middle',class:'blab'},d[lab]));}); 
+    const ly=T+10+li*18;
+    s.appendChild(E('rect',{x:w-R+8,y:ly-8,width:10,height:10,fill:col,rx:1}));
+    s.appendChild(E('text',{x:w-R+22,y:ly,class:'blab'},lbl));});}
+function donut(id,data,lab,val,colors,{w=380,h=240,fmt=fr}={}){
+  const s=mount(id,w,h);if(!s)return;const cx=100,cy=h/2,r=78,ir=44;
+  const total=data.reduce((a,d)=>a+d[val],0)||1;let ang=-Math.PI/2;
+  data.forEach((d,i)=>{const frac=d[val]/total,a2=ang+frac*2*Math.PI;
+    const x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const xi=cx+ir*Math.cos(a2),yi=cy+ir*Math.sin(a2),xi2=cx+ir*Math.cos(ang),yi2=cy+ir*Math.sin(ang),lg=frac>0.5?1:0;
+    const p=E('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 ${lg} 1 ${x2} ${y2} L ${xi} ${yi} A ${ir} ${ir} 0 ${lg} 0 ${xi2} ${yi2} Z`,fill:colors[i%colors.length]});
+    hov(p,`${d[lab]} : ${fmt(d[val])} (${Math.round(frac*100)}%)`);s.appendChild(p);ang=a2;});
+  data.forEach((d,i)=>{const ly=22+i*22;
+    s.appendChild(E('rect',{x:220,y:ly-9,width:10,height:10,fill:colors[i%colors.length],rx:1}));
+    s.appendChild(E('text',{x:235,y:ly,class:'glab'},d[lab]));
+    s.appendChild(E('text',{x:w-4,y:ly,'text-anchor':'end',class:'vlab'},Math.round(d[val]/total*100)+'%'));}); }
+const marginColor=d=>{const t=Math.min(d.margin_rate/65,1);return `rgb(${(63+(176-63)*(1-t))|0},${(125+(71-125)*(1-t))|0},${(83+(59-83)*(1-t))|0})`;  };
+const roasColor=d=>{const t=Math.min(d.roas/3,1);return `rgb(${(63+(176-63)*(1-t))|0},${(125+(71-125)*(1-t))|0},${(83+(59-83)*(1-t))|0})`;  };
+const fillSel=(id,opts)=>{document.getElementById(id).innerHTML=opts.map(o=>`<option>${o}</option>`).join('');};
+
+function renderStatic(){
+  const t=D.totals;
+  document.getElementById('kpibar').innerHTML=[
+    [money(t.revenue),'chiffre d\'affaires livré'],
+    [t.margin_rate.toFixed(1).replace('.',',')+' %','taux de marge brute'],
+    [fr(t.n_orders),'commandes livrées'],
+    [money(t.avg_basket),'panier moyen'],
+    [fr(t.n_customers),'clients actifs']
+  ].map(k=>`<div class="k"><div class="kv">${k[0]}</div><div class="kl">${k[1]}</div></div>`).join('');
+  document.getElementById('kpibar2').innerHTML=[
+    [money(t.budget_marketing),'budget marketing total'],
+    [t.roas_moyen.toFixed(2).replace('.',','),'ROAS moyen'],
+    [t.taux_attribution.toFixed(1).replace('.',',')+' %','commandes attribuées'],
+    [fr(60),'campagnes actives']
+  ].map(k=>`<div class="k"><div class="kv">${k[0]}</div><div class="kl">${k[1]}</div></div>`).join('');
+  barH('ch-cat-rev',D.by_category,'k','revenue',C.gold,{fmt:money,labW:150});
+  barH('ch-cat-margin',D.by_category,'k','margin_rate',C.derive,{fmt:pct,labW:150,colorFn:marginColor});
+  barH('ch-reg-rev',D.by_region,'k','revenue',C.bronze,{fmt:money,labW:180});
+  barV('ch-channel-orders',D.by_channel,'k','n_orders',C.cast,{fmt:fr,unit:' cmd'});
+  barV('ch-discount',D.discount_dist,'k','n',C.silver,{fmt:fr,unit:' articles'});
+  barH('ch-ch-roas',D.channel_perf,'k','roas',C.gold,{fmt:d=>d.toFixed(2).replace('.',','),labW:110,colorFn:roasColor});
+  barH('ch-ch-cac',D.channel_perf,'k','cac',C.struct,{fmt:d=>Math.round(d)+' €',labW:110});
+  barH('ch-ch-ctr',D.channel_perf,'k','ctr',C.cast,{fmt:pct,labW:110});
+  barH('ch-ch-conv',D.channel_perf,'k','conv_rate',C.derive,{fmt:pct,labW:110});
+  lineDouble('ch-mkt-monthly',D.monthly_marketing,'lab','budget','revenue',C.struct,C.gold,{f1:money,f2:money,l1:'Budget',l2:'Revenus'});
+  barH('ch-top-camp',D.top_campaigns,'k','roas',C.gold,{fmt:d=>d.toFixed(2).replace('.',','),labW:180,w:1080,colorFn:roasColor});
+  barH('ch-rfm',D.rfm,'seg','n',C.ink,{labW:90});
+  barH('ch-rfm-mon',D.rfm,'seg','monetary',C.gold,{fmt:money,labW:90});
+  barH('ch-loyalty',D.by_segment,'k','loyalty',C.cast,{fmt:d=>d.toFixed(1),labW:90});
+  donut('ch-seg-donut',D.by_segment,'k','n',[C.cast,C.gold,C.bronze,C.derive,C.struct]);
+}
+function renderMonthly(cat){
+  lineDouble('ch-monthly',D.monthly_by_cat[cat],'lab','revenue','margin',C.gold,C.derive,{f1:money,f2:money,l1:'CA',l2:'Marge'});
+  document.getElementById('cap-monthly').textContent=cat+' · 2023-2024';
+}
+function renderSegReg(reg){
+  barH('ch-seg-region',D.seg_by_region[reg],'k','n',C.cast,{labW:90,w:1080});
+  document.getElementById('cap-seg-reg').textContent=reg;
+}
+renderStatic();
+fillSel('sel-cat',D.cat_options); renderMonthly(D.cat_options[0]);
+fillSel('sel-reg',D.region_options); renderSegReg(D.region_options[0]);
+document.getElementById('sel-cat').addEventListener('change',e=>renderMonthly(e.target.value));
+document.getElementById('sel-reg').addEventListener('change',e=>renderSegReg(e.target.value));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.panel[data-panel="${b.dataset.tab}"]`).classList.add('active');
+}));
+</script>
+</body>
+</html>

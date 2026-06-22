@@ -895,6 +895,7 @@ export default function PortfolioDataAnalyst() {
   const [showCalculator, setShowCalculator] = useState(false);
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
+  const [retailOpen, setRetailOpen] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showLinkedInManager, setShowLinkedInManager] = useState(false);
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
@@ -1389,7 +1390,7 @@ export default function PortfolioDataAnalyst() {
       {showDataProject && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
           <div className="relative w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#030508] rounded-lg border border-[#27272A] shadow-2xl p-10">
-            <button onClick={() => setShowDataProject(false)}
+            <button onClick={() => { setShowDataProject(false); setRetailOpen(false); }}
               className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
               ✕
             </button>
@@ -1397,27 +1398,55 @@ export default function PortfolioDataAnalyst() {
               <span className="text-3xl">📊</span>
               <h2 className="text-3xl font-bold">{lang === 'en' ? 'Data Piloting & Reporting' : 'Pilotage & Reporting Data'}</h2>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { emoji: "🛡️", labelFr: "Assurances",  labelEn: "Insurance",   file: "/projects/assurances.html" },
-                { emoji: "🛒", labelFr: "Retail",       labelEn: "Retail",      file: "/projects/retail.html" },
-                { emoji: "👥", labelFr: "RH",           labelEn: "HR",          file: "/projects/RH.html" },
-              ].map(({ emoji, labelFr, labelEn, file }) => (
-                <button
-                  key={file}
-                  onClick={() => window.open(file, '_blank')}
-                  className="flex flex-col items-center justify-center gap-3 bg-[#0D1117] border border-[#27272A] hover:border-[#00F0FF]/50 hover:bg-[#00F0FF]/5 rounded-lg p-8 transition-all duration-200 group cursor-pointer"
-                >
-                  <span className="text-4xl">{emoji}</span>
-                  <span className="text-base font-bold text-white group-hover:text-[#00F0FF] transition-colors">
-                    {lang === 'en' ? labelEn : labelFr}
-                  </span>
-                  <span className="text-xs font-mono text-[#A1A1AA] group-hover:text-[#00F0FF]/60 transition-colors uppercase tracking-widest">
-                    {lang === 'en' ? 'View projects →' : 'Voir les projets →'}
-                  </span>
+            {!retailOpen ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {[
+                  { emoji: "🛡️", labelFr: "Assurances", labelEn: "Insurance", action: () => window.open("/projects/assurances.html", "_blank") },
+                  { emoji: "🛒", labelFr: "Retail",      labelEn: "Retail",    action: () => setRetailOpen(true) },
+                  { emoji: "👥", labelFr: "RH",          labelEn: "HR",        action: () => window.open("/projects/RH.html", "_blank") },
+                ].map(({ emoji, labelFr, labelEn, action }) => (
+                  <button
+                    key={labelFr}
+                    onClick={action}
+                    className="flex flex-col items-center justify-center gap-3 bg-[#0D1117] border border-[#27272A] hover:border-[#00F0FF]/50 hover:bg-[#00F0FF]/5 rounded-lg p-8 transition-all duration-200 group cursor-pointer"
+                  >
+                    <span className="text-4xl">{emoji}</span>
+                    <span className="text-base font-bold text-white group-hover:text-[#00F0FF] transition-colors">
+                      {lang === 'en' ? labelEn : labelFr}
+                    </span>
+                    <span className="text-xs font-mono text-[#A1A1AA] group-hover:text-[#00F0FF]/60 transition-colors uppercase tracking-widest">
+                      {lang === 'en' ? 'View projects →' : 'Voir les projets →'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div>
+                <button onClick={() => setRetailOpen(false)} className="flex items-center gap-2 text-xs font-mono text-[#A1A1AA] hover:text-[#00F0FF] transition-colors mb-6 uppercase tracking-widest">
+                  ← {lang === 'en' ? 'Back' : 'Retour'}
                 </button>
-              ))}
-            </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { emoji: "🏗️", labelFr: "Architecture médaillon : Olist",    labelEn: "Medallion Architecture : Olist",    file: "/projects/retail.html" },
+                    { emoji: "🔗", labelFr: "Pipeline Retail et Marketing",       labelEn: "Retail and Marketing Pipeline",     file: "/projects/retail_lineage.html" },
+                  ].map(({ emoji, labelFr, labelEn, file }) => (
+                    <button
+                      key={file}
+                      onClick={() => window.open(file, '_blank')}
+                      className="flex flex-col items-center justify-center gap-3 bg-[#0D1117] border border-[#27272A] hover:border-[#00F0FF]/50 hover:bg-[#00F0FF]/5 rounded-lg p-8 transition-all duration-200 group cursor-pointer"
+                    >
+                      <span className="text-4xl">{emoji}</span>
+                      <span className="text-base font-bold text-white group-hover:text-[#00F0FF] transition-colors text-center">
+                        {lang === 'en' ? labelEn : labelFr}
+                      </span>
+                      <span className="text-xs font-mono text-[#A1A1AA] group-hover:text-[#00F0FF]/60 transition-colors uppercase tracking-widest">
+                        {lang === 'en' ? 'Open →' : 'Ouvrir →'}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
