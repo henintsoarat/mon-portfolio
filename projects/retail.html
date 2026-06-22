@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Olist · Architecture médaillon · arbi-data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F5F1; --paper2:#FBFAF7; --ink:#1B1D21; --muted:#6B7079;
+    --line:#E2DED3; --line2:#D6D1C4;
+    --bronze:#A86A3D; --bronze-bg:#F3E7DC;
+    --silver:#6C757F; --silver-bg:#E9ECEF;
+    --gold:#A6841C; --gold-bg:#F4ECCF;
+    /* opérations */
+    --op-cast:#2F6F8F; --op-cast-bg:#E4EEF3;
+    --op-derive:#3E7D53; --op-derive-bg:#E6F0E9;
+    --op-rename:#B5751E; --op-rename-bg:#F6ECDA;
+    --op-struct:#B0473B; --op-struct-bg:#F6E4E1;
+    --op-join:#6E5AA3; --op-join-bg:#ECE7F4;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --disp:'Space Grotesk',sans-serif;
+    --body:'Inter',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);
+    line-height:1.5;-webkit-font-smoothing:antialiased;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;background-position:-1px -1px;
+  }
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  a{color:inherit}
+
+  /* ---------- HEADER ---------- */
+  header{padding:64px 0 40px;border-bottom:2px solid var(--ink)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .eyebrow b{color:var(--bronze);font-weight:700}
+  h1{font-family:var(--disp);font-weight:700;font-size:clamp(38px,6vw,72px);line-height:.98;letter-spacing:-.02em;margin:18px 0 14px}
+  h1 .pipe{display:inline-block;background:linear-gradient(90deg,var(--bronze),var(--silver),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{font-size:18px;color:#3a3d42;max-width:60ch}
+  .metrics{display:flex;flex-wrap:wrap;gap:0;margin-top:34px;border:1px solid var(--line2);background:var(--paper2)}
+  .metric{flex:1 1 160px;padding:18px 20px;border-right:1px solid var(--line2)}
+  .metric:last-child{border-right:none}
+  .metric .v{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:-.02em}
+  .metric .l{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .metric.ok .v{color:var(--op-derive)}
+
+  /* ---------- SECTION SHELL ---------- */
+  section{padding:54px 0}
+  .sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:8px}
+  .sec-num{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .sec-title{font-family:var(--disp);font-weight:600;font-size:26px;letter-spacing:-.01em}
+  .sec-sub{color:var(--muted);font-size:15px;margin:0 0 28px;max-width:70ch}
+
+  /* ---------- LEGEND ---------- */
+  .legend{display:flex;flex-wrap:wrap;gap:10px}
+  .chip-key{font-family:var(--mono);font-size:12px;padding:5px 11px;border-radius:2px;border-left:3px solid;display:inline-flex;gap:7px;align-items:center}
+  .k-cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .k-derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .k-rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .k-struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .k-join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+
+  /* ---------- FLOW : 3 LANES ---------- */
+  .flow{display:grid;grid-template-columns:1fr 1.5fr 1.35fr;gap:18px;align-items:start}
+  .lane{position:relative}
+  .lane-head{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#fff;font-family:var(--disp);font-weight:600;font-size:15px;letter-spacing:.02em;position:sticky;top:0;z-index:5}
+  .lane-head .tag{font-family:var(--mono);font-weight:500;font-size:11px;opacity:.85;margin-left:auto}
+  .lane.bronze .lane-head{background:var(--bronze)}
+  .lane.silver .lane-head{background:var(--silver)}
+  .lane.gold .lane-head{background:var(--gold)}
+  .lane-body{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+
+  .card{background:var(--paper2);border:1px solid var(--line2);border-radius:3px;border-left-width:4px;padding:13px 14px}
+  .lane.bronze .card{border-left-color:var(--bronze)}
+  .lane.silver .card{border-left-color:var(--silver)}
+  .lane.gold .card{border-left-color:var(--gold)}
+  .card.fact{border-left-color:var(--ink);background:#fff}
+  .card .tname{font-family:var(--mono);font-weight:700;font-size:13.5px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .card .dims{font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+  .card .role{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:2px;font-weight:600}
+
+  /* transformation chips */
+  .ops{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+  .op{font-family:var(--mono);font-size:11.5px;line-height:1.35;padding:5px 9px;border-radius:2px;border-left:3px solid;display:block}
+  .op .col{font-weight:700}
+  .op .to{opacity:.55;padding:0 4px}
+  .op.cast{background:var(--op-cast-bg);border-color:var(--op-cast);color:var(--op-cast)}
+  .op.derive{background:var(--op-derive-bg);border-color:var(--op-derive);color:var(--op-derive)}
+  .op.rename{background:var(--op-rename-bg);border-color:var(--op-rename);color:var(--op-rename)}
+  .op.struct{background:var(--op-struct-bg);border-color:var(--op-struct);color:var(--op-struct)}
+  .op.join{background:var(--op-join-bg);border-color:var(--op-join);color:var(--op-join)}
+  .grp{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 2px;font-weight:700}
+  .grp:first-child{margin-top:0}
+
+  .measures{font-family:var(--mono);font-size:10.5px;color:#3a3d42;margin-top:8px;padding-top:8px;border-top:1px dashed var(--line2)}
+  .measures b{color:var(--ink)}
+
+  /* ---------- STAR SCHEMA ---------- */
+  .starwrap{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:8px}
+  svg{display:block;width:100%;height:auto}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:2px solid var(--ink);padding:34px 0 60px;margin-top:30px;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center}
+  .stack{font-family:var(--mono);font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:8px}
+  .stack span{padding:4px 9px;border:1px solid var(--line2);border-radius:2px}
+  .sig{font-family:var(--disp);font-weight:600;font-size:15px}
+  .sig b{background:linear-gradient(90deg,var(--bronze),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ---------- DASHBOARD ---------- */
+  .tabs{display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .tab{flex:1 1 auto;font-family:var(--disp);font-weight:600;font-size:13.5px;padding:13px 14px;background:none;border:none;border-right:1px solid var(--line2);color:var(--muted);cursor:pointer;letter-spacing:.01em;transition:background .12s,color .12s;text-align:center}
+  .tab:last-child{border-right:none}
+  .tab:hover{background:#fff;color:var(--ink)}
+  .tab.active{background:var(--ink);color:var(--paper)}
+  .tab:focus-visible{outline:2px solid var(--op-cast);outline-offset:-2px}
+  .panel{display:none}
+  .panel.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .dash-grid .full{grid-column:1 / -1}
+  .pane{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px 14px}
+  .pane h3{font-family:var(--disp);font-weight:600;font-size:15.5px;margin:0 0 2px}
+  .pane .cap{font-size:12.5px;color:var(--muted);margin:0 0 14px;font-family:var(--body)}
+  .pane svg{overflow:visible}
+
+  .insight{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:3px;padding:18px 20px;display:flex;flex-direction:column;justify-content:center}
+  .insight .big{font-family:var(--mono);font-weight:700;font-size:34px;letter-spacing:-.02em;line-height:1}
+  .insight .big .arrow{color:var(--op-struct);margin:0 8px}
+  .insight .big .up{color:#7BBF8E}
+  .insight .lbl{font-size:13px;color:#b9bcc2;margin-top:8px;line-height:1.4;font-family:var(--body)}
+  .insight.gold{background:var(--gold);border-color:var(--gold);color:#2a2206}
+  .insight.gold .lbl{color:#5a4a08}
+
+  .kpibar{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line2);background:var(--paper2);margin-bottom:24px}
+  .kpibar .k{padding:16px 18px;border-right:1px solid var(--line2)}
+  .kpibar .k:last-child{border-right:none}
+  .kpibar .kv{font-family:var(--mono);font-weight:700;font-size:23px;letter-spacing:-.02em}
+  .kpibar .kl{font-size:12px;color:var(--muted);margin-top:3px}
+
+  /* chart primitives */
+  .axis{stroke:var(--line2);stroke-width:1}
+  .blab{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+  .vlab{font-family:var(--mono);font-size:10.5px;fill:#3a3d42;font-weight:500}
+  .glab{font-family:var(--mono);font-size:11px;fill:var(--ink);font-weight:500}
+
+  @media (max-width:960px){
+    .flow{grid-template-columns:1fr;gap:30px}
+    .lane-head{position:static}
+    .dash-grid{grid-template-columns:1fr}
+    .kpibar{grid-template-columns:repeat(2,1fr)}
+    .kpibar .k:nth-child(2n){border-right:none}
+    .tab{flex-basis:33%}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .card{transition:transform .15s ease,box-shadow .15s ease}
+    .card:hover{transform:translateY(-2px);box-shadow:0 6px 22px -12px rgba(0,0,0,.35)}
+  }
+</style>
+</head>
+<body>
+
+<header><div class="wrap">
+  <div class="eyebrow"><b>arbi-data</b> <span>/</span> data lineage <span>/</span> medallion</div>
+  <h1>Retail : <span class="pipe">pipeline médaillon</span></h1>
+  <p class="lede">Du CSV brut au modèle dimensionnel. Chaque couche, chaque table, et la transformation appliquée colonne par colonne : Bronze → Silver → Gold, prototypé en pandas, portable sur Fabric.</p>
+  <div class="metrics">
+    <div class="metric"><div class="v">9 → 8 → 10</div><div class="l">tables · bronze → silver → gold</div></div>
+    <div class="metric"><div class="v">1,55 M</div><div class="l">lignes sources ingérées</div></div>
+    <div class="metric"><div class="v">1 M → 19 K</div><div class="l">géolocalisation dédoublonnée</div></div>
+    <div class="metric ok"><div class="v">0</div><div class="l">FK orpheline · fait principal</div></div>
+  </div>
+</div></header>
+
+<!-- LEGEND -->
+<section style="padding-top:40px;padding-bottom:0"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">00</span><h2 class="sec-title">Grammaire des transformations</h2></div>
+  <p class="sec-sub">Chaque chip ci-dessous code une opération réelle du pipeline. La couleur indique sa nature ; le texte monospace nomme la colonne et l'effet.</p>
+  <div class="legend">
+    <span class="chip-key k-cast">typage · str → datetime / numeric</span>
+    <span class="chip-key k-derive">colonne dérivée · calcul</span>
+    <span class="chip-key k-rename">renommage · correction</span>
+    <span class="chip-key k-struct">structure · dédoublonnage / filtre</span>
+    <span class="chip-key k-join">jointure · enrichissement</span>
+  </div>
+</div></section>
+
+<!-- FLOW -->
+<section><div class="wrap">
+  <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Le flux, couche par couche</h2></div>
+  <p class="sec-sub">Bronze conserve le brut intact. Silver nettoie, type et conforme. Gold structure le modèle en étoile et les marts métier. Les transformations vivent dans la couche Silver : c'est là que se joue la qualité.</p>
+
+  <div class="flow">
+
+    <!-- BRONZE -->
+    <div class="lane bronze">
+      <div class="lane-head">Bronze<span class="tag">raw · read-only</span></div>
+      <div class="lane-body">
+        <div class="card"><div class="tname">olist_orders<span class="dims">99 441 × 8</span></div></div>
+        <div class="card"><div class="tname">olist_order_items<span class="dims">112 650 × 7</span></div></div>
+        <div class="card"><div class="tname">olist_order_payments<span class="dims">103 886 × 5</span></div></div>
+        <div class="card"><div class="tname">olist_order_reviews<span class="dims">99 224 × 7</span></div></div>
+        <div class="card"><div class="tname">olist_customers<span class="dims">99 441 × 5</span></div></div>
+        <div class="card"><div class="tname">olist_sellers<span class="dims">3 095 × 4</span></div></div>
+        <div class="card"><div class="tname">olist_products<span class="dims">32 951 × 9</span></div></div>
+        <div class="card"><div class="tname">olist_geolocation<span class="dims">1 000 163 × 5</span></div></div>
+        <div class="card"><div class="tname">category_translation<span class="dims">71 × 2</span></div></div>
+      </div>
+    </div>
+
+    <!-- SILVER -->
+    <div class="lane silver">
+      <div class="lane-head">Silver<span class="tag">cleaned · conformed</span></div>
+      <div class="lane-body">
+
+        <div class="card"><div class="tname">orders<span class="dims">99 441 × 13</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">5 colonnes de dates</span><span class="to">→</span>datetime</span>
+            <span class="op cast"><span class="col">order_status</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op derive"><span class="col">+ delivery_days</span><span class="to">=</span>delivered − purchase</span>
+            <span class="op derive"><span class="col">+ delivery_delay_days</span><span class="to">=</span>delivered − estimated</span>
+            <span class="op derive"><span class="col">+ is_delivered · is_late</span></span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">order_items<span class="dims">112 650 × 8</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">shipping_limit_date</span><span class="to">→</span>datetime</span>
+            <span class="op cast"><span class="col">price · freight_value</span><span class="to">→</span>float</span>
+            <span class="op derive"><span class="col">+ total_item_value</span><span class="to">=</span>price + freight</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">payments<span class="dims">103 886 × 5</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">payment_type</span><span class="to">→</span>liste de valeurs</span>
+            <span class="op cast"><span class="col">payment_installments</span><span class="to">→</span>entier (optionnel)</span>
+            <span class="op cast"><span class="col">montant payé</span><span class="to">→</span>float</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">reviews<span class="dims">99 224 × 7</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">note (1 à 5)</span><span class="to">→</span>entier (optionnel)</span>
+            <span class="op cast"><span class="col">2 colonnes de dates</span><span class="to">→</span>datetime</span>
+            <span class="op struct"><span class="col">dédoublonnage</span><span class="to">sur</span>(review_id, order_id)</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">customers<span class="dims">99 441 × 5</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">customer_city · _state</span><span class="to">→</span>trim</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">sellers<span class="dims">3 095 × 4</span></div>
+          <div class="ops">
+            <span class="op cast"><span class="col">seller_city · _state</span><span class="to">→</span>trim</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">products<span class="dims">32 951 × 10</span></div>
+          <div class="ops">
+            <span class="op rename"><span class="col">product_name_lenght</span><span class="to">→</span>_length</span>
+            <span class="op rename"><span class="col">description_lenght</span><span class="to">→</span>_length</span>
+            <span class="op join"><span class="col">+ category_name_english</span><span class="to">⨝</span>translation</span>
+            <span class="op struct"><span class="col">liste de valeurs</span><span class="to">fillna</span>'unknown'</span>
+          </div>
+        </div>
+
+        <div class="card"><div class="tname">geolocation<span class="dims">1 000 163 → 19 010</span></div>
+          <div class="ops">
+            <span class="op struct"><span class="col">drop_duplicates</span><span class="to">−</span>261 831 lignes</span>
+            <span class="op struct"><span class="col">filtre bbox Brésil</span><span class="to">→</span>lat/lng valides</span>
+            <span class="op derive"><span class="col">groupby zip_prefix</span><span class="to">→</span>lat/lng moy · ville/état modaux</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- GOLD -->
+    <div class="lane gold">
+      <div class="lane-head">Gold<span class="tag">star + marts</span></div>
+      <div class="lane-body">
+
+        <div class="grp">Dimensions · clé de substitution</div>
+        <div class="card"><div class="tname">dim_date<span class="dims">800 × 12</span></div>
+          <div class="role">généré · calendrier</div>
+          <div class="ops"><span class="op derive"><span class="col">clé date (AAAAMMJJ)</span><span class="to">=</span>yyyymmdd + attrs</span></div>
+        </div>
+        <div class="card"><div class="tname">dim_customer<span class="dims">99 441 × 8</span></div>
+          <div class="ops"><span class="op derive"><span class="col">+ customer_sk</span></span><span class="op join"><span class="col">+ geo_lat/lng</span><span class="to">⨝</span>geolocation</span></div>
+        </div>
+        <div class="card"><div class="tname">dim_product<span class="dims">32 951 × 9</span></div>
+          <div class="ops"><span class="op derive"><span class="col">+ product_sk</span></span></div>
+        </div>
+        <div class="card"><div class="tname">dim_seller<span class="dims">3 095 × 7</span></div>
+          <div class="ops"><span class="op derive"><span class="col">+ seller_sk</span></span><span class="op join"><span class="col">+ geo_lat/lng</span><span class="to">⨝</span>geolocation</span></div>
+        </div>
+
+        <div class="grp">Tableaux de transactions</div>
+        <div class="card fact"><div class="tname">fact_order_items<span class="dims">112 650 × 10</span></div>
+          <div class="role">grain · ligne d'article</div>
+          <div class="measures">FK <b>client · produit · vendeur · date d'achat</b><br>mesures <b>prix · frais de port · total</b></div>
+        </div>
+        <div class="card fact"><div class="tname">fact_payments<span class="dims">103 886 × 7</span></div>
+          <div class="role">grain · paiement</div>
+          <div class="measures">FK <b>client · date d'achat</b> · mesure <b>montant payé</b></div>
+        </div>
+        <div class="card fact"><div class="tname">fact_reviews<span class="dims">99 224 × 6</span></div>
+          <div class="role">grain · avis</div>
+          <div class="measures">FK <b>client · date d'achat · date de l'avis</b> · mesure <b>note (1 à 5)</b></div>
+        </div>
+
+        <div class="grp">Marts métier</div>
+        <div class="card"><div class="tname">kpi_sales_by_state<span class="dims">558 × 7</span></div></div>
+        <div class="card"><div class="tname">kpi_delivery_performance<span class="dims">27 × 6</span></div></div>
+        <div class="card"><div class="tname">kpi_rfm<span class="dims">95 560 × 9</span></div></div>
+
+      </div>
+    </div>
+
+  </div>
+</div></section>
+
+<!-- STAR SCHEMA -->
+<section style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">Le modèle en étoile (Gold)</h2></div>
+  <p class="sec-sub">Une constellation à dimensions conformes : trois faits partagent les mêmes dimensions client et date. Les liens représentent les clés de substitution résolues sans aucune ligne orpheline.</p>
+  <div class="starwrap">
+    <svg viewBox="0 0 1000 560" role="img" aria-label="Schéma en étoile : dimensions reliées aux faits">
+      <defs>
+        <style>
+          .dim{fill:#FBFAF7;stroke:var(--gold);stroke-width:2}
+          .fct{fill:#fff;stroke:var(--ink);stroke-width:2}
+          .tt{font-family:var(--mono);font-weight:700;font-size:14px;fill:var(--ink)}
+          .ts{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+          .lk{stroke:var(--line2);stroke-width:1.5}
+          .lk.c{stroke:var(--op-cast);stroke-width:1.5;stroke-dasharray:4 3}
+        </style>
+      </defs>
+
+      <!-- links (drawn first, behind boxes) -->
+      <!-- order_items center (x=250..450,y=360) to dims -->
+      <line class="lk" x1="120" y1="120" x2="300" y2="360"/>
+      <line class="lk" x1="385" y1="120" x2="350" y2="360"/>
+      <line class="lk" x1="650" y1="120" x2="400" y2="360"/>
+      <line class="lk" x1="880" y1="120" x2="430" y2="360"/>
+      <!-- payments (x=560..760,y=360) to customer + date -->
+      <line class="lk c" x1="385" y1="135" x2="610" y2="360"/>
+      <line class="lk c" x1="120" y1="135" x2="600" y2="360"/>
+      <!-- reviews (x=800..1000? keep inside) -->
+      <line class="lk c" x1="385" y1="150" x2="840" y2="360"/>
+      <line class="lk c" x1="120" y1="150" x2="830" y2="360"/>
+
+      <!-- DIMENSIONS (top row) -->
+      <g><rect class="dim" x="40" y="70" width="160" height="60" rx="4"/><text class="tt" x="120" y="98" text-anchor="middle">dim_date</text><text class="ts" x="120" y="116" text-anchor="middle">800 lignes</text></g>
+      <g><rect class="dim" x="305" y="70" width="160" height="60" rx="4"/><text class="tt" x="385" y="98" text-anchor="middle">dim_customer</text><text class="ts" x="385" y="116" text-anchor="middle">99 441 · unique_id</text></g>
+      <g><rect class="dim" x="570" y="70" width="160" height="60" rx="4"/><text class="tt" x="650" y="98" text-anchor="middle">dim_product</text><text class="ts" x="650" y="116" text-anchor="middle">32 951 · catégorie</text></g>
+      <g><rect class="dim" x="800" y="70" width="160" height="60" rx="4"/><text class="tt" x="880" y="98" text-anchor="middle">dim_seller</text><text class="ts" x="880" y="116" text-anchor="middle">3 095 · géo</text></g>
+
+      <!-- FACTS (bottom row) -->
+      <g><rect class="fct" x="250" y="360" width="200" height="78" rx="4"/><text class="tt" x="350" y="392" text-anchor="middle">fact_order_items</text><text class="ts" x="350" y="410" text-anchor="middle">112 650 · grain article</text><text class="ts" x="350" y="426" text-anchor="middle">price · freight</text></g>
+      <g><rect class="fct" x="510" y="360" width="190" height="78" rx="4"/><text class="tt" x="605" y="392" text-anchor="middle">fact_payments</text><text class="ts" x="605" y="410" text-anchor="middle">103 886 · grain paiement</text><text class="ts" x="605" y="426" text-anchor="middle">montant payé</text></g>
+      <g><rect class="fct" x="745" y="360" width="190" height="78" rx="4"/><text class="tt" x="840" y="392" text-anchor="middle">fact_reviews</text><text class="ts" x="840" y="410" text-anchor="middle">99 224 · grain avis</text><text class="ts" x="840" y="426" text-anchor="middle">note (1 à 5)</text></g>
+
+      <!-- caption -->
+      <text class="ts" x="40" y="500">- lien solide : dimension propre au fait</text>
+      <text class="ts" x="40" y="520" fill="#2F6F8F">- lien pointillé : dimension conforme partagée (client · date)</text>
+    </svg>
+  </div>
+</div></section>
+
+<!-- DASHBOARD -->
+<section id="dash"><div class="wrap">
+  <style>
+    .ctrl{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}
+    .ctrl label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+    .ctrl select{font-family:var(--mono);font-size:13px;padding:8px 12px;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:2px;cursor:pointer;min-width:200px}
+    .ctrl select:hover{border-color:var(--ink)}
+    .ctrl select:focus-visible{outline:2px solid var(--op-cast);outline-offset:1px}
+    #tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:12px;padding:6px 10px;border-radius:3px;opacity:0;transition:opacity .1s;z-index:99;white-space:nowrap;transform:translate(-50%,-130%)}
+    .hint{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  
+  /* ---------- DOCUMENTATION ---------- */
+  .doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+  .doc-grid.three{grid-template-columns:repeat(3,1fr)}
+  .doc-block{border:1px solid var(--line2);background:var(--paper2);border-radius:3px;padding:16px 18px}
+  .doc-block h4{font-family:var(--disp);font-weight:600;font-size:14.5px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+  .doc-block h4 .badge{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:2px;background:var(--ink);color:var(--paper);font-weight:700;letter-spacing:.08em}
+  .doc-block h4 .badge.s{background:var(--silver)}.doc-block h4 .badge.g{background:var(--gold);color:#1a0e00}
+  .doc-block h4 .badge.f{background:var(--ink)}
+  .doc-table{width:100%;border-collapse:collapse;font-size:12px}
+  .doc-table th{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line2);padding:5px 8px;text-align:left;white-space:nowrap}
+  .doc-table td{padding:5px 8px;border-bottom:1px solid var(--line);font-size:12px;vertical-align:top;line-height:1.4}
+  .doc-table tr:last-child td{border-bottom:none}
+  .doc-table .col-name{font-family:var(--mono);font-weight:700;font-size:11.5px;color:var(--op-cast);white-space:nowrap}
+  .doc-table .col-type{font-family:var(--mono);font-size:10.5px;color:var(--muted);white-space:nowrap}
+  .doc-table .col-pk{color:var(--gold);font-weight:700}
+  .doc-table .col-fk{color:var(--op-join)}
+  .doc-table .col-sk{color:var(--bronze)}
+  .doc-table .tag-d{background:var(--op-derive-bg);color:var(--op-derive);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .doc-table .tag-f{background:var(--op-struct-bg);color:var(--op-struct);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .doc-table .tag-j{background:var(--op-join-bg);color:var(--op-join);font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:2px;white-space:nowrap}
+  .formula-box{background:#fff;border:1px solid var(--line2);border-radius:2px;padding:10px 14px;font-family:var(--mono);font-size:12px;margin-top:10px}
+  .formula-box .f-row{display:flex;gap:12px;align-items:baseline;padding:4px 0;border-bottom:1px solid var(--line)}
+  .formula-box .f-row:last-child{border-bottom:none}
+  .formula-box .f-kpi{font-weight:700;color:var(--ink);min-width:160px}
+  .formula-box .f-eq{color:var(--muted);padding:0 4px}
+  .formula-box .f-formula{color:var(--op-cast)}
+  .formula-box .col{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:#fff;border:1px solid var(--line2);border-radius:2px;padding:1px 5px;margin-left:6px;vertical-align:middle}
+  .doc-note{font-size:12.5px;color:var(--muted);background:var(--paper2);border-left:3px solid var(--line2);padding:10px 14px;margin:6px 0;border-radius:0 3px 3px 0}
+  .doc-note code{font-family:var(--mono);font-size:11.5px;color:var(--op-cast)}
+  @media(max-width:960px){.doc-grid,.doc-grid.three{grid-template-columns:1fr}}
+
+</style>
+
+  <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Le rendu : tableau de bord</h2></div>
+  <p class="sec-sub">La couche Gold mise en lecture, interactive : filtre par état ou catégorie, survole pour le détail. Les croisements révèlent ce qu'une dimension seule ne dit pas.</p>
+
+  <div class="kpibar" id="kpibar"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" data-tab="temps">Temps</button>
+    <button class="tab" data-tab="geo">Géographie</button>
+    <button class="tab" data-tab="produit">Produit</button>
+    <button class="tab" data-tab="paiement">Paiement</button>
+    <button class="tab" data-tab="satisfaction">Satisfaction</button>
+    <button class="tab" data-tab="clients">Clients · RFM</button>
+  </div>
+
+  <!-- TEMPS -->
+  <div class="panel active" data-panel="temps">
+    <div class="dash-grid">
+      <div class="pane full"><h3>Chiffre d'affaires mensuel</h3><p class="cap">Jan. 2017 → août 2018 · traîne finale exclue</p><div id="ch-monthly"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-cat">Catégorie</label><select id="sel-cat"></select><span class="hint">filtre les heures et jours de commande</span></div>
+    <div class="dash-grid">
+      <div class="pane"><h3>Commandes par heure</h3><p class="cap">Heure d'achat (0–23 h)</p><div id="ch-hourly"></div></div>
+      <div class="pane"><h3>Commandes par jour</h3><p class="cap">Lundi au dimanche</p><div id="ch-weekday"></div></div>
+    </div>
+  </div>
+
+  <!-- GEO -->
+  <div class="panel" data-panel="geo">
+    <div class="dash-grid">
+      <div class="pane"><h3>Top États · chiffre d'affaires</h3><p class="cap">CA en BRL</p><div id="ch-state-rev"></div></div>
+      <div class="pane"><h3>Taux de retard par État</h3><p class="cap">% livré après la date estimée</p><div id="ch-state-late"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-geo">État</label><select id="sel-geo"></select><span class="hint">chiffre d'affaires par mois (mmmm-aa)</span></div>
+    <div class="dash-grid">
+      <div class="pane full"><h3>Chiffre d'affaires mensuel par État</h3><p class="cap" id="cap-geo-month">Tous les états</p><div id="ch-state-month"></div></div>
+    </div>
+  </div>
+
+  <!-- PRODUIT -->
+  <div class="panel" data-panel="produit">
+    <div class="dash-grid">
+      <div class="pane full"><h3>Top catégories · chiffre d'affaires</h3><p class="cap">Catégories traduites en français</p><div id="ch-cat-rev"></div></div>
+      <div class="pane"><h3>Mieux notées</h3><p class="cap">Note moyenne · ≥ 300 avis</p><div id="ch-cat-best"></div></div>
+      <div class="pane"><h3>Moins bien notées</h3><p class="cap">Note moyenne · ≥ 300 avis</p><div id="ch-cat-worst"></div></div>
+    </div>
+  </div>
+
+  <!-- PAIEMENT -->
+  <div class="panel" data-panel="paiement">
+    <div class="dash-grid">
+      <div class="pane"><h3>Répartition par moyen de paiement</h3><p class="cap">Part de la valeur payée</p><div id="ch-pay"></div></div>
+      <div class="pane"><h3>Nombre de mensualités</h3><p class="cap">Échelonnement carte (1 à 12)</p><div id="ch-inst"></div></div>
+      <div class="insight gold full"><div class="big">73,9&nbsp;%</div><div class="lbl">de la valeur transite par carte de crédit, souvent échelonnée, le crédit conso est central dans le e-commerce brésilien. 3 paiements <code>not_defined</code> à 0 BRL filtrés.</div></div>
+    </div>
+  </div>
+
+  <!-- SATISFACTION -->
+  <div class="panel" data-panel="satisfaction">
+    <div class="ctrl"><label for="sel-sat">État</label><select id="sel-sat"></select><span class="hint">filtre la distribution et la note mensuelle</span></div>
+    <div class="dash-grid">
+      <div class="pane"><h3>Distribution des notes</h3><p class="cap" id="cap-sat-dist">Tous les états · 1 à 5 étoiles</p><div id="ch-score"></div></div>
+      <div class="insight full"><div class="big">4,29 <span class="arrow">→</span> 2,27</div><div class="lbl">Note moyenne à l'heure (4,29) versus en retard (2,27), au niveau national. Le retard de livraison est le premier destructeur de satisfaction : croisement faits livraison × avis.</div></div>
+      <div class="pane full"><h3>Note moyenne mensuelle</h3><p class="cap" id="cap-sat-month">Tous les états</p><div id="ch-score-month"></div></div>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div class="panel" data-panel="clients">
+    <div class="dash-grid">
+      <div class="pane"><h3>Segments RFM · nombre de clients</h3><p class="cap">95 560 clients réels</p><div id="ch-rfm"></div></div>
+      <div class="pane"><h3>Valeur monétaire par segment</h3><p class="cap">Somme dépensée · BRL</p><div id="ch-rfm-mon"></div></div>
+    </div>
+    <div class="ctrl" style="margin-top:16px"><label for="sel-cli">État</label><select id="sel-cli"></select><span class="hint">filtre le statut des commandes</span></div>
+    <div class="dash-grid">
+      <div class="pane"><h3>Statut des commandes</h3><p class="cap" id="cap-cli">Tous les états</p><div id="ch-status"></div></div>
+      <div class="insight gold"><div class="big">6,96 M</div><div class="lbl">Le segment <b>Loyal</b> porte la plus grosse valeur cumulée, devant les Champions moins nombreux. Fréquence d'achat faible (majorité d'achats uniques), typique d'Olist.</div></div>
+    </div>
+  </div>
+
+</div></section>
+
+
+<section id="doc" style="padding-top:10px"><div class="wrap">
+  <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Documentation : champs &amp; règles de calcul</h2></div>
+  <p class="sec-sub">Description complète de chaque champ de données : ce qu'il contient, son format, et comment il a été calculé ou transformé. Les formules utilisent les noms de colonnes réels du code.</p>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Tables de données — nettoyées et structurées</h3>
+
+  <div class="doc-grid three">
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>orders <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">99 441 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">order_id</td><td class="col-type">texte</td><td>identifiant unique de la commande</td></tr>
+        <tr><td class="col-name col-fk">customer_id</td><td class="col-type">texte</td><td>lien vers le tableau clients</td></tr>
+        <tr><td class="col-name">order_status</td><td class="col-type">liste de valeurs</td><td>valeur parmi une liste fixe</td></tr>
+        <tr><td class="col-name">order_purchase_timestamp</td><td class="col-type">date &amp; heure</td><td>converti en date depuis le texte source</td></tr>
+        <tr><td class="col-name">order_approved_at</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+        <tr><td class="col-name">order_delivered_carrier_date</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+        <tr><td class="col-name">order_delivered_customer_date</td><td class="col-type">date &amp; heure</td><td>converti en date · vide si non livré</td></tr>
+        <tr><td class="col-name">order_estimated_delivery_date</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+        <tr><td class="col-name">is_delivered</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si la commande est marquée « livrée »</td></tr>
+        <tr><td class="col-name">delivery_days</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> date de livraison moins date d'achat (en jours)</td></tr>
+        <tr><td class="col-name">estimated_days</td><td class="col-type">entier</td><td><span class="tag-d">calculé</span> date estimée moins date d'achat (en jours)</td></tr>
+        <tr><td class="col-name">delivery_delay_days</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> date de livraison moins date estimée · positif = retard</td></tr>
+        <tr><td class="col-name">is_late</td><td class="col-type">oui / non</td><td><span class="tag-d">calculé</span> vrai si la livraison est arrivée après la date estimée</td></tr>
+      </table>
+    </div>
+
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>order_items <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">112 650 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">order_id</td><td class="col-type">texte</td><td>identifiant de commande · lien vers le tableau commandes</td></tr>
+        <tr><td class="col-name col-pk">order_item_id</td><td class="col-type">entier</td><td>numéro de l'article dans la commande</td></tr>
+        <tr><td class="col-name col-fk">product_id</td><td class="col-type">texte</td><td>lien vers le tableau produits</td></tr>
+        <tr><td class="col-name col-fk">seller_id</td><td class="col-type">texte</td><td>lien vers le tableau vendeurs</td></tr>
+        <tr><td class="col-name">shipping_limit_date</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+        <tr><td class="col-name">price</td><td class="col-type">décimal</td><td>montant en réaux brésiliens (BRL)</td></tr>
+        <tr><td class="col-name">freight_value</td><td class="col-type">décimal</td><td>montant en réaux brésiliens (BRL)</td></tr>
+        <tr><td class="col-name">total_item_value</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> prix + frais de port</td></tr>
+      </table>
+      <div style="height:14px"></div>
+      <h4><span class="badge s">SILVER</span>payments <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">103 886 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">order_id</td><td class="col-type">texte</td><td>identifiant de commande · lien vers le tableau commandes</td></tr>
+        <tr><td class="col-name col-pk">payment_sequential</td><td class="col-type">entier</td><td>numéro de l'article dans la commande</td></tr>
+        <tr><td class="col-name">payment_type</td><td class="col-type">liste de valeurs</td><td>valeur parmi une liste fixe</td></tr>
+        <tr><td class="col-name">payment_installments</td><td class="col-type">entier (optionnel)</td><td>nombre entier · peut être vide</td></tr>
+        <tr><td class="col-name">montant payé</td><td class="col-type">décimal</td><td>montant en réaux brésiliens (BRL)</td></tr>
+      </table>
+    </div>
+
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>products <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">32 951 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">product_id</td><td class="col-type">texte</td><td>identifiant unique de la commande</td></tr>
+        <tr><td class="col-name">product_category_name</td><td class="col-type">texte</td><td>absent dans la source → remplacé par « inconnu »</td></tr>
+        <tr><td class="col-name">product_name_length</td><td class="col-type">décimal</td><td><span class="tag-d">renommé</span> source : product_name_lenght</td></tr>
+        <tr><td class="col-name">product_description_length</td><td class="col-type">décimal</td><td><span class="tag-d">renommé</span> source : product_description_lenght</td></tr>
+        <tr><td class="col-name">product_photos_qty</td><td class="col-type">décimal</td><td>repris tel quel depuis la source, sans modification</td></tr>
+        <tr><td class="col-name">product_weight_g</td><td class="col-type">décimal</td><td>repris tel quel depuis la source, sans modification</td></tr>
+        <tr><td class="col-name">product_length/height/width_cm</td><td class="col-type">décimal</td><td>repris tel quel depuis la source, sans modification</td></tr>
+        <tr><td class="col-name">product_category_name_english</td><td class="col-type">texte</td><td><span class="tag-j">jointure</span> category_translation · absent dans la source → remplacé par « inconnu »</td></tr>
+      </table>
+      <div style="height:14px"></div>
+      <h4><span class="badge s">SILVER</span>reviews <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">99 224 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name">review_id</td><td class="col-type">texte</td><td>identifiant d'avis · peut se répéter (un avis peut couvrir plusieurs commandes)</td></tr>
+        <tr><td class="col-name col-fk">order_id</td><td class="col-type">texte</td><td>lien vers le tableau commandes</td></tr>
+        <tr><td class="col-name">note (1 à 5)</td><td class="col-type">entier (optionnel)</td><td>note de 1 à 5 étoiles · peut être vide</td></tr>
+        <tr><td class="col-name">review_comment_title/message</td><td class="col-type">texte</td><td>texte libre · souvent absent</td></tr>
+        <tr><td class="col-name">review_creation_date</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+        <tr><td class="col-name">review_answer_timestamp</td><td class="col-type">date &amp; heure</td><td>converti en date</td></tr>
+      </table>
+    </div>
+
+    <div class="doc-block"><h4><span class="badge s">SILVER</span>customers <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">99 441 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">customer_id</td><td class="col-type">texte</td><td>identifiant client propre à cette commande</td></tr>
+        <tr><td class="col-name">customer_unique_id</td><td class="col-type">texte</td><td>identifiant stable du client réel, commandes multiples comprises</td></tr>
+        <tr><td class="col-name">customer_zip_code_prefix</td><td class="col-type">entier</td><td>lien vers le tableau de localisation géographique</td></tr>
+        <tr><td class="col-name">customer_city</td><td class="col-type">texte</td><td>espaces superflus supprimés</td></tr>
+        <tr><td class="col-name">customer_state</td><td class="col-type">texte</td><td>espaces superflus supprimés</td></tr>
+      </table>
+      <div style="height:14px"></div>
+      <h4><span class="badge s">SILVER</span>sellers <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">3 095 lignes</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">seller_id</td><td class="col-type">texte</td><td>identifiant unique de la commande</td></tr>
+        <tr><td class="col-name">seller_zip_code_prefix</td><td class="col-type">entier</td><td>lien vers le tableau de localisation géographique</td></tr>
+        <tr><td class="col-name">seller_city / seller_state</td><td class="col-type">texte</td><td>espaces superflus supprimés</td></tr>
+      </table>
+      <div style="height:14px"></div>
+      <h4><span class="badge s">SILVER</span>geolocation <span style="font-family:var(--mono);font-size:11px;color:var(--muted);font-weight:400">19 010 lignes (depuis 1 000 163)</span></h4>
+      <table class="doc-table"><tr><th>Champ</th><th>Format</th><th>Description &amp; transformation</th></tr>
+        <tr><td class="col-name col-pk">zip_code_prefix</td><td class="col-type">entier</td><td>code postal (5 premiers chiffres) · une ligne par préfixe</td></tr>
+        <tr><td class="col-name">geo_lat / geo_lng</td><td class="col-type">décimal</td><td><span class="tag-d">calculé</span> coordonnée moyenne des adresses partageant ce code postal</td></tr>
+        <tr><td class="col-name">geo_city / geo_state</td><td class="col-type">texte</td><td><span class="tag-d">calculé</span> ville / état le plus fréquent pour ce code postal</td></tr>
+      </table>
+      <div class="doc-note">Traitement : suppression des doublons, exclusion des coordonnées hors du territoire brésilien, puis regroupement par code postal.</div>
+    </div>
+
+    <div class="doc-block" style="grid-column:span 2"><h4><span class="badge g">GOLD</span>Tableaux de référence et tableaux de transactions</h4>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px">Tableaux de référence</p>
+          <table class="doc-table"><tr><th>Tableau</th><th>Clé interne</th><th>Nb de lignes</th><th>Informations clés</th></tr>
+            <tr><td class="col-name">dim_date</td><td class="col-type col-sk">clé date (AAAAMMJJ)</td><td>800</td><td>année, trimestre, mois, jour · indicateur week-end</td></tr>
+            <tr><td class="col-name">dim_customer</td><td class="col-type col-sk">clé interne client</td><td>99 441</td><td>identifiant client réel · ville · état · coordonnées GPS</td></tr>
+            <tr><td class="col-name">dim_product</td><td class="col-type col-sk">clé interne produit</td><td>32 951</td><td>catégorie (en français) · poids et dimensions</td></tr>
+            <tr><td class="col-name">dim_seller</td><td class="col-type col-sk">clé interne vendeur</td><td>3 095</td><td>ville · état · coordonnées GPS</td></tr>
+          </table>
+        </div>
+        <div>
+          <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px">Tableaux de transactions</p>
+          <table class="doc-table"><tr><th>Tableau</th><th>Nb de lignes</th><th>Liens vers</th><th>Valeurs mesurées</th></tr>
+            <tr><td class="col-name">fact_order_items</td><td>112 650</td><td>client · produit · vendeur · date d'achat</td><td>prix · frais de port · total</td></tr>
+            <tr><td class="col-name">fact_payments</td><td>103 886</td><td>client · date d'achat</td><td>montant payé</td></tr>
+            <tr><td class="col-name">fact_reviews</td><td>99 224</td><td>client · date d'achat · date de l'avis</td><td>note (1 à 5)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Indicateurs clés — comment ils sont calculés</h3>
+
+  <div class="doc-grid">
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>kpi_sales_by_state</h4>
+      <p class="doc-note">Calculé sur les commandes non annulées, par état et par mois.</p>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">chiffre d'affaires</span><span class="f-eq">=</span><span class="f-formula">somme de tous les prix des articles<span class="col">price</span></span></div>
+        <div class="f-row"><span class="f-kpi">frais de port totaux</span><span class="f-eq">=</span><span class="f-formula">somme de tous les frais de port<span class="col">freight_value</span></span></div>
+        <div class="f-row"><span class="f-kpi">nombre d'articles vendus</span><span class="f-eq">=</span><span class="f-formula">nombre total d'articles<span class="col">order_item_id</span></span></div>
+        <div class="f-row"><span class="f-kpi">nombre de commandes</span><span class="f-eq">=</span><span class="f-formula">nombre de commandes distinctes<span class="col">order_id</span></span></div>
+        <div class="f-row"><span class="f-kpi">panier moyen</span><span class="f-eq">=</span><span class="f-formula">chiffre d'affaires ÷ nombre de commandes<span class="col">price</span> ÷ <span class="col">order_id</span></span></div>
+      </div>
+    </div>
+    <div class="doc-block"><h4><span class="badge g">GOLD</span>kpi_delivery_performance</h4>
+      <p class="doc-note">Calculé sur les commandes effectivement livrées, par état.</p>
+      <div class="formula-box">
+        <div class="f-row"><span class="f-kpi">nombre de commandes</span><span class="f-eq">=</span><span class="f-formula">nombre de commandes livrées<span class="col">order_id</span></span></div>
+        <div class="f-row"><span class="f-kpi">délai de livraison moyen (jours)</span><span class="f-eq">=</span><span class="f-formula">moyenne des délais réels de livraison<span class="col">delivery_days</span></span></div>
+        <div class="f-row"><span class="f-kpi">délai estimé moyen (jours)</span><span class="f-eq">=</span><span class="f-formula">moyenne des délais estimés<span class="col">estimated_days</span></span></div>
+        <div class="f-row"><span class="f-kpi">écart moyen livraison réelle vs estimée</span><span class="f-eq">=</span><span class="f-formula">moyenne des écarts livraison réelle vs estimée<span class="col">delivery_delay_days</span></span></div>
+        <div class="f-row"><span class="f-kpi">taux de retard</span><span class="f-eq">=</span><span class="f-formula">part des commandes livrées en retard (en %)<span class="col">is_late</span></span></div>
+      </div>
+    </div>
+    <div class="doc-block" style="grid-column:span 2"><h4><span class="badge g">GOLD</span>kpi_rfm</h4>
+      <p class="doc-note">Calculé sur les commandes non annulées, par client réel. La date de référence est le lendemain du dernier achat observé dans le jeu de données.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">ancienneté du dernier achat (jours)</span><span class="f-eq">=</span><span class="f-formula">date de référence moins date du dernier achat<span class="col">order_purchase_timestamp</span></span></div>
+          <div class="f-row"><span class="f-kpi">nombre de commandes passées</span><span class="f-eq">=</span><span class="f-formula">nombre de commandes distinctes<span class="col">order_id</span></span></div>
+          <div class="f-row"><span class="f-kpi">montant total dépensé</span><span class="f-eq">=</span><span class="f-formula">somme des montants payés<span class="col">payment_value</span></span></div>
+          <div class="f-row"><span class="f-kpi">score récence (1 à 5)</span><span class="f-eq">=</span><span class="f-formula">note 1–5 : 5 = achat très récent<span class="col">recency_days</span></span></div>
+          <div class="f-row"><span class="f-kpi">score fréquence (1 à 5)</span><span class="f-eq">=</span><span class="f-formula">note 1–5 : 5 = acheteur très fréquent<span class="col">frequency</span></span></div>
+          <div class="f-row"><span class="f-kpi">score montant (1 à 5)</span><span class="f-eq">=</span><span class="f-formula">note 1–5 : 5 = gros montant dépensé<span class="col">monetary</span></span></div>
+          <div class="f-row"><span class="f-kpi">score total (3 à 15)</span><span class="f-eq">=</span><span class="f-formula">score récence + score fréquence + score montant<span class="col">r_score</span> + <span class="col">f_score</span> + <span class="col">m_score</span></span></div>
+        </div>
+        <div class="formula-box">
+          <div class="f-row"><span class="f-kpi">segment client</span><span class="f-eq">:</span><span class="f-formula">Champions ≥ 13</span></div>
+          <div class="f-row"><span class="f-kpi"></span><span class="f-eq"></span><span class="f-formula">Loyal ≥ 10</span></div>
+          <div class="f-row"><span class="f-kpi"></span><span class="f-eq"></span><span class="f-formula">Potential ≥ 7</span></div>
+          <div class="f-row"><span class="f-kpi"></span><span class="f-eq"></span><span class="f-formula">At risk ≥ 5</span></div>
+          <div class="f-row"><span class="f-kpi"></span><span class="f-eq"></span><span class="f-formula">Hibernating &lt; 5</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:var(--disp);font-size:18px;margin:28px 0 12px;font-weight:600">Choix de traitement et anomalies détectées</h3>
+  <div class="doc-grid three">
+    <div class="doc-note">Un même identifiant d'avis peut apparaître sur plusieurs commandes dans la source. La combinaison identifiant avis + identifiant commande est utilisée comme clé unique.</div>
+    <div class="doc-note">Localisation géographique : 1 000 163 lignes sources réduites à 19 010 après suppression des doublons, exclusion des coordonnées hors du Brésil, et regroupement par code postal.</div>
+    <div class="doc-note">Fautes de frappe corrigées dans la source : le mot « lenght » (mal orthographié) a été corrigé en « length » pour les champs nom et description du produit.</div>
+    <div class="doc-note">610 produits n'ont pas de catégorie dans la source → remplacés par « inconnu » lors du traitement.</div>
+    <div class="doc-note">Les données de septembre et octobre 2018 sont presque vides (fin de la collecte) : ces mois sont exclus des graphiques pour éviter une fausse impression de chute d'activité.</div>
+    <div class="doc-note">Aucune ligne du tableau de transactions ne fait référence à un client, produit ou vendeur inexistant. Les données sont parfaitement cohérentes entre elles.</div>
+  </div>
+</div></section>
+
+<footer><div class="wrap" style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;width:100%">
+  <div class="stack">
+    <span>Python · pandas</span><span>parquet</span><span>architecture médaillon</span><span>star schema</span><span>→ portable Fabric / Spark SQL</span>
+  </div>
+  <div class="sig">transformer la donnée en décisions · <b>arbi-data</b></div>
+</div></footer>
+
+<script>
+const D = {"totals":{"revenue":13496408,"orders":98816,"avg_score":4.09,"pct5":58,"cc_share":78.3},"monthly":[{"lab":"janv. 17","revenue":120098},{"lab":"févr. 17","revenue":244959},{"lab":"mars 17","revenue":368341},{"lab":"avr. 17","revenue":353843},{"lab":"mai 17","revenue":503159},{"lab":"juin 17","revenue":429917},{"lab":"juil. 17","revenue":492287},{"lab":"août 17","revenue":568246},{"lab":"sept. 17","revenue":621416},{"lab":"oct. 17","revenue":660180},{"lab":"nov. 17","revenue":1003862},{"lab":"déc. 17","revenue":742184},{"lab":"janv. 18","revenue":945456},{"lab":"févr. 18","revenue":837895},{"lab":"mars 18","revenue":981051},{"lab":"avr. 18","revenue":993593},{"lab":"mai 18","revenue":992872},{"lab":"juin 18","revenue":863266},{"lab":"juil. 18","revenue":878044},{"lab":"août 18","revenue":848860}],"hourly_by_cat":{"Toutes catégories":[{"h":0,"orders":2362},{"h":1,"orders":1151},{"h":2,"orders":503},{"h":3,"orders":267},{"h":4,"orders":205},{"h":5,"orders":185},{"h":6,"orders":493},{"h":7,"orders":1218},{"h":8,"orders":2939},{"h":9,"orders":4712},{"h":10,"orders":6083},{"h":11,"orders":6497},{"h":12,"orders":5919},{"h":13,"orders":6430},{"h":14,"orders":6492},{"h":15,"orders":6370},{"h":16,"orders":6594},{"h":17,"orders":6074},{"h":18,"orders":5708},{"h":19,"orders":5899},{"h":20,"orders":6116},{"h":21,"orders":6145},{"h":22,"orders":5761},{"h":23,"orders":4082}],"Linge de maison":[{"h":0,"orders":238},{"h":1,"orders":113},{"h":2,"orders":61},{"h":3,"orders":22},{"h":4,"orders":24},{"h":5,"orders":23},{"h":6,"orders":40},{"h":7,"orders":93},{"h":8,"orders":263},{"h":9,"orders":433},{"h":10,"orders":565},{"h":11,"orders":604},{"h":12,"orders":504},{"h":13,"orders":607},{"h":14,"orders":668},{"h":15,"orders":604},{"h":16,"orders":601},{"h":17,"orders":586},{"h":18,"orders":564},{"h":19,"orders":565},{"h":20,"orders":590},{"h":21,"orders":631},{"h":22,"orders":583},{"h":23,"orders":417}],"Santé & beauté":[{"h":0,"orders":219},{"h":1,"orders":90},{"h":2,"orders":43},{"h":3,"orders":26},{"h":4,"orders":18},{"h":5,"orders":19},{"h":6,"orders":45},{"h":7,"orders":121},{"h":8,"orders":258},{"h":9,"orders":414},{"h":10,"orders":523},{"h":11,"orders":579},{"h":12,"orders":554},{"h":13,"orders":598},{"h":14,"orders":580},{"h":15,"orders":555},{"h":16,"orders":617},{"h":17,"orders":538},{"h":18,"orders":504},{"h":19,"orders":525},{"h":20,"orders":545},{"h":21,"orders":529},{"h":22,"orders":524},{"h":23,"orders":376}],"Sport & loisirs":[{"h":0,"orders":178},{"h":1,"orders":105},{"h":2,"orders":46},{"h":3,"orders":24},{"h":4,"orders":11},{"h":5,"orders":14},{"h":6,"orders":48},{"h":7,"orders":112},{"h":8,"orders":222},{"h":9,"orders":373},{"h":10,"orders":488},{"h":11,"orders":505},{"h":12,"orders":470},{"h":13,"orders":506},{"h":14,"orders":490},{"h":15,"orders":554},{"h":16,"orders":504},{"h":17,"orders":456},{"h":18,"orders":440},{"h":19,"orders":448},{"h":20,"orders":440},{"h":21,"orders":477},{"h":22,"orders":467},{"h":23,"orders":295}],"Meubles & déco":[{"h":0,"orders":188},{"h":1,"orders":74},{"h":2,"orders":44},{"h":3,"orders":11},{"h":4,"orders":13},{"h":5,"orders":14},{"h":6,"orders":20},{"h":7,"orders":63},{"h":8,"orders":187},{"h":9,"orders":267},{"h":10,"orders":382},{"h":11,"orders":413},{"h":12,"orders":395},{"h":13,"orders":413},{"h":14,"orders":417},{"h":15,"orders":404},{"h":16,"orders":415},{"h":17,"orders":420},{"h":18,"orders":366},{"h":19,"orders":378},{"h":20,"orders":423},{"h":21,"orders":388},{"h":22,"orders":437},{"h":23,"orders":293}],"Informatique & accessoires":[{"h":0,"orders":130},{"h":1,"orders":57},{"h":2,"orders":23},{"h":3,"orders":15},{"h":4,"orders":16},{"h":5,"orders":8},{"h":6,"orders":25},{"h":7,"orders":60},{"h":8,"orders":207},{"h":9,"orders":378},{"h":10,"orders":468},{"h":11,"orders":524},{"h":12,"orders":411},{"h":13,"orders":453},{"h":14,"orders":482},{"h":15,"orders":483},{"h":16,"orders":472},{"h":17,"orders":432},{"h":18,"orders":407},{"h":19,"orders":342},{"h":20,"orders":380},{"h":21,"orders":331},{"h":22,"orders":309},{"h":23,"orders":241}],"Articles ménagers":[{"h":0,"orders":122},{"h":1,"orders":63},{"h":2,"orders":26},{"h":3,"orders":11},{"h":4,"orders":9},{"h":5,"orders":6},{"h":6,"orders":26},{"h":7,"orders":86},{"h":8,"orders":168},{"h":9,"orders":260},{"h":10,"orders":395},{"h":11,"orders":400},{"h":12,"orders":343},{"h":13,"orders":408},{"h":14,"orders":378},{"h":15,"orders":436},{"h":16,"orders":406},{"h":17,"orders":383},{"h":18,"orders":301},{"h":19,"orders":382},{"h":20,"orders":367},{"h":21,"orders":339},{"h":22,"orders":317},{"h":23,"orders":215}],"Montres & cadeaux":[{"h":0,"orders":166},{"h":1,"orders":89},{"h":2,"orders":30},{"h":3,"orders":29},{"h":4,"orders":8},{"h":5,"orders":12},{"h":6,"orders":44},{"h":7,"orders":87},{"h":8,"orders":170},{"h":9,"orders":271},{"h":10,"orders":307},{"h":11,"orders":324},{"h":12,"orders":316},{"h":13,"orders":348},{"h":14,"orders":345},{"h":15,"orders":348},{"h":16,"orders":362},{"h":17,"orders":341},{"h":18,"orders":302},{"h":19,"orders":329},{"h":20,"orders":355},{"h":21,"orders":384},{"h":22,"orders":352},{"h":23,"orders":285}],"Téléphonie":[{"h":0,"orders":126},{"h":1,"orders":74},{"h":2,"orders":24},{"h":3,"orders":15},{"h":4,"orders":11},{"h":5,"orders":8},{"h":6,"orders":26},{"h":7,"orders":59},{"h":8,"orders":125},{"h":9,"orders":204},{"h":10,"orders":241},{"h":11,"orders":246},{"h":12,"orders":218},{"h":13,"orders":285},{"h":14,"orders":231},{"h":15,"orders":258},{"h":16,"orders":275},{"h":17,"orders":269},{"h":18,"orders":247},{"h":19,"orders":252},{"h":20,"orders":256},{"h":21,"orders":274},{"h":22,"orders":260},{"h":23,"orders":199}],"Outils de jardinage":[{"h":0,"orders":93},{"h":1,"orders":37},{"h":2,"orders":15},{"h":3,"orders":8},{"h":4,"orders":2},{"h":5,"orders":8},{"h":6,"orders":22},{"h":7,"orders":39},{"h":8,"orders":96},{"h":9,"orders":160},{"h":10,"orders":182},{"h":11,"orders":236},{"h":12,"orders":226},{"h":13,"orders":225},{"h":14,"orders":226},{"h":15,"orders":211},{"h":16,"orders":237},{"h":17,"orders":191},{"h":18,"orders":192},{"h":19,"orders":237},{"h":20,"orders":217},{"h":21,"orders":252},{"h":22,"orders":234},{"h":23,"orders":159}],"Automobile":[{"h":0,"orders":81},{"h":1,"orders":43},{"h":2,"orders":21},{"h":3,"orders":9},{"h":4,"orders":4},{"h":5,"orders":8},{"h":6,"orders":19},{"h":7,"orders":46},{"h":8,"orders":142},{"h":9,"orders":188},{"h":10,"orders":253},{"h":11,"orders":251},{"h":12,"orders":256},{"h":13,"orders":267},{"h":14,"orders":247},{"h":15,"orders":242},{"h":16,"orders":245},{"h":17,"orders":248},{"h":18,"orders":225},{"h":19,"orders":239},{"h":20,"orders":243},{"h":21,"orders":224},{"h":22,"orders":237},{"h":23,"orders":135}],"Jouets":[{"h":0,"orders":96},{"h":1,"orders":46},{"h":2,"orders":16},{"h":3,"orders":8},{"h":4,"orders":9},{"h":5,"orders":7},{"h":6,"orders":22},{"h":7,"orders":59},{"h":8,"orders":119},{"h":9,"orders":168},{"h":10,"orders":234},{"h":11,"orders":265},{"h":12,"orders":234},{"h":13,"orders":226},{"h":14,"orders":262},{"h":15,"orders":246},{"h":16,"orders":264},{"h":17,"orders":224},{"h":18,"orders":257},{"h":19,"orders":245},{"h":20,"orders":228},{"h":21,"orders":244},{"h":22,"orders":227},{"h":23,"orders":149}],"Gadgets & idées":[{"h":0,"orders":81},{"h":1,"orders":36},{"h":2,"orders":11},{"h":3,"orders":7},{"h":4,"orders":12},{"h":5,"orders":6},{"h":6,"orders":17},{"h":7,"orders":44},{"h":8,"orders":97},{"h":9,"orders":170},{"h":10,"orders":222},{"h":11,"orders":232},{"h":12,"orders":255},{"h":13,"orders":222},{"h":14,"orders":265},{"h":15,"orders":239},{"h":16,"orders":246},{"h":17,"orders":241},{"h":18,"orders":199},{"h":19,"orders":241},{"h":20,"orders":203},{"h":21,"orders":228},{"h":22,"orders":197},{"h":23,"orders":146}],"Parfumerie":[{"h":0,"orders":63},{"h":1,"orders":55},{"h":2,"orders":20},{"h":3,"orders":7},{"h":4,"orders":4},{"h":5,"orders":2},{"h":6,"orders":19},{"h":7,"orders":33},{"h":8,"orders":82},{"h":9,"orders":165},{"h":10,"orders":198},{"h":11,"orders":211},{"h":12,"orders":172},{"h":13,"orders":195},{"h":14,"orders":203},{"h":15,"orders":174},{"h":16,"orders":233},{"h":17,"orders":201},{"h":18,"orders":195},{"h":19,"orders":187},{"h":20,"orders":186},{"h":21,"orders":194},{"h":22,"orders":189},{"h":23,"orders":160}],"Puériculture":[{"h":0,"orders":74},{"h":1,"orders":23},{"h":2,"orders":9},{"h":3,"orders":2},{"h":4,"orders":10},{"h":5,"orders":10},{"h":6,"orders":18},{"h":7,"orders":32},{"h":8,"orders":91},{"h":9,"orders":152},{"h":10,"orders":158},{"h":11,"orders":218},{"h":12,"orders":173},{"h":13,"orders":183},{"h":14,"orders":175},{"h":15,"orders":178},{"h":16,"orders":196},{"h":17,"orders":179},{"h":18,"orders":155},{"h":19,"orders":174},{"h":20,"orders":199},{"h":21,"orders":210},{"h":22,"orders":153},{"h":23,"orders":97}],"Électronique":[{"h":0,"orders":49},{"h":1,"orders":33},{"h":2,"orders":10},{"h":3,"orders":9},{"h":4,"orders":3},{"h":5,"orders":4},{"h":6,"orders":10},{"h":7,"orders":47},{"h":8,"orders":86},{"h":9,"orders":130},{"h":10,"orders":180},{"h":11,"orders":175},{"h":12,"orders":154},{"h":13,"orders":156},{"h":14,"orders":173},{"h":15,"orders":181},{"h":16,"orders":150},{"h":17,"orders":143},{"h":18,"orders":139},{"h":19,"orders":163},{"h":20,"orders":165},{"h":21,"orders":175},{"h":22,"orders":124},{"h":23,"orders":85}],"Papeterie":[{"h":0,"orders":60},{"h":1,"orders":21},{"h":2,"orders":12},{"h":3,"orders":5},{"h":4,"orders":1},{"h":5,"orders":3},{"h":6,"orders":12},{"h":7,"orders":21},{"h":8,"orders":79},{"h":9,"orders":105},{"h":10,"orders":169},{"h":11,"orders":144},{"h":12,"orders":136},{"h":13,"orders":144},{"h":14,"orders":135},{"h":15,"orders":125},{"h":16,"orders":164},{"h":17,"orders":148},{"h":18,"orders":128},{"h":19,"orders":136},{"h":20,"orders":161},{"h":21,"orders":139},{"h":22,"orders":149},{"h":23,"orders":102}],"Sacs & accessoires":[{"h":0,"orders":52},{"h":1,"orders":26},{"h":2,"orders":14},{"h":3,"orders":12},{"h":4,"orders":8},{"h":5,"orders":4},{"h":6,"orders":8},{"h":7,"orders":23},{"h":8,"orders":63},{"h":9,"orders":72},{"h":10,"orders":109},{"h":11,"orders":109},{"h":12,"orders":105},{"h":13,"orders":125},{"h":14,"orders":123},{"h":15,"orders":101},{"h":16,"orders":108},{"h":17,"orders":104},{"h":18,"orders":107},{"h":19,"orders":115},{"h":20,"orders":123},{"h":21,"orders":137},{"h":22,"orders":107},{"h":23,"orders":103}],"Animalerie":[{"h":0,"orders":23},{"h":1,"orders":18},{"h":2,"orders":10},{"h":3,"orders":4},{"h":4,"orders":6},{"h":5,"orders":3},{"h":6,"orders":6},{"h":7,"orders":26},{"h":8,"orders":56},{"h":9,"orders":90},{"h":10,"orders":112},{"h":11,"orders":110},{"h":12,"orders":96},{"h":13,"orders":122},{"h":14,"orders":129},{"h":15,"orders":103},{"h":16,"orders":113},{"h":17,"orders":108},{"h":18,"orders":105},{"h":19,"orders":87},{"h":20,"orders":120},{"h":21,"orders":98},{"h":22,"orders":93},{"h":23,"orders":68}],"Mobilier de bureau":[{"h":0,"orders":32},{"h":1,"orders":9},{"h":2,"orders":6},{"h":3,"orders":5},{"h":4,"orders":4},{"h":5,"orders":1},{"h":6,"orders":4},{"h":7,"orders":12},{"h":8,"orders":36},{"h":9,"orders":63},{"h":10,"orders":68},{"h":11,"orders":64},{"h":12,"orders":88},{"h":13,"orders":72},{"h":14,"orders":87},{"h":15,"orders":103},{"h":16,"orders":103},{"h":17,"orders":79},{"h":18,"orders":68},{"h":19,"orders":84},{"h":20,"orders":80},{"h":21,"orders":71},{"h":22,"orders":73},{"h":23,"orders":60}],"Inconnu":[{"h":0,"orders":37},{"h":1,"orders":17},{"h":2,"orders":9},{"h":3,"orders":3},{"h":4,"orders":3},{"h":5,"orders":6},{"h":6,"orders":8},{"h":7,"orders":19},{"h":8,"orders":33},{"h":9,"orders":77},{"h":10,"orders":90},{"h":11,"orders":98},{"h":12,"orders":95},{"h":13,"orders":93},{"h":14,"orders":107},{"h":15,"orders":86},{"h":16,"orders":106},{"h":17,"orders":96},{"h":18,"orders":86},{"h":19,"orders":80},{"h":20,"orders":70},{"h":21,"orders":102},{"h":22,"orders":89},{"h":23,"orders":47}]},"weekday_by_cat":{"Toutes catégories":[{"d":"Lundi","orders":15978},{"d":"Mardi","orders":15758},{"d":"Mercredi","orders":15352},{"d":"Jeudi","orders":14573},{"d":"Vendredi","orders":13949},{"d":"Samedi","orders":10764},{"d":"Dimanche","orders":11831}],"Linge de maison":[{"d":"Lundi","orders":1484},{"d":"Mardi","orders":1488},{"d":"Mercredi","orders":1430},{"d":"Jeudi","orders":1386},{"d":"Vendredi","orders":1304},{"d":"Samedi","orders":1116},{"d":"Dimanche","orders":1191}],"Santé & beauté":[{"d":"Lundi","orders":1423},{"d":"Mardi","orders":1407},{"d":"Mercredi","orders":1405},{"d":"Jeudi","orders":1361},{"d":"Vendredi","orders":1236},{"d":"Samedi","orders":916},{"d":"Dimanche","orders":1052}],"Sport & loisirs":[{"d":"Lundi","orders":1283},{"d":"Mardi","orders":1259},{"d":"Mercredi","orders":1236},{"d":"Jeudi","orders":1162},{"d":"Vendredi","orders":1024},{"d":"Samedi","orders":789},{"d":"Dimanche","orders":920}],"Meubles & déco":[{"d":"Lundi","orders":1022},{"d":"Mardi","orders":1044},{"d":"Mercredi","orders":904},{"d":"Jeudi","orders":941},{"d":"Vendredi","orders":960},{"d":"Samedi","orders":721},{"d":"Dimanche","orders":833}],"Informatique & accessoires":[{"d":"Lundi","orders":1178},{"d":"Mardi","orders":1108},{"d":"Mercredi","orders":1047},{"d":"Jeudi","orders":1009},{"d":"Vendredi","orders":953},{"d":"Samedi","orders":675},{"d":"Dimanche","orders":684}],"Articles ménagers":[{"d":"Lundi","orders":939},{"d":"Mardi","orders":976},{"d":"Mercredi","orders":882},{"d":"Jeudi","orders":833},{"d":"Vendredi","orders":797},{"d":"Samedi","orders":650},{"d":"Dimanche","orders":770}],"Montres & cadeaux":[{"d":"Lundi","orders":898},{"d":"Mardi","orders":829},{"d":"Mercredi","orders":862},{"d":"Jeudi","orders":835},{"d":"Vendredi","orders":843},{"d":"Samedi","orders":640},{"d":"Dimanche","orders":697}],"Téléphonie":[{"d":"Lundi","orders":662},{"d":"Mardi","orders":667},{"d":"Mercredi","orders":629},{"d":"Jeudi","orders":595},{"d":"Vendredi","orders":645},{"d":"Samedi","orders":499},{"d":"Dimanche","orders":486}],"Outils de jardinage":[{"d":"Lundi","orders":569},{"d":"Mardi","orders":545},{"d":"Mercredi","orders":543},{"d":"Jeudi","orders":562},{"d":"Vendredi","orders":493},{"d":"Samedi","orders":403},{"d":"Dimanche","orders":390}],"Automobile":[{"d":"Lundi","orders":644},{"d":"Mardi","orders":636},{"d":"Mercredi","orders":621},{"d":"Jeudi","orders":602},{"d":"Vendredi","orders":530},{"d":"Samedi","orders":441},{"d":"Dimanche","orders":399}],"Jouets":[{"d":"Lundi","orders":624},{"d":"Mardi","orders":617},{"d":"Mercredi","orders":599},{"d":"Jeudi","orders":552},{"d":"Vendredi","orders":571},{"d":"Samedi","orders":416},{"d":"Dimanche","orders":476}],"Gadgets & idées":[{"d":"Lundi","orders":575},{"d":"Mardi","orders":573},{"d":"Mercredi","orders":585},{"d":"Jeudi","orders":541},{"d":"Vendredi","orders":489},{"d":"Samedi","orders":438},{"d":"Dimanche","orders":416}],"Parfumerie":[{"d":"Lundi","orders":507},{"d":"Mardi","orders":513},{"d":"Mercredi","orders":495},{"d":"Jeudi","orders":456},{"d":"Vendredi","orders":483},{"d":"Samedi","orders":341},{"d":"Dimanche","orders":353}],"Puériculture":[{"d":"Lundi","orders":501},{"d":"Mardi","orders":459},{"d":"Mercredi","orders":428},{"d":"Jeudi","orders":435},{"d":"Vendredi","orders":379},{"d":"Samedi","orders":330},{"d":"Dimanche","orders":337}],"Électronique":[{"d":"Lundi","orders":434},{"d":"Mardi","orders":406},{"d":"Mercredi","orders":391},{"d":"Jeudi","orders":362},{"d":"Vendredi","orders":346},{"d":"Samedi","orders":265},{"d":"Dimanche","orders":340}],"Papeterie":[{"d":"Lundi","orders":351},{"d":"Mardi","orders":405},{"d":"Mercredi","orders":378},{"d":"Jeudi","orders":331},{"d":"Vendredi","orders":349},{"d":"Samedi","orders":237},{"d":"Dimanche","orders":248}],"Sacs & accessoires":[{"d":"Lundi","orders":268},{"d":"Mardi","orders":289},{"d":"Mercredi","orders":311},{"d":"Jeudi","orders":253},{"d":"Vendredi","orders":306},{"d":"Samedi","orders":165},{"d":"Dimanche","orders":266}],"Animalerie":[{"d":"Lundi","orders":278},{"d":"Mardi","orders":250},{"d":"Mercredi","orders":285},{"d":"Jeudi","orders":229},{"d":"Vendredi","orders":239},{"d":"Samedi","orders":187},{"d":"Dimanche","orders":238}],"Mobilier de bureau":[{"d":"Lundi","orders":207},{"d":"Mardi","orders":212},{"d":"Mercredi","orders":192},{"d":"Jeudi","orders":186},{"d":"Vendredi","orders":184},{"d":"Samedi","orders":163},{"d":"Dimanche","orders":128}],"Inconnu":[{"d":"Lundi","orders":225},{"d":"Mardi","orders":235},{"d":"Mercredi","orders":239},{"d":"Jeudi","orders":211},{"d":"Vendredi","orders":200},{"d":"Samedi","orders":163},{"d":"Dimanche","orders":184}]},"cat_options":["Toutes catégories","Linge de maison","Santé & beauté","Sport & loisirs","Meubles & déco","Informatique & accessoires","Articles ménagers","Montres & cadeaux","Téléphonie","Outils de jardinage","Automobile","Jouets","Gadgets & idées","Parfumerie","Puériculture","Électronique","Papeterie","Sacs & accessoires","Animalerie","Mobilier de bureau","Inconnu"],"state_revenue":[{"state":"São Paulo","revenue":5165166},{"state":"Rio de Janeiro","revenue":1811923},{"state":"Minas Gerais","revenue":1573667},{"state":"Rio Grande do Sul","revenue":742810},{"state":"Paraná","revenue":676883},{"state":"Santa Catarina","revenue":518578},{"state":"Bahia","revenue":507109},{"state":"District fédéral","revenue":300886},{"state":"Goiás","revenue":287870},{"state":"Espírito Santo","revenue":273532},{"state":"Pernambuco","revenue":261740},{"state":"Ceará","revenue":226264}],"state_late":[{"state":"Alagoas","late":21.4},{"state":"Maranhão","late":17.4},{"state":"Sergipe","late":15.2},{"state":"Piauí","late":13.9},{"state":"Ceará","late":13.8},{"state":"Bahia","late":12.2},{"state":"Roraima","late":12.2},{"state":"Rio de Janeiro","late":12.1},{"state":"Pará","late":11.2},{"state":"Espírito Santo","late":10.7},{"state":"Paraíba","late":10.4},{"state":"Tocantins","late":9.9}],"state_month_revenue":{"Tous les états":[{"lab":"septembre-16","revenue":208},{"lab":"octobre-16","revenue":46515},{"lab":"décembre-16","revenue":11},{"lab":"janvier-17","revenue":120098},{"lab":"février-17","revenue":244959},{"lab":"mars-17","revenue":368341},{"lab":"avril-17","revenue":353843},{"lab":"mai-17","revenue":503159},{"lab":"juin-17","revenue":429917},{"lab":"juillet-17","revenue":492287},{"lab":"août-17","revenue":568246},{"lab":"septembre-17","revenue":621416},{"lab":"octobre-17","revenue":660180},{"lab":"novembre-17","revenue":1003862},{"lab":"décembre-17","revenue":742184},{"lab":"janvier-18","revenue":945456},{"lab":"février-18","revenue":837895},{"lab":"mars-18","revenue":981051},{"lab":"avril-18","revenue":993593},{"lab":"mai-18","revenue":992872},{"lab":"juin-18","revenue":863266},{"lab":"juillet-18","revenue":878044},{"lab":"août-18","revenue":848860},{"lab":"septembre-18","revenue":145}],"São Paulo":[{"lab":"septembre-16","revenue":135},{"lab":"octobre-16","revenue":14107},{"lab":"janvier-17","revenue":41485},{"lab":"février-17","revenue":78130},{"lab":"mars-17","revenue":134271},{"lab":"avril-17","revenue":131192},{"lab":"mai-17","revenue":175420},{"lab":"juin-17","revenue":171173},{"lab":"juillet-17","revenue":181968},{"lab":"août-17","revenue":198078},{"lab":"septembre-17","revenue":216698},{"lab":"octobre-17","revenue":226122},{"lab":"novembre-17","revenue":355815},{"lab":"décembre-17","revenue":280099},{"lab":"janvier-18","revenue":374404},{"lab":"février-18","revenue":309885},{"lab":"mars-18","revenue":383807},{"lab":"avril-18","revenue":396602},{"lab":"mai-18","revenue":434116},{"lab":"juin-18","revenue":342590},{"lab":"juillet-18","revenue":324518},{"lab":"août-18","revenue":394403},{"lab":"septembre-18","revenue":145}],"Rio de Janeiro":[{"lab":"octobre-16","revenue":9487},{"lab":"janvier-17","revenue":12683},{"lab":"février-17","revenue":32305},{"lab":"mars-17","revenue":55034},{"lab":"avril-17","revenue":57890},{"lab":"mai-17","revenue":74629},{"lab":"juin-17","revenue":54331},{"lab":"juillet-17","revenue":77248},{"lab":"août-17","revenue":78232},{"lab":"septembre-17","revenue":94456},{"lab":"octobre-17","revenue":96959},{"lab":"novembre-17","revenue":150222},{"lab":"décembre-17","revenue":117171},{"lab":"janvier-18","revenue":120853},{"lab":"février-18","revenue":115510},{"lab":"mars-18","revenue":117848},{"lab":"avril-18","revenue":123281},{"lab":"mai-18","revenue":126767},{"lab":"juin-18","revenue":102569},{"lab":"juillet-18","revenue":99527},{"lab":"août-18","revenue":94922}],"Minas Gerais":[{"lab":"octobre-16","revenue":4811},{"lab":"janvier-17","revenue":16242},{"lab":"février-17","revenue":29556},{"lab":"mars-17","revenue":41639},{"lab":"avril-17","revenue":39781},{"lab":"mai-17","revenue":49648},{"lab":"juin-17","revenue":46397},{"lab":"juillet-17","revenue":54601},{"lab":"août-17","revenue":59302},{"lab":"septembre-17","revenue":72467},{"lab":"octobre-17","revenue":81546},{"lab":"novembre-17","revenue":133534},{"lab":"décembre-17","revenue":93138},{"lab":"janvier-18","revenue":114504},{"lab":"février-18","revenue":107349},{"lab":"mars-18","revenue":119930},{"lab":"avril-18","revenue":111476},{"lab":"mai-18","revenue":102696},{"lab":"juin-18","revenue":105758},{"lab":"juillet-18","revenue":93593},{"lab":"août-18","revenue":95697}],"Rio Grande do Sul":[{"lab":"octobre-16","revenue":3452},{"lab":"janvier-17","revenue":12190},{"lab":"février-17","revenue":15833},{"lab":"mars-17","revenue":20092},{"lab":"avril-17","revenue":17195},{"lab":"mai-17","revenue":28408},{"lab":"juin-17","revenue":23943},{"lab":"juillet-17","revenue":29107},{"lab":"août-17","revenue":34295},{"lab":"septembre-17","revenue":37202},{"lab":"octobre-17","revenue":37561},{"lab":"novembre-17","revenue":58700},{"lab":"décembre-17","revenue":42180},{"lab":"janvier-18","revenue":48483},{"lab":"février-18","revenue":46525},{"lab":"mars-18","revenue":57559},{"lab":"avril-18","revenue":52500},{"lab":"mai-18","revenue":50841},{"lab":"juin-18","revenue":44094},{"lab":"juillet-18","revenue":39622},{"lab":"août-18","revenue":43028}],"Paraná":[{"lab":"octobre-16","revenue":2005},{"lab":"décembre-16","revenue":11},{"lab":"janvier-17","revenue":5322},{"lab":"février-17","revenue":18119},{"lab":"mars-17","revenue":15733},{"lab":"avril-17","revenue":15958},{"lab":"mai-17","revenue":31683},{"lab":"juin-17","revenue":21538},{"lab":"juillet-17","revenue":24569},{"lab":"août-17","revenue":28527},{"lab":"septembre-17","revenue":22576},{"lab":"octobre-17","revenue":33101},{"lab":"novembre-17","revenue":46853},{"lab":"décembre-17","revenue":30123},{"lab":"janvier-18","revenue":44836},{"lab":"février-18","revenue":45566},{"lab":"mars-18","revenue":51001},{"lab":"avril-18","revenue":66361},{"lab":"mai-18","revenue":46569},{"lab":"juin-18","revenue":42212},{"lab":"juillet-18","revenue":45389},{"lab":"août-18","revenue":38832}],"Santa Catarina":[{"lab":"octobre-16","revenue":2238},{"lab":"janvier-17","revenue":6662},{"lab":"février-17","revenue":6938},{"lab":"mars-17","revenue":18284},{"lab":"avril-17","revenue":11607},{"lab":"mai-17","revenue":23369},{"lab":"juin-17","revenue":13323},{"lab":"juillet-17","revenue":18702},{"lab":"août-17","revenue":22292},{"lab":"septembre-17","revenue":25556},{"lab":"octobre-17","revenue":21023},{"lab":"novembre-17","revenue":40313},{"lab":"décembre-17","revenue":24235},{"lab":"janvier-18","revenue":38792},{"lab":"février-18","revenue":31956},{"lab":"mars-18","revenue":36672},{"lab":"avril-18","revenue":44613},{"lab":"mai-18","revenue":35704},{"lab":"juin-18","revenue":32741},{"lab":"juillet-18","revenue":31204},{"lab":"août-18","revenue":32356}],"Bahia":[{"lab":"octobre-16","revenue":894},{"lab":"janvier-17","revenue":3956},{"lab":"février-17","revenue":7088},{"lab":"mars-17","revenue":15727},{"lab":"avril-17","revenue":18282},{"lab":"mai-17","revenue":16470},{"lab":"juin-17","revenue":20989},{"lab":"juillet-17","revenue":19240},{"lab":"août-17","revenue":26113},{"lab":"septembre-17","revenue":23947},{"lab":"octobre-17","revenue":24734},{"lab":"novembre-17","revenue":29138},{"lab":"décembre-17","revenue":28373},{"lab":"janvier-18","revenue":36721},{"lab":"février-18","revenue":31972},{"lab":"mars-18","revenue":36810},{"lab":"avril-18","revenue":31937},{"lab":"mai-18","revenue":35174},{"lab":"juin-18","revenue":35099},{"lab":"juillet-18","revenue":42597},{"lab":"août-18","revenue":21847}],"District fédéral":[{"lab":"octobre-16","revenue":1044},{"lab":"janvier-17","revenue":1827},{"lab":"février-17","revenue":10187},{"lab":"mars-17","revenue":6880},{"lab":"avril-17","revenue":7528},{"lab":"mai-17","revenue":7903},{"lab":"juin-17","revenue":8326},{"lab":"juillet-17","revenue":10828},{"lab":"août-17","revenue":9864},{"lab":"septembre-17","revenue":13320},{"lab":"octobre-17","revenue":13093},{"lab":"novembre-17","revenue":26860},{"lab":"décembre-17","revenue":16966},{"lab":"janvier-18","revenue":17737},{"lab":"février-18","revenue":21205},{"lab":"mars-18","revenue":20955},{"lab":"avril-18","revenue":18256},{"lab":"mai-18","revenue":25461},{"lab":"juin-18","revenue":19985},{"lab":"juillet-18","revenue":22720},{"lab":"août-18","revenue":19942}],"Goiás":[{"lab":"octobre-16","revenue":984},{"lab":"janvier-17","revenue":4227},{"lab":"février-17","revenue":2265},{"lab":"mars-17","revenue":8704},{"lab":"avril-17","revenue":5496},{"lab":"mai-17","revenue":16616},{"lab":"juin-17","revenue":9395},{"lab":"juillet-17","revenue":8923},{"lab":"août-17","revenue":13487},{"lab":"septembre-17","revenue":13890},{"lab":"octobre-17","revenue":16591},{"lab":"novembre-17","revenue":21079},{"lab":"décembre-17","revenue":15862},{"lab":"janvier-18","revenue":16759},{"lab":"février-18","revenue":17921},{"lab":"mars-18","revenue":19348},{"lab":"avril-18","revenue":19087},{"lab":"mai-18","revenue":24194},{"lab":"juin-18","revenue":14358},{"lab":"juillet-18","revenue":20654},{"lab":"août-18","revenue":18029}],"Espírito Santo":[{"lab":"octobre-16","revenue":918},{"lab":"janvier-17","revenue":2256},{"lab":"février-17","revenue":3926},{"lab":"mars-17","revenue":4985},{"lab":"avril-17","revenue":5475},{"lab":"mai-17","revenue":12898},{"lab":"juin-17","revenue":10346},{"lab":"juillet-17","revenue":7219},{"lab":"août-17","revenue":13158},{"lab":"septembre-17","revenue":11236},{"lab":"octobre-17","revenue":10381},{"lab":"novembre-17","revenue":24302},{"lab":"décembre-17","revenue":12607},{"lab":"janvier-18","revenue":20095},{"lab":"février-18","revenue":16994},{"lab":"mars-18","revenue":17392},{"lab":"avril-18","revenue":16543},{"lab":"mai-18","revenue":19005},{"lab":"juin-18","revenue":17153},{"lab":"juillet-18","revenue":30146},{"lab":"août-18","revenue":16497}],"Pernambuco":[{"lab":"octobre-16","revenue":1369},{"lab":"janvier-17","revenue":1884},{"lab":"février-17","revenue":2782},{"lab":"mars-17","revenue":6648},{"lab":"avril-17","revenue":3810},{"lab":"mai-17","revenue":10420},{"lab":"juin-17","revenue":5805},{"lab":"juillet-17","revenue":9880},{"lab":"août-17","revenue":13074},{"lab":"septembre-17","revenue":15078},{"lab":"octobre-17","revenue":17427},{"lab":"novembre-17","revenue":19658},{"lab":"décembre-17","revenue":16129},{"lab":"janvier-18","revenue":14993},{"lab":"février-18","revenue":17284},{"lab":"mars-18","revenue":22861},{"lab":"avril-18","revenue":17663},{"lab":"mai-18","revenue":13775},{"lab":"juin-18","revenue":14791},{"lab":"juillet-18","revenue":24482},{"lab":"août-18","revenue":11927}],"Ceará":[{"lab":"octobre-16","revenue":1689},{"lab":"janvier-17","revenue":1049},{"lab":"février-17","revenue":2095},{"lab":"mars-17","revenue":5970},{"lab":"avril-17","revenue":5760},{"lab":"mai-17","revenue":10466},{"lab":"juin-17","revenue":10060},{"lab":"juillet-17","revenue":7760},{"lab":"août-17","revenue":10643},{"lab":"septembre-17","revenue":16892},{"lab":"octobre-17","revenue":12112},{"lab":"novembre-17","revenue":18655},{"lab":"décembre-17","revenue":11116},{"lab":"janvier-18","revenue":13549},{"lab":"février-18","revenue":11092},{"lab":"mars-18","revenue":18385},{"lab":"avril-18","revenue":17350},{"lab":"mai-18","revenue":11946},{"lab":"juin-18","revenue":16550},{"lab":"juillet-18","revenue":13668},{"lab":"août-18","revenue":9457}],"Pará":[{"lab":"octobre-16","revenue":1088},{"lab":"janvier-17","revenue":2226},{"lab":"février-17","revenue":9901},{"lab":"mars-17","revenue":7648},{"lab":"avril-17","revenue":4776},{"lab":"mai-17","revenue":5404},{"lab":"juin-17","revenue":5730},{"lab":"juillet-17","revenue":5459},{"lab":"août-17","revenue":14765},{"lab":"septembre-17","revenue":6218},{"lab":"octobre-17","revenue":6752},{"lab":"novembre-17","revenue":11704},{"lab":"décembre-17","revenue":10420},{"lab":"janvier-18","revenue":13988},{"lab":"février-18","revenue":8944},{"lab":"mars-18","revenue":13209},{"lab":"avril-18","revenue":11650},{"lab":"mai-18","revenue":7456},{"lab":"juin-18","revenue":9358},{"lab":"juillet-18","revenue":13196},{"lab":"août-18","revenue":8929}],"Mato Grosso":[{"lab":"octobre-16","revenue":328},{"lab":"janvier-17","revenue":1977},{"lab":"février-17","revenue":2988},{"lab":"mars-17","revenue":2157},{"lab":"avril-17","revenue":3724},{"lab":"mai-17","revenue":6731},{"lab":"juin-17","revenue":4327},{"lab":"juillet-17","revenue":10289},{"lab":"août-17","revenue":6709},{"lab":"septembre-17","revenue":6941},{"lab":"octobre-17","revenue":10749},{"lab":"novembre-17","revenue":11432},{"lab":"décembre-17","revenue":9626},{"lab":"janvier-18","revenue":12135},{"lab":"février-18","revenue":8173},{"lab":"mars-18","revenue":8639},{"lab":"avril-18","revenue":11544},{"lab":"mai-18","revenue":12262},{"lab":"juin-18","revenue":10335},{"lab":"juillet-18","revenue":10600},{"lab":"août-18","revenue":4648}],"Maranhão":[{"lab":"octobre-16","revenue":704},{"lab":"janvier-17","revenue":618},{"lab":"février-17","revenue":895},{"lab":"mars-17","revenue":1951},{"lab":"avril-17","revenue":3243},{"lab":"mai-17","revenue":3300},{"lab":"juin-17","revenue":1779},{"lab":"juillet-17","revenue":6481},{"lab":"août-17","revenue":5999},{"lab":"septembre-17","revenue":9519},{"lab":"octobre-17","revenue":10336},{"lab":"novembre-17","revenue":10002},{"lab":"décembre-17","revenue":5820},{"lab":"janvier-18","revenue":8714},{"lab":"février-18","revenue":9878},{"lab":"mars-18","revenue":8356},{"lab":"avril-18","revenue":7930},{"lab":"mai-18","revenue":7084},{"lab":"juin-18","revenue":5979},{"lab":"juillet-18","revenue":6455},{"lab":"août-18","revenue":4246}],"Mato Grosso do Sul":[{"lab":"janvier-17","revenue":149},{"lab":"février-17","revenue":7520},{"lab":"mars-17","revenue":6453},{"lab":"avril-17","revenue":1904},{"lab":"mai-17","revenue":3387},{"lab":"juin-17","revenue":3807},{"lab":"juillet-17","revenue":3723},{"lab":"août-17","revenue":3842},{"lab":"septembre-17","revenue":4903},{"lab":"octobre-17","revenue":6268},{"lab":"novembre-17","revenue":6250},{"lab":"décembre-17","revenue":5408},{"lab":"janvier-18","revenue":10101},{"lab":"février-18","revenue":8593},{"lab":"mars-18","revenue":7399},{"lab":"avril-18","revenue":5876},{"lab":"mai-18","revenue":9923},{"lab":"juin-18","revenue":8887},{"lab":"juillet-18","revenue":6811},{"lab":"août-18","revenue":5551}],"Paraíba":[{"lab":"octobre-16","revenue":50},{"lab":"janvier-17","revenue":410},{"lab":"février-17","revenue":2170},{"lab":"mars-17","revenue":4388},{"lab":"avril-17","revenue":2957},{"lab":"mai-17","revenue":2899},{"lab":"juin-17","revenue":6183},{"lab":"juillet-17","revenue":4241},{"lab":"août-17","revenue":2325},{"lab":"septembre-17","revenue":5499},{"lab":"octobre-17","revenue":10284},{"lab":"novembre-17","revenue":4567},{"lab":"décembre-17","revenue":5586},{"lab":"janvier-18","revenue":6800},{"lab":"février-18","revenue":4751},{"lab":"mars-18","revenue":6087},{"lab":"avril-18","revenue":4413},{"lab":"mai-18","revenue":4860},{"lab":"juin-18","revenue":12994},{"lab":"juillet-18","revenue":15658},{"lab":"août-18","revenue":7752}],"Piauí":[{"lab":"octobre-16","revenue":210},{"lab":"janvier-17","revenue":1251},{"lab":"février-17","revenue":3044},{"lab":"mars-17","revenue":2106},{"lab":"avril-17","revenue":2497},{"lab":"mai-17","revenue":5973},{"lab":"juin-17","revenue":2147},{"lab":"juillet-17","revenue":2202},{"lab":"août-17","revenue":4626},{"lab":"septembre-17","revenue":3146},{"lab":"octobre-17","revenue":4047},{"lab":"novembre-17","revenue":2708},{"lab":"décembre-17","revenue":2647},{"lab":"janvier-18","revenue":6724},{"lab":"février-18","revenue":4361},{"lab":"mars-18","revenue":6557},{"lab":"avril-18","revenue":10775},{"lab":"mai-18","revenue":6846},{"lab":"juin-18","revenue":4846},{"lab":"juillet-18","revenue":6933},{"lab":"août-18","revenue":3013}],"Rio Grande do Norte":[{"lab":"octobre-16","revenue":729},{"lab":"janvier-17","revenue":1125},{"lab":"février-17","revenue":399},{"lab":"mars-17","revenue":1742},{"lab":"avril-17","revenue":1244},{"lab":"mai-17","revenue":4684},{"lab":"juin-17","revenue":1241},{"lab":"juillet-17","revenue":3194},{"lab":"août-17","revenue":2545},{"lab":"septembre-17","revenue":3446},{"lab":"octobre-17","revenue":4202},{"lab":"novembre-17","revenue":8469},{"lab":"décembre-17","revenue":3168},{"lab":"janvier-18","revenue":5808},{"lab":"février-18","revenue":3205},{"lab":"mars-18","revenue":7384},{"lab":"avril-18","revenue":6002},{"lab":"mai-18","revenue":4233},{"lab":"juin-18","revenue":6563},{"lab":"juillet-18","revenue":8415},{"lab":"août-18","revenue":5236}],"Alagoas":[{"lab":"octobre-16","revenue":82},{"lab":"janvier-17","revenue":394},{"lab":"février-17","revenue":2616},{"lab":"mars-17","revenue":1175},{"lab":"avril-17","revenue":4718},{"lab":"mai-17","revenue":4773},{"lab":"juin-17","revenue":952},{"lab":"juillet-17","revenue":2336},{"lab":"août-17","revenue":8972},{"lab":"septembre-17","revenue":4365},{"lab":"octobre-17","revenue":5344},{"lab":"novembre-17","revenue":5936},{"lab":"décembre-17","revenue":2224},{"lab":"janvier-18","revenue":5134},{"lab":"février-18","revenue":4593},{"lab":"mars-18","revenue":6996},{"lab":"avril-18","revenue":6106},{"lab":"mai-18","revenue":3657},{"lab":"juin-18","revenue":3731},{"lab":"juillet-18","revenue":3956},{"lab":"août-18","revenue":2253}],"Sergipe":[{"lab":"octobre-16","revenue":285},{"lab":"janvier-17","revenue":264},{"lab":"février-17","revenue":1862},{"lab":"mars-17","revenue":2499},{"lab":"avril-17","revenue":2595},{"lab":"mai-17","revenue":681},{"lab":"juin-17","revenue":1457},{"lab":"juillet-17","revenue":1372},{"lab":"août-17","revenue":4822},{"lab":"septembre-17","revenue":2815},{"lab":"octobre-17","revenue":4294},{"lab":"novembre-17","revenue":5579},{"lab":"décembre-17","revenue":3148},{"lab":"janvier-18","revenue":3060},{"lab":"février-18","revenue":4487},{"lab":"mars-18","revenue":2558},{"lab":"avril-18","revenue":3210},{"lab":"mai-18","revenue":1083},{"lab":"juin-18","revenue":3849},{"lab":"juillet-18","revenue":4442},{"lab":"août-18","revenue":4558}],"Tocantins":[{"lab":"janvier-17","revenue":630},{"lab":"février-17","revenue":766},{"lab":"mars-17","revenue":728},{"lab":"avril-17","revenue":3193},{"lab":"mai-17","revenue":2124},{"lab":"juin-17","revenue":3965},{"lab":"juillet-17","revenue":98},{"lab":"août-17","revenue":2133},{"lab":"septembre-17","revenue":3693},{"lab":"octobre-17","revenue":2809},{"lab":"novembre-17","revenue":2336},{"lab":"décembre-17","revenue":1457},{"lab":"janvier-18","revenue":2647},{"lab":"février-18","revenue":2636},{"lab":"mars-18","revenue":4574},{"lab":"avril-18","revenue":4292},{"lab":"mai-18","revenue":2740},{"lab":"juin-18","revenue":4049},{"lab":"juillet-18","revenue":2614},{"lab":"août-18","revenue":1926}],"Rondônia":[{"lab":"janvier-17","revenue":682},{"lab":"février-17","revenue":1622},{"lab":"mars-17","revenue":1865},{"lab":"avril-17","revenue":969},{"lab":"mai-17","revenue":551},{"lab":"juin-17","revenue":1801},{"lab":"juillet-17","revenue":1084},{"lab":"août-17","revenue":2237},{"lab":"septembre-17","revenue":4198},{"lab":"octobre-17","revenue":1658},{"lab":"novembre-17","revenue":5852},{"lab":"décembre-17","revenue":1950},{"lab":"janvier-18","revenue":2287},{"lab":"février-18","revenue":1579},{"lab":"mars-18","revenue":2727},{"lab":"avril-18","revenue":3500},{"lab":"mai-18","revenue":2255},{"lab":"juin-18","revenue":1922},{"lab":"juillet-18","revenue":4504},{"lab":"août-18","revenue":2790}],"Amazonas":[{"lab":"février-17","revenue":903},{"lab":"mars-17","revenue":631},{"lab":"avril-17","revenue":836},{"lab":"mai-17","revenue":1073},{"lab":"juin-17","revenue":170},{"lab":"juillet-17","revenue":706},{"lab":"août-17","revenue":1277},{"lab":"septembre-17","revenue":1163},{"lab":"octobre-17","revenue":71},{"lab":"novembre-17","revenue":2635},{"lab":"décembre-17","revenue":1029},{"lab":"janvier-18","revenue":2926},{"lab":"février-18","revenue":2029},{"lab":"mars-18","revenue":1118},{"lab":"avril-18","revenue":668},{"lab":"mai-18","revenue":1812},{"lab":"juin-18","revenue":925},{"lab":"juillet-18","revenue":2005},{"lab":"août-18","revenue":381}],"Acre":[{"lab":"janvier-17","revenue":590},{"lab":"février-17","revenue":450},{"lab":"mars-17","revenue":456},{"lab":"avril-17","revenue":1162},{"lab":"mai-17","revenue":2094},{"lab":"juin-17","revenue":386},{"lab":"juillet-17","revenue":619},{"lab":"août-17","revenue":638},{"lab":"septembre-17","revenue":1787},{"lab":"octobre-17","revenue":735},{"lab":"novembre-17","revenue":650},{"lab":"décembre-17","revenue":1101},{"lab":"janvier-18","revenue":883},{"lab":"février-18","revenue":202},{"lab":"mars-18","revenue":98},{"lab":"avril-18","revenue":423},{"lab":"mai-18","revenue":1365},{"lab":"juin-18","revenue":428},{"lab":"juillet-18","revenue":1470},{"lab":"août-18","revenue":447}],"Amapá":[{"lab":"février-17","revenue":550},{"lab":"mars-17","revenue":304},{"lab":"mai-17","revenue":1320},{"lab":"juin-17","revenue":253},{"lab":"juillet-17","revenue":260},{"lab":"août-17","revenue":290},{"lab":"septembre-17","revenue":365},{"lab":"octobre-17","revenue":1592},{"lab":"novembre-17","revenue":512},{"lab":"décembre-17","revenue":602},{"lab":"janvier-18","revenue":2394},{"lab":"février-18","revenue":1008},{"lab":"mars-18","revenue":535},{"lab":"avril-18","revenue":823},{"lab":"mai-18","revenue":956},{"lab":"juin-18","revenue":167},{"lab":"juillet-18","revenue":1351},{"lab":"août-18","revenue":194}],"Roraima":[{"lab":"septembre-16","revenue":73},{"lab":"octobre-16","revenue":40},{"lab":"février-17","revenue":51},{"lab":"mars-17","revenue":271},{"lab":"avril-17","revenue":49},{"lab":"mai-17","revenue":233},{"lab":"juin-17","revenue":93},{"lab":"juillet-17","revenue":180},{"lab":"septembre-17","revenue":40},{"lab":"octobre-17","revenue":389},{"lab":"novembre-17","revenue":99},{"lab":"janvier-18","revenue":129},{"lab":"février-18","revenue":199},{"lab":"mars-18","revenue":2245},{"lab":"avril-18","revenue":713},{"lab":"mai-18","revenue":90},{"lab":"juin-18","revenue":1332},{"lab":"juillet-18","revenue":1515}]},"geo_states":["Tous les états","São Paulo","Rio de Janeiro","Minas Gerais","Rio Grande do Sul","Paraná","Santa Catarina","Bahia","District fédéral","Goiás","Espírito Santo","Pernambuco","Ceará","Pará","Mato Grosso","Maranhão","Mato Grosso do Sul","Paraíba","Piauí","Rio Grande do Norte","Alagoas","Sergipe","Tocantins","Rondônia","Amazonas","Acre","Amapá","Roraima"],"cat_revenue":[{"cat":"Santé & beauté","revenue":1255695},{"cat":"Montres & cadeaux","revenue":1198185},{"cat":"Linge de maison","revenue":1035964},{"cat":"Sport & loisirs","revenue":979741},{"cat":"Informatique & accessoires","revenue":904322},{"cat":"Meubles & déco","revenue":727465},{"cat":"Articles ménagers","revenue":626826},{"cat":"Gadgets & idées","revenue":620835},{"cat":"Automobile","revenue":586621},{"cat":"Outils de jardinage","revenue":481010},{"cat":"Jouets","revenue":479809},{"cat":"Puériculture","revenue":410471}],"cat_score_best":[{"cat":"Livres généralistes","score":4.5},{"cat":"Bagagerie","score":4.34},{"cat":"Alimentation","score":4.28},{"cat":"Papeterie","score":4.25},{"cat":"Animalerie","score":4.25},{"cat":"Instruments de musique","score":4.21}],"cat_score_worst":[{"cat":"Linge de maison","score":3.97},{"cat":"Bâtiment & rénovation","score":3.97},{"cat":"Inconnu","score":3.93},{"cat":"Confort maison","score":3.86},{"cat":"Audio","score":3.84},{"cat":"Mobilier de bureau","score":3.62}],"pay_type":[{"type":"credit_card","value":12542084},{"type":"boleto","value":2869361},{"type":"voucher","value":379437},{"type":"debit_card","value":217990}],"installments":[{"i":1,"n":52546},{"i":2,"n":12413},{"i":3,"n":10461},{"i":4,"n":7098},{"i":5,"n":5239},{"i":6,"n":3920},{"i":7,"n":1626},{"i":8,"n":4268},{"i":9,"n":644},{"i":10,"n":5328},{"i":11,"n":23},{"i":12,"n":133}],"score_dist_by_state":{"Tous les états":[{"s":1,"n":11002},{"s":2,"n":3107},{"s":3,"n":8131},{"s":4,"n":19116},{"s":5,"n":57259}],"São Paulo":[{"s":1,"n":3826},{"s":2,"n":1192},{"s":3,"n":3274},{"s":4,"n":7979},{"s":5,"n":25099}],"Rio de Janeiro":[{"s":1,"n":2121},{"s":2,"n":462},{"s":3,"n":1043},{"s":4,"n":2133},{"s":5,"n":6925}],"Minas Gerais":[{"s":1,"n":1171},{"s":2,"n":329},{"s":3,"n":964},{"s":4,"n":2258},{"s":5,"n":6843}],"Rio Grande do Sul":[{"s":1,"n":543},{"s":2,"n":169},{"s":3,"n":449},{"s":4,"n":1096},{"s":5,"n":3202}],"Paraná":[{"s":1,"n":457},{"s":2,"n":154},{"s":3,"n":380},{"s":4,"n":1007},{"s":5,"n":3018}],"Santa Catarina":[{"s":1,"n":399},{"s":2,"n":119},{"s":3,"n":319},{"s":4,"n":711},{"s":5,"n":2056}],"Bahia":[{"s":1,"n":496},{"s":2,"n":128},{"s":3,"n":335},{"s":4,"n":742},{"s":5,"n":1640}],"District fédéral":[{"s":1,"n":249},{"s":2,"n":68},{"s":3,"n":169},{"s":4,"n":445},{"s":5,"n":1210}],"Goiás":[{"s":1,"n":222},{"s":2,"n":67},{"s":3,"n":191},{"s":4,"n":423},{"s":5,"n":1108}],"Espírito Santo":[{"s":1,"n":239},{"s":2,"n":56},{"s":3,"n":181},{"s":4,"n":425},{"s":5,"n":1105}],"Pernambuco":[{"s":1,"n":218},{"s":2,"n":53},{"s":3,"n":130},{"s":4,"n":321},{"s":5,"n":919}],"Ceará":[{"s":1,"n":204},{"s":2,"n":53},{"s":3,"n":131},{"s":4,"n":263},{"s":5,"n":671}],"Pará":[{"s":1,"n":153},{"s":2,"n":35},{"s":3,"n":95},{"s":4,"n":197},{"s":5,"n":484}],"Mato Grosso":[{"s":1,"n":92},{"s":2,"n":31},{"s":3,"n":77},{"s":4,"n":189},{"s":5,"n":512}],"Maranhão":[{"s":1,"n":128},{"s":2,"n":31},{"s":3,"n":74},{"s":4,"n":157},{"s":5,"n":352}],"Mato Grosso do Sul":[{"s":1,"n":80},{"s":2,"n":23},{"s":3,"n":53},{"s":4,"n":137},{"s":5,"n":429}],"Paraíba":[{"s":1,"n":65},{"s":2,"n":23},{"s":3,"n":48},{"s":4,"n":96},{"s":5,"n":297}],"Piauí":[{"s":1,"n":70},{"s":2,"n":18},{"s":3,"n":42},{"s":4,"n":103},{"s":5,"n":254}],"Rio Grande do Norte":[{"s":1,"n":54},{"s":2,"n":14},{"s":3,"n":39},{"s":4,"n":95},{"s":5,"n":280}],"Alagoas":[{"s":1,"n":73},{"s":2,"n":25},{"s":3,"n":29},{"s":4,"n":89},{"s":5,"n":197}],"Sergipe":[{"s":1,"n":63},{"s":2,"n":13},{"s":3,"n":29},{"s":4,"n":67},{"s":5,"n":176}],"Tocantins":[{"s":1,"n":25},{"s":2,"n":12},{"s":3,"n":23},{"s":4,"n":66},{"s":5,"n":152}],"Rondônia":[{"s":1,"n":23},{"s":2,"n":13},{"s":3,"n":27},{"s":4,"n":44},{"s":5,"n":142}],"Amazonas":[{"s":1,"n":12},{"s":2,"n":10},{"s":3,"n":6},{"s":4,"n":30},{"s":5,"n":89}],"Acre":[{"s":1,"n":7},{"s":2,"n":6},{"s":3,"n":8},{"s":4,"n":15},{"s":5,"n":45}],"Amapá":[{"s":1,"n":3},{"s":2,"n":2},{"s":3,"n":8},{"s":4,"n":20},{"s":5,"n":34}],"Roraima":[{"s":1,"n":9},{"s":2,"n":1},{"s":3,"n":7},{"s":4,"n":8},{"s":5,"n":20}]},"score_month_by_state":{"Tous les états":[{"lab":"janv. 17","score":4.34},{"lab":"févr. 17","score":4.28},{"lab":"mars 17","score":4.05},{"lab":"avr. 17","score":4.07},{"lab":"mai 17","score":4.11},{"lab":"juin 17","score":4.14},{"lab":"juil. 17","score":4.2},{"lab":"août 17","score":4.24},{"lab":"sept. 17","score":4.2},{"lab":"oct. 17","score":4.19},{"lab":"nov. 17","score":4.13},{"lab":"déc. 17","score":3.94},{"lab":"janv. 18","score":4.07},{"lab":"févr. 18","score":4.03},{"lab":"mars 18","score":3.75},{"lab":"avr. 18","score":3.93},{"lab":"mai 18","score":4.2},{"lab":"juin 18","score":4.2},{"lab":"juil. 18","score":4.3},{"lab":"août 18","score":4.24}],"São Paulo":[{"lab":"janv. 17","score":4.16},{"lab":"févr. 17","score":4.3},{"lab":"mars 17","score":4.08},{"lab":"avr. 17","score":4.16},{"lab":"mai 17","score":4.1},{"lab":"juin 17","score":4.15},{"lab":"juil. 17","score":4.21},{"lab":"août 17","score":4.35},{"lab":"sept. 17","score":4.21},{"lab":"oct. 17","score":4.2},{"lab":"nov. 17","score":4.17},{"lab":"déc. 17","score":4.13},{"lab":"janv. 18","score":4.19},{"lab":"févr. 18","score":4.1},{"lab":"mars 18","score":4.01},{"lab":"avr. 18","score":4.2},{"lab":"mai 18","score":4.3},{"lab":"juin 18","score":4.26},{"lab":"juil. 18","score":4.34},{"lab":"août 18","score":4.23}],"Rio de Janeiro":[{"lab":"janv. 17","score":4.39},{"lab":"févr. 17","score":4.16},{"lab":"mars 17","score":3.95},{"lab":"avr. 17","score":4.08},{"lab":"mai 17","score":4.06},{"lab":"juin 17","score":4.05},{"lab":"juil. 17","score":4.21},{"lab":"août 17","score":4.1},{"lab":"sept. 17","score":4.23},{"lab":"oct. 17","score":4.17},{"lab":"nov. 17","score":4.09},{"lab":"déc. 17","score":3.51},{"lab":"janv. 18","score":3.64},{"lab":"févr. 18","score":3.75},{"lab":"mars 18","score":3.02},{"lab":"avr. 18","score":3.5},{"lab":"mai 18","score":4.05},{"lab":"juin 18","score":4.1},{"lab":"juil. 18","score":4.27},{"lab":"août 18","score":4.14}],"Minas Gerais":[{"lab":"janv. 17","score":4.45},{"lab":"févr. 17","score":4.29},{"lab":"mars 17","score":4.09},{"lab":"avr. 17","score":4.18},{"lab":"mai 17","score":4.14},{"lab":"juin 17","score":4.18},{"lab":"juil. 17","score":4.2},{"lab":"août 17","score":4.18},{"lab":"sept. 17","score":4.36},{"lab":"oct. 17","score":4.29},{"lab":"nov. 17","score":4.22},{"lab":"déc. 17","score":4.03},{"lab":"janv. 18","score":4.17},{"lab":"févr. 18","score":4.18},{"lab":"mars 18","score":3.71},{"lab":"avr. 18","score":3.88},{"lab":"mai 18","score":4.32},{"lab":"juin 18","score":4.19},{"lab":"juil. 18","score":4.3},{"lab":"août 18","score":4.33}],"Rio Grande do Sul":[{"lab":"janv. 17","score":3.83},{"lab":"févr. 17","score":4.44},{"lab":"mars 17","score":4.19},{"lab":"avr. 17","score":4.12},{"lab":"mai 17","score":4.15},{"lab":"juin 17","score":4.48},{"lab":"juil. 17","score":4.26},{"lab":"août 17","score":4.27},{"lab":"sept. 17","score":4.21},{"lab":"oct. 17","score":4.26},{"lab":"nov. 17","score":4.07},{"lab":"déc. 17","score":3.83},{"lab":"janv. 18","score":3.97},{"lab":"févr. 18","score":4.02},{"lab":"mars 18","score":3.96},{"lab":"avr. 18","score":3.87},{"lab":"mai 18","score":4.22},{"lab":"juin 18","score":4.34},{"lab":"juil. 18","score":4.32},{"lab":"août 18","score":4.36}],"Paraná":[{"lab":"janv. 17","score":4.76},{"lab":"févr. 17","score":4.14},{"lab":"mars 17","score":4.09},{"lab":"avr. 17","score":4.0},{"lab":"mai 17","score":4.31},{"lab":"juin 17","score":4.32},{"lab":"juil. 17","score":4.37},{"lab":"août 17","score":4.38},{"lab":"sept. 17","score":4.28},{"lab":"oct. 17","score":4.2},{"lab":"nov. 17","score":4.09},{"lab":"déc. 17","score":4.05},{"lab":"janv. 18","score":4.05},{"lab":"févr. 18","score":4.17},{"lab":"mars 18","score":3.9},{"lab":"avr. 18","score":4.09},{"lab":"mai 18","score":4.27},{"lab":"juin 18","score":4.16},{"lab":"juil. 18","score":4.4},{"lab":"août 18","score":4.4}],"Santa Catarina":[{"lab":"janv. 17","score":4.14},{"lab":"févr. 17","score":4.22},{"lab":"mars 17","score":3.74},{"lab":"avr. 17","score":3.96},{"lab":"mai 17","score":4.18},{"lab":"juin 17","score":3.99},{"lab":"juil. 17","score":4.26},{"lab":"août 17","score":4.19},{"lab":"sept. 17","score":4.16},{"lab":"oct. 17","score":4.26},{"lab":"nov. 17","score":4.24},{"lab":"déc. 17","score":3.72},{"lab":"janv. 18","score":4.18},{"lab":"févr. 18","score":3.86},{"lab":"mars 18","score":3.63},{"lab":"avr. 18","score":4.02},{"lab":"mai 18","score":4.42},{"lab":"juin 18","score":4.21},{"lab":"juil. 18","score":4.4},{"lab":"août 18","score":4.29}],"Bahia":[{"lab":"janv. 17","score":3.67},{"lab":"févr. 17","score":4.24},{"lab":"mars 17","score":3.96},{"lab":"avr. 17","score":3.71},{"lab":"mai 17","score":3.85},{"lab":"juin 17","score":3.87},{"lab":"juil. 17","score":3.71},{"lab":"août 17","score":4.03},{"lab":"sept. 17","score":4.23},{"lab":"oct. 17","score":3.93},{"lab":"nov. 17","score":3.81},{"lab":"déc. 17","score":3.82},{"lab":"janv. 18","score":4.0},{"lab":"févr. 18","score":3.64},{"lab":"mars 18","score":3.56},{"lab":"avr. 18","score":3.38},{"lab":"mai 18","score":3.84},{"lab":"juin 18","score":3.85},{"lab":"juil. 18","score":4.13},{"lab":"août 18","score":4.18}],"District fédéral":[{"lab":"janv. 17","score":4.0},{"lab":"févr. 17","score":4.11},{"lab":"mars 17","score":4.31},{"lab":"avr. 17","score":4.0},{"lab":"mai 17","score":4.16},{"lab":"juin 17","score":3.78},{"lab":"juil. 17","score":4.27},{"lab":"août 17","score":4.31},{"lab":"sept. 17","score":4.2},{"lab":"oct. 17","score":3.89},{"lab":"nov. 17","score":4.07},{"lab":"déc. 17","score":3.79},{"lab":"janv. 18","score":4.15},{"lab":"févr. 18","score":4.01},{"lab":"mars 18","score":3.78},{"lab":"avr. 18","score":3.89},{"lab":"mai 18","score":4.25},{"lab":"juin 18","score":4.26},{"lab":"juil. 18","score":4.39},{"lab":"août 18","score":4.16}],"Goiás":[{"lab":"janv. 17","score":5.0},{"lab":"févr. 17","score":4.33},{"lab":"mars 17","score":4.03},{"lab":"avr. 17","score":3.84},{"lab":"mai 17","score":4.03},{"lab":"juin 17","score":3.94},{"lab":"juil. 17","score":4.26},{"lab":"août 17","score":4.26},{"lab":"sept. 17","score":4.06},{"lab":"oct. 17","score":4.11},{"lab":"nov. 17","score":4.48},{"lab":"déc. 17","score":3.9},{"lab":"janv. 18","score":3.93},{"lab":"févr. 18","score":4.17},{"lab":"mars 18","score":3.71},{"lab":"avr. 18","score":3.75},{"lab":"mai 18","score":4.05},{"lab":"juin 18","score":4.17},{"lab":"juil. 18","score":4.23},{"lab":"août 18","score":4.19}],"Espírito Santo":[{"lab":"janv. 17","score":4.5},{"lab":"févr. 17","score":4.37},{"lab":"mars 17","score":3.79},{"lab":"avr. 17","score":4.22},{"lab":"mai 17","score":4.21},{"lab":"juin 17","score":4.27},{"lab":"juil. 17","score":4.01},{"lab":"août 17","score":4.18},{"lab":"sept. 17","score":3.99},{"lab":"oct. 17","score":4.44},{"lab":"nov. 17","score":4.13},{"lab":"déc. 17","score":3.85},{"lab":"janv. 18","score":4.18},{"lab":"févr. 18","score":4.11},{"lab":"mars 18","score":3.63},{"lab":"avr. 18","score":3.58},{"lab":"mai 18","score":4.07},{"lab":"juin 18","score":4.02},{"lab":"juil. 18","score":4.06},{"lab":"août 18","score":4.32}],"Pernambuco":[{"lab":"févr. 17","score":4.87},{"lab":"mars 17","score":4.15},{"lab":"avr. 17","score":3.81},{"lab":"mai 17","score":4.14},{"lab":"juin 17","score":4.14},{"lab":"juil. 17","score":4.0},{"lab":"août 17","score":3.99},{"lab":"sept. 17","score":3.61},{"lab":"oct. 17","score":4.17},{"lab":"nov. 17","score":3.93},{"lab":"déc. 17","score":3.98},{"lab":"janv. 18","score":3.96},{"lab":"févr. 18","score":4.16},{"lab":"mars 18","score":3.86},{"lab":"avr. 18","score":3.79},{"lab":"mai 18","score":3.76},{"lab":"juin 18","score":4.24},{"lab":"juil. 18","score":4.38},{"lab":"août 18","score":4.18}],"Ceará":[{"lab":"janv. 17","score":5.0},{"lab":"févr. 17","score":4.6},{"lab":"mars 17","score":3.62},{"lab":"avr. 17","score":2.72},{"lab":"mai 17","score":4.09},{"lab":"juin 17","score":4.27},{"lab":"juil. 17","score":4.11},{"lab":"août 17","score":4.44},{"lab":"sept. 17","score":4.33},{"lab":"oct. 17","score":3.98},{"lab":"nov. 17","score":3.69},{"lab":"déc. 17","score":3.58},{"lab":"janv. 18","score":4.05},{"lab":"févr. 18","score":3.37},{"lab":"mars 18","score":2.85},{"lab":"avr. 18","score":3.18},{"lab":"mai 18","score":3.89},{"lab":"juin 18","score":4.22},{"lab":"juil. 18","score":4.33},{"lab":"août 18","score":4.31}],"Pará":[{"lab":"janv. 17","score":4.5},{"lab":"févr. 17","score":4.33},{"lab":"mars 17","score":4.06},{"lab":"avr. 17","score":3.65},{"lab":"mai 17","score":4.36},{"lab":"juin 17","score":4.29},{"lab":"juil. 17","score":4.21},{"lab":"août 17","score":3.8},{"lab":"sept. 17","score":4.02},{"lab":"oct. 17","score":4.05},{"lab":"nov. 17","score":4.08},{"lab":"déc. 17","score":3.71},{"lab":"janv. 18","score":3.74},{"lab":"févr. 18","score":3.79},{"lab":"mars 18","score":3.81},{"lab":"avr. 18","score":2.51},{"lab":"mai 18","score":3.3},{"lab":"juin 18","score":3.93},{"lab":"juil. 18","score":4.31},{"lab":"août 18","score":4.4}],"Mato Grosso":[{"lab":"janv. 17","score":1.0},{"lab":"févr. 17","score":3.93},{"lab":"mars 17","score":3.38},{"lab":"avr. 17","score":3.74},{"lab":"mai 17","score":3.9},{"lab":"juin 17","score":4.31},{"lab":"juil. 17","score":4.48},{"lab":"août 17","score":4.13},{"lab":"sept. 17","score":4.03},{"lab":"oct. 17","score":4.11},{"lab":"nov. 17","score":4.33},{"lab":"déc. 17","score":3.83},{"lab":"janv. 18","score":4.14},{"lab":"févr. 18","score":4.07},{"lab":"mars 18","score":3.81},{"lab":"avr. 18","score":3.92},{"lab":"mai 18","score":4.48},{"lab":"juin 18","score":4.04},{"lab":"juil. 18","score":4.29},{"lab":"août 18","score":4.4}],"Maranhão":[{"lab":"févr. 17","score":4.8},{"lab":"mars 17","score":3.85},{"lab":"avr. 17","score":3.79},{"lab":"mai 17","score":4.34},{"lab":"juin 17","score":4.0},{"lab":"juil. 17","score":4.0},{"lab":"août 17","score":3.84},{"lab":"sept. 17","score":3.98},{"lab":"oct. 17","score":4.28},{"lab":"nov. 17","score":3.32},{"lab":"déc. 17","score":3.23},{"lab":"janv. 18","score":3.65},{"lab":"févr. 18","score":3.78},{"lab":"mars 18","score":3.2},{"lab":"avr. 18","score":3.22},{"lab":"mai 18","score":4.04},{"lab":"juin 18","score":4.03},{"lab":"juil. 18","score":3.9},{"lab":"août 18","score":3.95}],"Mato Grosso do Sul":[{"lab":"févr. 17","score":5.0},{"lab":"mars 17","score":4.36},{"lab":"avr. 17","score":4.12},{"lab":"mai 17","score":4.53},{"lab":"juin 17","score":4.34},{"lab":"juil. 17","score":3.92},{"lab":"août 17","score":4.48},{"lab":"sept. 17","score":3.86},{"lab":"oct. 17","score":4.17},{"lab":"nov. 17","score":4.64},{"lab":"déc. 17","score":4.11},{"lab":"janv. 18","score":4.14},{"lab":"févr. 18","score":4.31},{"lab":"mars 18","score":3.52},{"lab":"avr. 18","score":3.41},{"lab":"mai 18","score":4.16},{"lab":"juin 18","score":4.49},{"lab":"juil. 18","score":4.59},{"lab":"août 18","score":3.98}],"Paraíba":[{"lab":"janv. 17","score":5.0},{"lab":"févr. 17","score":4.0},{"lab":"mars 17","score":4.57},{"lab":"avr. 17","score":3.83},{"lab":"mai 17","score":3.71},{"lab":"juin 17","score":3.89},{"lab":"juil. 17","score":4.35},{"lab":"août 17","score":4.07},{"lab":"sept. 17","score":4.4},{"lab":"oct. 17","score":3.83},{"lab":"nov. 17","score":4.11},{"lab":"déc. 17","score":3.66},{"lab":"janv. 18","score":3.73},{"lab":"févr. 18","score":4.33},{"lab":"mars 18","score":3.84},{"lab":"avr. 18","score":4.32},{"lab":"mai 18","score":3.68},{"lab":"juin 18","score":4.21},{"lab":"juil. 18","score":3.85},{"lab":"août 18","score":4.27}],"Piauí":[{"lab":"févr. 17","score":4.4},{"lab":"mars 17","score":4.29},{"lab":"avr. 17","score":3.88},{"lab":"mai 17","score":4.28},{"lab":"juin 17","score":4.24},{"lab":"juil. 17","score":4.27},{"lab":"août 17","score":3.8},{"lab":"sept. 17","score":3.76},{"lab":"oct. 17","score":4.35},{"lab":"nov. 17","score":4.21},{"lab":"déc. 17","score":3.52},{"lab":"janv. 18","score":4.5},{"lab":"févr. 18","score":3.55},{"lab":"mars 18","score":3.54},{"lab":"avr. 18","score":3.72},{"lab":"mai 18","score":4.12},{"lab":"juin 18","score":3.48},{"lab":"juil. 18","score":3.71},{"lab":"août 18","score":3.95}],"Rio Grande do Norte":[{"lab":"janv. 17","score":4.75},{"lab":"févr. 17","score":5.0},{"lab":"mars 17","score":4.5},{"lab":"avr. 17","score":4.25},{"lab":"mai 17","score":4.26},{"lab":"juin 17","score":4.0},{"lab":"juil. 17","score":4.36},{"lab":"août 17","score":3.92},{"lab":"sept. 17","score":4.0},{"lab":"oct. 17","score":4.13},{"lab":"nov. 17","score":4.1},{"lab":"déc. 17","score":3.82},{"lab":"janv. 18","score":4.32},{"lab":"févr. 18","score":4.21},{"lab":"mars 18","score":4.17},{"lab":"avr. 18","score":3.84},{"lab":"mai 18","score":3.28},{"lab":"juin 18","score":4.45},{"lab":"juil. 18","score":4.37},{"lab":"août 18","score":4.41}],"Alagoas":[{"lab":"févr. 17","score":4.0},{"lab":"mars 17","score":4.4},{"lab":"avr. 17","score":4.43},{"lab":"mai 17","score":3.22},{"lab":"juin 17","score":3.78},{"lab":"juil. 17","score":3.4},{"lab":"août 17","score":3.56},{"lab":"sept. 17","score":3.37},{"lab":"oct. 17","score":3.6},{"lab":"nov. 17","score":4.25},{"lab":"déc. 17","score":3.96},{"lab":"janv. 18","score":4.53},{"lab":"févr. 18","score":2.96},{"lab":"mars 18","score":3.23},{"lab":"avr. 18","score":3.48},{"lab":"mai 18","score":3.69},{"lab":"juin 18","score":4.4},{"lab":"juil. 18","score":4.67},{"lab":"août 18","score":3.97}],"Sergipe":[{"lab":"janv. 17","score":5.0},{"lab":"févr. 17","score":4.75},{"lab":"mars 17","score":3.57},{"lab":"avr. 17","score":3.83},{"lab":"mai 17","score":3.47},{"lab":"juin 17","score":4.56},{"lab":"juil. 17","score":3.56},{"lab":"août 17","score":4.05},{"lab":"sept. 17","score":3.75},{"lab":"oct. 17","score":3.84},{"lab":"nov. 17","score":3.57},{"lab":"déc. 17","score":3.23},{"lab":"janv. 18","score":4.26},{"lab":"févr. 18","score":4.06},{"lab":"mars 18","score":3.81},{"lab":"avr. 18","score":2.62},{"lab":"mai 18","score":3.25},{"lab":"juin 18","score":3.62},{"lab":"juil. 18","score":3.75},{"lab":"août 18","score":4.24}],"Tocantins":[{"lab":"févr. 17","score":4.67},{"lab":"mars 17","score":4.12},{"lab":"avr. 17","score":4.12},{"lab":"mai 17","score":4.41},{"lab":"juin 17","score":3.3},{"lab":"juil. 17","score":5.0},{"lab":"août 17","score":4.75},{"lab":"sept. 17","score":4.75},{"lab":"oct. 17","score":4.21},{"lab":"nov. 17","score":3.67},{"lab":"déc. 17","score":4.18},{"lab":"janv. 18","score":4.0},{"lab":"févr. 18","score":4.5},{"lab":"mars 18","score":3.34},{"lab":"avr. 18","score":3.72},{"lab":"mai 18","score":4.18},{"lab":"juin 18","score":3.7},{"lab":"juil. 18","score":4.14},{"lab":"août 18","score":4.66}],"Rondônia":[{"lab":"févr. 17","score":4.0},{"lab":"mars 17","score":4.0},{"lab":"avr. 17","score":3.09},{"lab":"mai 17","score":4.2},{"lab":"juin 17","score":4.08},{"lab":"juil. 17","score":4.67},{"lab":"août 17","score":4.0},{"lab":"sept. 17","score":4.0},{"lab":"oct. 17","score":4.59},{"lab":"nov. 17","score":3.8},{"lab":"déc. 17","score":4.29},{"lab":"janv. 18","score":3.83},{"lab":"févr. 18","score":4.5},{"lab":"mars 18","score":4.13},{"lab":"avr. 18","score":3.21},{"lab":"mai 18","score":4.14},{"lab":"juin 18","score":4.28},{"lab":"juil. 18","score":4.2},{"lab":"août 18","score":4.5}],"Amazonas":[{"lab":"févr. 17","score":5.0},{"lab":"mars 17","score":4.67},{"lab":"avr. 17","score":4.4},{"lab":"mai 17","score":4.47},{"lab":"juin 17","score":3.86},{"lab":"juil. 17","score":2.25},{"lab":"août 17","score":4.0},{"lab":"sept. 17","score":4.5},{"lab":"oct. 17","score":4.22},{"lab":"nov. 17","score":5.0},{"lab":"déc. 17","score":4.67},{"lab":"janv. 18","score":4.44},{"lab":"févr. 18","score":3.75},{"lab":"mars 18","score":4.0},{"lab":"avr. 18","score":3.38},{"lab":"mai 18","score":4.7},{"lab":"juin 18","score":4.88},{"lab":"juil. 18","score":3.71},{"lab":"août 18","score":4.0}],"Acre":[{"lab":"févr. 17","score":2.0},{"lab":"mars 17","score":4.8},{"lab":"mai 17","score":3.78},{"lab":"juin 17","score":4.0},{"lab":"juil. 17","score":4.75},{"lab":"août 17","score":3.83},{"lab":"sept. 17","score":4.75},{"lab":"oct. 17","score":4.0},{"lab":"nov. 17","score":1.0},{"lab":"déc. 17","score":4.25},{"lab":"janv. 18","score":4.62},{"lab":"févr. 18","score":4.0},{"lab":"mars 18","score":4.67},{"lab":"avr. 18","score":3.0},{"lab":"mai 18","score":3.2},{"lab":"juin 18","score":4.5},{"lab":"juil. 18","score":5.0},{"lab":"août 18","score":4.71}],"Amapá":[{"lab":"févr. 17","score":5.0},{"lab":"mars 17","score":4.5},{"lab":"avr. 17","score":5.0},{"lab":"mai 17","score":4.0},{"lab":"juin 17","score":3.67},{"lab":"juil. 17","score":4.33},{"lab":"août 17","score":4.0},{"lab":"sept. 17","score":4.67},{"lab":"oct. 17","score":4.0},{"lab":"nov. 17","score":5.0},{"lab":"déc. 17","score":4.0},{"lab":"janv. 18","score":4.0},{"lab":"févr. 18","score":3.9},{"lab":"avr. 18","score":3.8},{"lab":"mai 18","score":4.38},{"lab":"juin 18","score":4.67},{"lab":"juil. 18","score":5.0},{"lab":"août 18","score":4.12}],"Roraima":[{"lab":"févr. 17","score":4.0},{"lab":"avr. 17","score":3.5},{"lab":"mai 17","score":4.0},{"lab":"juin 17","score":4.33},{"lab":"juil. 17","score":4.67},{"lab":"oct. 17","score":4.0},{"lab":"nov. 17","score":5.0},{"lab":"déc. 17","score":3.0},{"lab":"janv. 18","score":1.0},{"lab":"févr. 18","score":3.0},{"lab":"mars 18","score":4.0},{"lab":"avr. 18","score":2.56},{"lab":"mai 18","score":3.33},{"lab":"juin 18","score":3.5},{"lab":"juil. 18","score":5.0},{"lab":"août 18","score":5.0}]},"sat_states":["Tous les états","São Paulo","Rio de Janeiro","Minas Gerais","Rio Grande do Sul","Paraná","Santa Catarina","Bahia","District fédéral","Goiás","Espírito Santo","Pernambuco","Ceará","Pará","Mato Grosso","Maranhão","Mato Grosso do Sul","Paraíba","Piauí","Rio Grande do Norte","Alagoas","Sergipe","Tocantins","Rondônia","Amazonas","Acre","Amapá","Roraima"],"ins_ontime":4.29,"ins_late":2.27,"rfm":[{"seg":"Champions","n":8214,"monetary":2766194},{"seg":"Loyal","n":32252,"monetary":6962147},{"seg":"Potential","n":39308,"monetary":5108783},{"seg":"At risk","n":12567,"monetary":874282},{"seg":"Hibernating","n":3219,"monetary":154210}],"status_by_state":{"Tous les états":[{"s":"delivered","n":96478},{"s":"shipped","n":1107},{"s":"canceled","n":625},{"s":"unavailable","n":609},{"s":"invoiced","n":314},{"s":"processing","n":301}],"São Paulo":[{"s":"delivered","n":40501},{"s":"shipped","n":328},{"s":"canceled","n":327},{"s":"unavailable","n":292},{"s":"invoiced","n":160},{"s":"processing","n":136}],"Rio de Janeiro":[{"s":"delivered","n":12350},{"s":"shipped","n":289},{"s":"canceled","n":86},{"s":"unavailable","n":68}],"Minas Gerais":[{"s":"delivered","n":11354},{"s":"unavailable","n":75},{"s":"shipped","n":71},{"s":"canceled","n":64}],"Rio Grande do Sul":[{"s":"delivered","n":5345}],"Paraná":[{"s":"delivered","n":4923}],"Santa Catarina":[{"s":"delivered","n":3546}],"Bahia":[{"s":"delivered","n":3256},{"s":"shipped","n":68}],"District fédéral":[{"s":"delivered","n":2080}],"Espírito Santo":[{"s":"delivered","n":1995}],"Goiás":[{"s":"delivered","n":1957}],"Pernambuco":[{"s":"delivered","n":1593}],"Ceará":[{"s":"delivered","n":1279}],"Pará":[{"s":"delivered","n":946}],"Mato Grosso":[{"s":"delivered","n":886}],"Maranhão":[{"s":"delivered","n":717}],"Mato Grosso do Sul":[{"s":"delivered","n":701}],"Paraíba":[{"s":"delivered","n":517}],"Piauí":[{"s":"delivered","n":476}],"Rio Grande do Norte":[{"s":"delivered","n":474}],"Alagoas":[{"s":"delivered","n":397}],"Sergipe":[{"s":"delivered","n":335}],"Tocantins":[{"s":"delivered","n":274}],"Rondônia":[{"s":"delivered","n":243}],"Amazonas":[{"s":"delivered","n":145}],"Acre":[{"s":"delivered","n":80}],"Amapá":[{"s":"delivered","n":67}],"Roraima":[]},"cli_states":["Tous les états","São Paulo","Rio de Janeiro","Minas Gerais","Rio Grande do Sul","Paraná","Santa Catarina","Bahia","District fédéral","Espírito Santo","Goiás","Pernambuco","Ceará","Pará","Mato Grosso","Maranhão","Mato Grosso do Sul","Paraíba","Piauí","Rio Grande do Norte","Alagoas","Sergipe","Tocantins","Rondônia","Amazonas","Acre","Amapá","Roraima"]};
+const fr = n => Math.round(n).toLocaleString('fr-FR').replace(/\u202f/g,'\u00a0');
+const money = n => n>=1e6 ? (n/1e6).toFixed(1).replace('.',',')+'\u00a0M' : n>=1e3 ? Math.round(n/1e3)+'\u00a0k' : ''+Math.round(n);
+const dec = (n,d=2)=> n.toFixed(d).replace('.',',');
+const NS='http://www.w3.org/2000/svg';
+const C={bronze:'#A86A3D',silver:'#6C757F',gold:'#A6841C',ink:'#1B1D21',cast:'#2F6F8F',derive:'#3E7D53',struct:'#B0473B',join:'#6E5AA3',muted:'#6B7079',line:'#D6D1C4'};
+const tip=(()=>{const d=document.createElement('div');d.id='tip';document.body.appendChild(d);return d;})();
+function showTip(e,txt){tip.textContent=txt;tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.opacity='1';}
+function hideTip(){tip.style.opacity='0';}
+function hov(el,txt){el.style.cursor='default';el.addEventListener('mousemove',e=>showTip(e,txt));el.addEventListener('mouseleave',hideTip);
+  el.addEventListener('mouseenter',()=>el.style.opacity='0.78');el.addEventListener('mouseleave',()=>el.style.opacity='1');}
+function E(t,a={},txt){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;return e;}
+function mount(id,w,h){const c=document.getElementById(id);if(!c)return null;c.innerHTML='';const s=E('svg',{viewBox:`0 0 ${w} ${h}`,width:'100%'});s.style.height='auto';s.style.overflow='visible';c.appendChild(s);return s;}
+
+function barV(id,data,lab,val,color,{w=520,h=250,rot=false,fmt=fr,vals=true,unit=''}={}){
+  const s=mount(id,w,h);if(!s)return;const L=46,R=12,T=22,B=rot?54:30;
+  const pw=w-L-R,ph=h-T-B,base=h-B,n=data.length,max=Math.max(...data.map(d=>d[val]))||1;
+  s.appendChild(E('line',{x1:L,y1:base,x2:w-R,y2:base,class:'axis'}));
+  data.forEach((d,i)=>{const bw=pw/n*0.62,cx=L+(i+0.5)*pw/n,bh=d[val]/max*ph,y=base-bh;
+    const r=E('rect',{x:cx-bw/2,y,width:bw,height:Math.max(bh,0),fill:color,rx:1.5});
+    hov(r,`${d[lab]} · ${fmt(d[val])}${unit}`);s.appendChild(r);
+    if(vals)s.appendChild(E('text',{x:cx,y:y-5,'text-anchor':'middle',class:'vlab'},fmt(d[val])));
+    const t=E('text',{x:cx,y:base+15,'text-anchor':rot?'end':'middle',class:'blab'},d[lab]);
+    if(rot)t.setAttribute('transform',`rotate(-42 ${cx} ${base+15})`);s.appendChild(t);});
+}
+function barH(id,data,lab,val,color,{w=520,labW=128,fmt=fr,colorFn=null,unit=''}={}){
+  const rh=30,T=8,B=8,h=data.length*rh+T+B,L=labW,R=62;const s=mount(id,w,h);if(!s)return;
+  const pw=w-L-R,max=Math.max(...data.map(d=>d[val]))||1;
+  data.forEach((d,i)=>{const y=T+i*rh+rh/2,bw=d[val]/max*pw;
+    s.appendChild(E('text',{x:L-8,y:y+4,'text-anchor':'end',class:'glab'},d[lab]));
+    const r=E('rect',{x:L,y:y-9,width:Math.max(bw,1),height:18,fill:colorFn?colorFn(d):color,rx:1.5});
+    hov(r,`${d[lab]} · ${fmt(d[val])}${unit}`);s.appendChild(r);
+    s.appendChild(E('text',{x:L+bw+6,y:y+4,class:'vlab'},fmt(d[val])));});
+}
+function line(id,data,lab,val,color,{w=1080,h=300,fmt=money,every=2,rot=false}={}){
+  const s=mount(id,w,h);if(!s)return;if(!data.length)return;const L=56,R=16,T=20,B=rot?70:34;
+  const pw=w-L-R,ph=h-T-B,n=data.length,max=Math.max(...data.map(d=>d[val])),min=Math.min(...data.map(d=>d[val]));
+  const lo=Math.min(min,0),X=i=>L+(n===1?pw/2:i*pw/(n-1)),Y=v=>T+ph-(v-lo)/(max-lo||1)*ph;
+  for(let g=0;g<=2;g++){const v=lo+(max-lo)*g/2,y=Y(v);
+    s.appendChild(E('line',{x1:L,y1:y,x2:w-R,y2:y,stroke:C.line,'stroke-width':g===0?1:0.6,'stroke-dasharray':g===0?'':'3 3'}));
+    s.appendChild(E('text',{x:L-8,y:y+3,'text-anchor':'end',class:'blab'},fmt(v)));}
+  s.appendChild(E('polyline',{points:data.map((d,i)=>`${X(i)},${Y(d[val])}`).join(' '),fill:'none',stroke:color,'stroke-width':2.4,'stroke-linejoin':'round'}));
+  data.forEach((d,i)=>{const cx=X(i),cy=Y(d[val]);
+    const c=E('circle',{cx,cy,r:3.5,fill:'#FBFAF7',stroke:color,'stroke-width':2});
+    hov(c,`${d[lab]} · ${fmt(d[val])}`);s.appendChild(c);
+    if(i%every===0||i===n-1){const t=E('text',{x:cx,y:h-(rot?8:12),'text-anchor':rot?'end':'middle',class:'blab'},d[lab]);
+      if(rot)t.setAttribute('transform',`rotate(-42 ${cx} ${h-8})`);s.appendChild(t);}});
+}
+function donut(id,data,lab,val,colors,{w=380,h=240,fmt=fr}={}){
+  const s=mount(id,w,h);if(!s)return;const cx=110,cy=h/2,r=80,ir=46;
+  const total=data.reduce((a,d)=>a+d[val],0)||1;let ang=-Math.PI/2;
+  data.forEach((d,i)=>{const frac=d[val]/total,a2=ang+frac*2*Math.PI;
+    const x1=cx+r*Math.cos(ang),y1=cy+r*Math.sin(ang),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    const xi=cx+ir*Math.cos(a2),yi=cy+ir*Math.sin(a2),xi2=cx+ir*Math.cos(ang),yi2=cy+ir*Math.sin(ang),lg=frac>0.5?1:0;
+    const p=E('path',{d:`M ${x1} ${y1} A ${r} ${r} 0 ${lg} 1 ${x2} ${y2} L ${xi} ${yi} A ${ir} ${ir} 0 ${lg} 0 ${xi2} ${yi2} Z`,fill:colors[i%colors.length]});
+    hov(p,`${d[lab]} · ${fmt(d[val])} (${Math.round(frac*100)}%)`);s.appendChild(p);ang=a2;});
+  data.forEach((d,i)=>{const ly=24+i*22;
+    s.appendChild(E('rect',{x:228,y:ly-9,width:11,height:11,fill:colors[i%colors.length],rx:1}));
+    s.appendChild(E('text',{x:245,y:ly,class:'glab'},d[lab]));
+    s.appendChild(E('text',{x:w-4,y:ly,'text-anchor':'end',class:'vlab'},Math.round(d[val]/total*100)+'%'));});
+}
+const lateColor=d=>{const t=Math.min(d.late/22,1);return `rgb(${176+((200-176)*(1-t))|0},${71+((140-71)*(1-t))|0},${59+((120-59)*(1-t))|0})`;};
+const fillSel=(id,opts)=>{const s=document.getElementById(id);s.innerHTML=opts.map(o=>`<option>${o}</option>`).join('');};
+
+function renderStatic(){
+  const t=D.totals;
+  document.getElementById('kpibar').innerHTML=[
+    [money(t.revenue)+' BRL','chiffre d\'affaires'],[fr(t.orders),'commandes valides'],
+    [dec(t.avg_score)+' / 5','note moyenne'],[t.pct5+'\u00a0%','d\'avis 5 étoiles'],
+    [dec(t.cc_share,1)+'\u00a0%','par carte de crédit']
+  ].map(k=>`<div class="k"><div class="kv">${k[0]}</div><div class="kl">${k[1]}</div></div>`).join('');
+  line('ch-monthly',D.monthly,'lab','revenue',C.gold,{});
+  barH('ch-state-rev',D.state_revenue,'state','revenue',C.gold,{fmt:money,labW:150,unit:' BRL'});
+  barH('ch-state-late',D.state_late,'state','late',C.struct,{fmt:d=>dec(d,1),labW:150,colorFn:lateColor,unit:'%'});
+  barH('ch-cat-rev',D.cat_revenue,'cat','revenue',C.bronze,{w:1080,fmt:money,labW:230,unit:' BRL'});
+  barH('ch-cat-best',D.cat_score_best,'cat','score',C.derive,{labW:185,fmt:d=>dec(d)});
+  barH('ch-cat-worst',D.cat_score_worst,'cat','score',C.struct,{labW:185,fmt:d=>dec(d)});
+  donut('ch-pay',D.pay_type,'type','value',[C.cast,C.bronze,C.join,C.silver,C.muted],{fmt:money});
+  barV('ch-inst',D.installments,'i','n',C.cast,{});
+  barH('ch-rfm',D.rfm,'seg','n',C.ink,{labW:104});
+  barH('ch-rfm-mon',D.rfm,'seg','monetary',C.gold,{fmt:money,labW:104,unit:' BRL'});
+}
+function renderTemps(cat){
+  barV('ch-hourly',D.hourly_by_cat[cat],'h','orders',C.silver,{vals:false,unit:' cmd'});
+  barV('ch-weekday',D.weekday_by_cat[cat],'d','orders',C.bronze,{rot:true,unit:' cmd'});
+}
+function renderGeoMonth(st){
+  line('ch-state-month',D.state_month_revenue[st],'lab','revenue',C.gold,{rot:true,every:2});
+  document.getElementById('cap-geo-month').textContent=st;
+}
+function renderSat(st){
+  barV('ch-score',D.score_dist_by_state[st],'s','n',C.gold,{unit:' avis'});
+  line('ch-score-month',D.score_month_by_state[st],'lab','score',C.derive,{fmt:d=>dec(d,1),every:2});
+  document.getElementById('cap-sat-dist').textContent=st+' · 1 à 5 étoiles';
+  document.getElementById('cap-sat-month').textContent=st;
+}
+function renderCli(st){
+  donut('ch-status',D.status_by_state[st],'s','n',[C.derive,C.silver,C.struct,C.bronze,C.cast,C.join],{});
+  document.getElementById('cap-cli').textContent=st;
+}
+
+// init
+renderStatic();
+fillSel('sel-cat',D.cat_options); renderTemps(D.cat_options[0]);
+fillSel('sel-geo',D.geo_states); renderGeoMonth(D.geo_states[0]);
+fillSel('sel-sat',D.sat_states); renderSat(D.sat_states[0]);
+fillSel('sel-cli',D.cli_states); renderCli(D.cli_states[0]);
+document.getElementById('sel-cat').addEventListener('change',e=>renderTemps(e.target.value));
+document.getElementById('sel-geo').addEventListener('change',e=>renderGeoMonth(e.target.value));
+document.getElementById('sel-sat').addEventListener('change',e=>renderSat(e.target.value));
+document.getElementById('sel-cli').addEventListener('change',e=>renderCli(e.target.value));
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.querySelector(`.panel[data-panel="${b.dataset.tab}"]`).classList.add('active');
+}));
+</script>
+
+</body>
+</html>
