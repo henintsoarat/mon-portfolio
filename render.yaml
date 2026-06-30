@@ -1,0 +1,56 @@
+services:
+  # ── Frontend (portail privé) ────────────────────────────────────────────────
+  - type: web
+    name: mon-portail
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https:; font-src 'self' data:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    envVars:
+      - key: VITE_PUBLIC_MODE
+        value: "false"
+      - key: VITE_API_URL
+        sync: false   # ex: https://mon-portfolio-api.onrender.com
+
+  # ── Backend (auth + API Claude + Notion) ───────────────────────────────────
+  - type: web
+    name: mon-portfolio-api
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        sync: false   # chaîne aléatoire longue, ex: openssl rand -hex 32
+      - key: ADMIN_USERNAME
+        sync: false   # ex: admin
+      - key: ADMIN_PASSWORD
+        sync: false   # mot de passe en clair — bcrypt hash calculé au démarrage
+      - key: FRONTEND_URL
+        sync: false   # URL du static site Render, ex: https://mon-portail.onrender.com
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: NOTION_TOKEN
+        sync: false
+      - key: NOTION_DATABASE_ID
+        sync: false

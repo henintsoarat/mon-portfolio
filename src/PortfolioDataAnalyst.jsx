@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import emailjs from "@emailjs/browser";
 import LifeCalculator from "./LifeCalculator";
-import { useAuth } from "./AuthContext";
 import LinkedInManager from "./linkedin_manager";
 
 const EMAILJS_SERVICE_ID = "service_4k6fbdp";
@@ -28,18 +27,6 @@ const PROJECTS = [
     action: "data",
   },
   {
-    id: 2,
-    title: "Espace Projets Privés",
-    titleEN: "Private Projects Space",
-    description: "Études de cas confidentielles, projets clients et ressources réservées à l'administration du portfolio.",
-    descriptionEN: "Confidential case studies, client projects, and resources reserved for portfolio administration.",
-    emoji: "🔐",
-    access: "admin",
-    buttonLabel: "Accéder au panel",
-    buttonLabelEN: "Access panel",
-    action: "admin",
-  },
-  {
     id: 3,
     title: "Vibe Coding avec Claude Code",
     titleEN: "Vibe Coding with Claude Code",
@@ -56,10 +43,7 @@ const PROJECTS = [
 const T = {
   fr: {
     nav: { about: "Qui suis-je", skills: "Compétences", experience: "Parcours", projects: "Projets", tarifs: "Tarifs", contact: "Contact" },
-    visitor: "Mode Visiteur",
-    admin: "Admin",
-    logout: "Déconnexion",
-    quit: "Quitter",
+    backToPortal: "← Portail",
     downloadCV: "Lire le CV",
     cvFile: "/CV_Henintsoa_Andrianaivo.pdf",
     marquee: [
@@ -163,7 +147,7 @@ const T = {
         },
       ],
     },
-    projects: { title: "Projets", adminNote: "🔐 Un projet est réservé à l'espace admin." },
+    projects: { title: "Projets" },
     pricing: {
       title: "Tarifs",
       subtitle: "Quatre façons de transformer vos données en décisions, du diagnostic rapide à l'accompagnement dans la durée.",
@@ -314,25 +298,10 @@ const T = {
       tech: "Fait avec React • Vite • Tailwind CSS",
     },
     progressLabels: ["Automatisation", "DataViz", "Reporting Métier"],
-    adminPanel: {
-      title: "Espace Administration",
-      subtitle: "Accès restreint, session admin active",
-      projects: "Projets confidentiels",
-      projectsDesc: "Ajoutez ici vos études de cas clients, projets NDA ou ressources privées.",
-      pricing: "Tarification & Disponibilités",
-      pricingDesc: "Informations tarifaires et planning de disponibilité accessibles depuis ce panel.",
-      linkedinTitle: "LinkedIn Manager",
-      linkedinDesc: "Outil de gestion de posts LinkedIn, génération IA, planification et intégration Notion.",
-      linkedinBtn: "Lancer LinkedIn Manager →",
-      logout: "Se déconnecter",
-    },
   },
   en: {
     nav: { about: "About", skills: "Skills", experience: "Experience", projects: "Projects", tarifs: "Pricing", contact: "Contact" },
-    visitor: "Visitor Mode",
-    admin: "Admin",
-    logout: "Logout",
-    quit: "Quit",
+    backToPortal: "← Portal",
     downloadCV: "Read CV",
     cvFile: "/CV_Henintsoa_Andrianaivo_EN.pdf",
     marquee: [
@@ -436,7 +405,7 @@ const T = {
         },
       ],
     },
-    projects: { title: "Projects", adminNote: "🔐 One project is reserved for the admin space." },
+    projects: { title: "Projects" },
     pricing: {
       title: "Pricing",
       subtitle: "Four ways to turn your data into decisions, from a quick diagnosis to a long-term partnership.",
@@ -587,18 +556,6 @@ const T = {
       tech: "Built with React • Vite • Tailwind CSS",
     },
     progressLabels: ["Automation", "DataViz", "Business Reporting"],
-    adminPanel: {
-      title: "Administration Space",
-      subtitle: "Restricted access, admin session active",
-      projects: "Confidential Projects",
-      projectsDesc: "Add client case studies, NDA projects, or private resources here.",
-      pricing: "Pricing & Availability",
-      pricingDesc: "Pricing information and availability schedule accessible from this panel.",
-      linkedinTitle: "LinkedIn Manager",
-      linkedinDesc: "LinkedIn post management tool with AI generation, scheduling, and Notion integration.",
-      linkedinBtn: "Launch LinkedIn Manager →",
-      logout: "Log out",
-    },
   },
 };
 
@@ -629,7 +586,6 @@ function ProjectCard({ project, lang, onAction }) {
   const title = lang === 'en' ? (project.titleEN || project.title) : project.title;
   const description = lang === 'en' ? (project.descriptionEN || project.description) : project.description;
   const buttonLabel = lang === 'en' ? (project.buttonLabelEN || project.buttonLabel) : project.buttonLabel;
-  const adminNote = lang === 'en' ? "Admin access only" : "Accès admin uniquement";
 
   return (
     <div className="core-card bg-[#0D1117] border border-[#27272A] rounded-lg p-8 flex flex-col h-full">
@@ -640,12 +596,6 @@ function ProjectCard({ project, lang, onAction }) {
       </div>
       <h3 className="text-xl font-bold mb-4 tracking-tight text-white">{title}</h3>
       <p className="text-[#A1A1AA] leading-relaxed flex-1 text-sm" style={{ lineHeight: '1.75' }}>{description}</p>
-      {project.access === 'admin' && (
-        <div className="mt-4 inline-flex items-center gap-1.5 text-xs text-[#FF003C]/70 font-mono">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-          <span>{adminNote}</span>
-        </div>
-      )}
       <button
         type="button"
         onClick={onAction}
@@ -819,8 +769,7 @@ function useTypewriter(phrases, resetKey, { typingSpeed = 75, deletingSpeed = 40
   return text;
 }
 
-export default function PortfolioDataAnalyst() {
-  const { role, logout } = useAuth();
+export default function PortfolioDataAnalyst({ onBack }) {
   const [lang, setLang] = useState('fr');
   const t = T[lang];
 
@@ -896,12 +845,11 @@ export default function PortfolioDataAnalyst() {
   const [showVibeCoding, setShowVibeCoding] = useState(false);
   const [showDataProject, setShowDataProject] = useState(false);
   const [retailOpen, setRetailOpen] = useState(false);
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
   const [showLinkedInManager, setShowLinkedInManager] = useState(false);
   const linkedInUrl = "https://www.linkedin.com/in/henintsoa-ratovonirina/";
   const openLinkedIn = () => window.open(linkedInUrl, "_blank");
 
-  const anyModalOpen = showCalculator || showVibeCoding || showDataProject || showAdminPanel || showLinkedInManager;
+  const anyModalOpen = showCalculator || showVibeCoding || showDataProject || showLinkedInManager;
   useEffect(() => {
     document.body.style.overflow = anyModalOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
@@ -910,10 +858,9 @@ export default function PortfolioDataAnalyst() {
   const handleProjectAction = (action) => {
     if (action === 'vibe') setShowVibeCoding(true);
     else if (action === 'data') setShowDataProject(true);
-    else if (action === 'admin') setShowAdminPanel(true);
   };
 
-  const visibleProjects = PROJECTS.filter(p => p.access === 'public' || (p.access === 'admin' && role === 'admin'));
+  const visibleProjects = PROJECTS.filter(p => p.access === 'public');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -942,23 +889,18 @@ export default function PortfolioDataAnalyst() {
       {/* Navigation */}
       <div className="sticky top-0 z-30 w-full border-b border-[#27272A] py-3 backdrop-blur-md" style={{ backgroundColor: 'rgba(3,5,8,0.55)', boxShadow: '0 4px 32px rgba(0,0,0,0.4)' }}>
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-4">
-          {/* Mode badge */}
+          {/* Back to portal */}
           <div className="flex items-center gap-4">
-            {role === 'admin' ? (
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-[10px] font-mono uppercase tracking-widest">
-                  <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                  {t.admin}
-                </span>
-                <button onClick={logout} className="text-[10px] font-mono text-[#FF003C]/60 hover:text-[#FF003C] transition uppercase tracking-widest">{t.logout}</button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0D1117] border border-[#27272A] text-[#52525b] text-[10px] font-mono uppercase tracking-widest">
-                  <span className="w-1 h-1 rounded-full bg-[#A1A1AA]/30" /> {t.visitor}
-                </span>
-                <button onClick={logout} className="text-[10px] font-mono text-[#FF003C]/60 hover:text-[#FF003C] transition uppercase tracking-widest">{t.quit}</button>
-              </div>
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="inline-flex items-center gap-1.5 text-[10px] font-mono text-[#A1A1AA] hover:text-[#00F0FF] transition uppercase tracking-widest"
+              >
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                </svg>
+                {t.backToPortal}
+              </button>
             )}
           </div>
 
@@ -1447,50 +1389,6 @@ export default function PortfolioDataAnalyst() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Modale Admin Panel */}
-      {showAdminPanel && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
-          <div className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto bg-slate-950 rounded-3xl border border-yellow-500/20 shadow-2xl p-10">
-            <button onClick={() => setShowAdminPanel(false)}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#0D1117] hover:bg-[#27272A] border border-[#27272A] flex items-center justify-center text-[#A1A1AA] hover:text-white transition font-mono">
-              ✕
-            </button>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-3xl">🔐</span>
-              <h2 className="text-3xl font-bold">{t.adminPanel.title}</h2>
-            </div>
-            <p className="text-[#A1A1AA] text-sm mb-8">{t.adminPanel.subtitle}</p>
-            <div className="space-y-4">
-              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
-                <h3 className="font-bold mb-2 flex items-center gap-2"><span>📁</span> {t.adminPanel.projects}</h3>
-                <p className="text-[#A1A1AA] text-sm">{t.adminPanel.projectsDesc}</p>
-              </div>
-              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
-                <h3 className="font-bold mb-2 flex items-center gap-2"><span>💼</span> {t.adminPanel.pricing}</h3>
-                <p className="text-[#A1A1AA] text-sm">{t.adminPanel.pricingDesc}</p>
-              </div>
-              <div className="bg-[#0D1117] border border-[#27272A] rounded-lg p-6">
-                <h3 className="font-bold mb-3 flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-[#00F0FF]"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                  {t.adminPanel.linkedinTitle}
-                </h3>
-                <p className="text-[#A1A1AA] text-sm mb-4">{t.adminPanel.linkedinDesc}</p>
-                <button
-                  onClick={() => { setShowAdminPanel(false); setShowLinkedInManager(true); }}
-                  className="w-full px-4 py-2.5 rounded-xl core-btn bg-[#00F0FF] hover:bg-white text-black text-white font-semibold text-sm transition duration-300"
-                >
-                  {t.adminPanel.linkedinBtn}
-                </button>
-              </div>
-            </div>
-            <button onClick={logout}
-              className="mt-8 w-full px-4 py-3 rounded-2xl border border-red-500/30 text-red-400 hover:bg-red-950/30 transition text-sm font-medium">
-              {t.adminPanel.logout}
-            </button>
           </div>
         </div>
       )}

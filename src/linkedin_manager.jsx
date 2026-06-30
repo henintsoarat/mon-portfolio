@@ -321,6 +321,13 @@ const TOPIC_SUGGESTIONS = [
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
+const PORTAL_SESSION_KEY = 'portal_token';
+
+function authHeaders() {
+  const token = sessionStorage.getItem(PORTAL_SESSION_KEY);
+  return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
 export default function App({ onClose }) {
   const [tab, setTab] = useState("compose");
   const [notif, setNotif] = useState(null);
@@ -361,7 +368,7 @@ export default function App({ onClose }) {
     const savedDbId = localStorage.getItem("notion_db_id");
     const savedDbUrl = localStorage.getItem("notion_db_url");
     if (savedDbId) { setNotionDbId(savedDbId); if (savedDbUrl) setNotionDbUrl(savedDbUrl); setNotionStatus("ok"); }
-    fetch(`${API_BASE}/api/notion/status`)
+    fetch(`${API_BASE}/api/notion/status`, { headers: authHeaders() })
       .then(r => r.json())
       .then(data => {
         if (data.configured) {
@@ -384,7 +391,7 @@ export default function App({ onClose }) {
     try {
       const res = await fetch(`${API_BASE}/api/notion/create-db`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ parentPageId: notionParentPageId.trim() }),
       });
       const data = await res.json();
@@ -409,7 +416,7 @@ export default function App({ onClose }) {
     try {
       const res = await fetch(`${API_BASE}/api/notion/save-post`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ content: post.content, status: post.status, date: post.date, dbId }),
       });
       const data = await res.json();
@@ -431,7 +438,7 @@ export default function App({ onClose }) {
     try {
       const res = await fetch(`${API_BASE}/api/notion/save-post`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeaders() },
         body: JSON.stringify({ content: postContent, status: "draft", tone, postType, hashtags, date: new Date().toISOString().slice(0, 16), dbId }),
       });
       const data = await res.json();
@@ -447,7 +454,7 @@ export default function App({ onClose }) {
   const callClaude = async (prompt, maxTokens = 1024) => {
     const res = await fetch(`${API_BASE}/api/claude`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeaders() },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
         max_tokens: maxTokens,
@@ -730,7 +737,7 @@ export default function App({ onClose }) {
                         <div style={{fontSize:12,color:"var(--success)",display:"flex",alignItems:"center",gap:6}}><NIcon name="check" size={12}/> Base "LinkedIn Posts Manager" active</div>
                         <div style={{fontSize:11,color:"var(--text-muted)"}}>{notionSynced} post{notionSynced!==1?"s":""} synchronisé{notionSynced!==1?"s":""}</div>
                         {notionDbUrl && <a href={notionDbUrl} target="_blank" rel="noopener noreferrer" className="notion-db-link"><NIcon name="external" size={11}/> Ouvrir dans Notion</a>}
-                        <button className="btn btn-secondary btn-sm" onClick={() => { setNotionStatus("loading"); fetch(`${API_BASE}/api/notion/status`).then(r=>r.json()).then(d=>{ if(d.configured){setNotionStatus("ok");setNotionDbId(d.dbId);setNotionDbUrl(d.dbUrl);}else{setNotionStatus("idle");} }).catch(()=>setNotionStatus("error")); }} style={{width:"100%",justifyContent:"center"}}><NIcon name="refresh" size={11}/> Resynchroniser</button>
+                        <button className="btn btn-secondary btn-sm" onClick={() => { setNotionStatus("loading"); fetch(`${API_BASE}/api/notion/status`, { headers: authHeaders() }).then(r=>r.json()).then(d=>{ if(d.configured){setNotionStatus("ok");setNotionDbId(d.dbId);setNotionDbUrl(d.dbUrl);}else{setNotionStatus("idle");} }).catch(()=>setNotionStatus("error")); }} style={{width:"100%",justifyContent:"center"}}><NIcon name="refresh" size={11}/> Resynchroniser</button>
                       </div>
                     ) : (
                       <div style={{display:"flex",flexDirection:"column",gap:10}}>
